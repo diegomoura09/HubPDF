@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('manage_coupons') }} - {{ t('admin_dashboard') }} - {{ t('title') }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">{{ t('manage_coupons') }}</h1>
+            <p class="text-gray-600">{{ t('create_and_manage_promo_codes') }}</p>
+        </div>
+        <div class="flex space-x-4">
+            <button onclick="showCreateCouponModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium">
+                <i data-feather="plus" class="h-4 w-4 mr-2 inline"></i>
+                {{ t('create_coupon') }}
+            </button>
+            <a href="/admin" class="text-blue-600 hover:text-blue-700 font-medium">
+                ← {{ t('back_to_admin') }}
+            </a>
+        </div>
+    </div>
+    
+    <!-- Coupons Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('code') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('discount') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('validity') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('usage') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('status') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for coupon in coupons %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ coupon.code }}</div>
+                                <div class="text-sm text-gray-500">{{ t('created') }}: {{ coupon.created_at.strftime('%d/%m/%Y') }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ coupon.discount_percent }}%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div>{{ t('from') }}: {{ coupon.valid_from.strftime('%d/%m/%Y') }}</div>
+                                <div>{{ t('until') }}: {{ coupon.valid_until.strftime('%d/%m/%Y') }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {% if coupon.usage_limit %}
+                                    {{ coupon.used_count }}/{{ coupon.usage_limit }}
+                                {% else %}
+                                    {{ coupon.used_count }}/{{ t('unlimited') }}
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                       {% if coupon.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                    {% if coupon.is_active %}{{ t('active') }}{% else %}{{ t('inactive') }}{% endif %}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button onclick="toggleCoupon({{ coupon.id }})" 
+                                        class="{% if coupon.is_active %}text-red-600 hover:text-red-700{% else %}text-green-600 hover:text-green-700{% endif %}">
+                                    {% if coupon.is_active %}{{ t('deactivate') }}{% else %}{{ t('activate') }}{% endif %}
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if not coupons %}
+            <div class="text-center py-12">
+                <i data-feather="tag" class="h-12 w-12 text-gray-400 mx-auto mb-4"></i>
+                <p class="text-gray-500">{{ t('no_coupons_found') }}</p>
+                <button onclick="showCreateCouponModal()" class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium">
+                    {{ t('create_first_coupon') }}
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Create Coupon Modal -->
+<div id="create-coupon-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('create_new_coupon') }}</h3>
+            <form id="create-coupon-form" method="post" action="/admin/coupons">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('coupon_code') }}</label>
+                    <input type="text" name="code" required 
+                           placeholder="{{ t('coupon_code_placeholder') }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('discount_percentage') }}</label>
+                    <input type="number" name="discount_percent" min="1" max="100" required 
+                           placeholder="10"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('valid_from') }}</label>
+                    <input type="date" name="valid_from" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('valid_until') }}</label>
+                    <input type="date" name="valid_until" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('usage_limit') }}</label>
+                    <input type="number" name="usage_limit" min="1" 
+                           placeholder="{{ t('unlimited_if_empty') }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeCreateCouponModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md font-medium">
+                        {{ t('cancel') }}
+                    </button>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium">
+                        {{ t('create_coupon') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showCreateCouponModal() {
+    // Set default dates
+    const today = new Date().toISOString().split('T')[0];
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    const nextMonthStr = nextMonth.toISOString().split('T')[0];
+    
+    document.querySelector('input[name="valid_from"]').value = today;
+    document.querySelector('input[name="valid_until"]').value = nextMonthStr;
+    
+    document.getElementById('create-coupon-modal').classList.remove('hidden');
+}
+
+function closeCreateCouponModal() {
+    document.getElementById('create-coupon-modal').classList.add('hidden');
+    document.getElementById('create-coupon-form').reset();
+}
+
+function toggleCoupon(couponId) {
+    fetch(`/admin/coupons/${couponId}/toggle`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        } else {
+            alert(data.message || 'Error occurred');
+        }
+    });
+}
+
+document.getElementById('create-coupon-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/admin/coupons', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        } else {
+            alert(data.message || 'Error occurred');
+        }
+    });
+});
+</script>
+{% endblock %}

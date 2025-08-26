@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('title') }} - {{ t('subtitle') }}{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-red-50 to-orange-50">
+    <!-- Hero Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                {{ t('hero_title') }}
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                {{ t('hero_description') }}
+            </p>
+            
+            {% if user %}
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="/tools" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold text-lg inline-flex items-center">
+                        <i data-feather="tool" class="h-5 w-5 mr-2"></i>
+                        {{ t('btn_start_editing') }}
+                    </a>
+                    <a href="/dashboard" class="bg-white hover:bg-gray-50 text-gray-900 px-8 py-3 rounded-lg font-semibold text-lg border border-gray-300 inline-flex items-center">
+                        <i data-feather="bar-chart-2" class="h-5 w-5 mr-2"></i>
+                        {{ t('btn_view_dashboard') }}
+                    </a>
+                </div>
+                
+                {% if usage_summary %}
+                    <div class="mt-8 bg-white rounded-lg shadow-sm p-6 max-w-md mx-auto">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ t('usage_today') }}</h3>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">{{ t('operations_used') }}</span>
+                            <span class="text-sm font-medium">{{ usage_summary.operations_used }}/{{ usage_summary.operations_limit }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                            <div class="bg-red-600 h-2 rounded-full" style="width: {{ (usage_summary.operations_used / usage_summary.operations_limit * 100) | round }}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500">{{ t('plan') }}: {{ t('plan_' + usage_summary.plan) }}</p>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="/auth/register" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold text-lg inline-flex items-center">
+                        <i data-feather="user-plus" class="h-5 w-5 mr-2"></i>
+                        {{ t('btn_get_started') }}
+                    </a>
+                    <a href="/auth/login" class="bg-white hover:bg-gray-50 text-gray-900 px-8 py-3 rounded-lg font-semibold text-lg border border-gray-300 inline-flex items-center">
+                        <i data-feather="log-in" class="h-5 w-5 mr-2"></i>
+                        {{ t('btn_login') }}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ t('features_title') }}</h2>
+            <p class="text-lg text-gray-600">{{ t('features_description') }}</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Merge PDFs -->
+            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
+                    <i data-feather="layers" class="h-6 w-6 text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_merge') }}</h3>
+                <p class="text-gray-600 text-sm">{{ t('tool_merge_description') }}</p>
+            </div>
+            
+            <!-- Split PDFs -->
+            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
+                    <i data-feather="scissors" class="h-6 w-6 text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_split') }}</h3>
+                <p class="text-gray-600 text-sm">{{ t('tool_split_description') }}</p>
+            </div>
+            
+            <!-- Compress PDFs -->
+            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
+                    <i data-feather="minimize-2" class="h-6 w-6 text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_compress') }}</h3>
+                <p class="text-gray-600 text-sm">{{ t('tool_compress_description') }}</p>
+            </div>
+            
+            <!-- PDF to Images -->
+            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
+                    <i data-feather="image" class="h-6 w-6 text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_pdf_to_images') }}</h3>
+                <p class="text-gray-600 text-sm">{{ t('tool_pdf_to_images_description') }}</p>
+            </div>
+            
+            <!-- Images to PDF -->
+            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
+                    <i data-feather="file-plus" class="h-6 w-6 text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_images_to_pdf') }}</h3>
+                <p class="text-gray-600 text-sm">{{ t('tool_images_to_pdf_description') }}</p>
+            </div>
+            
+            <!-- Extract Text -->
+            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
+                    <i data-feather="type" class="h-6 w-6 text-red-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_extract_text') }}</h3>
+                <p class="text-gray-600 text-sm">{{ t('tool_extract_text_description') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Security Section -->
+<div class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ t('security_title') }}</h2>
+            <p class="text-lg text-gray-600">{{ t('security_description') }}</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mx-auto mb-4">
+                    <i data-feather="shield" class="h-8 w-8 text-green-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('security_encryption') }}</h3>
+                <p class="text-gray-600">{{ t('security_encryption_description') }}</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4">
+                    <i data-feather="clock" class="h-8 w-8 text-blue-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('security_temporary') }}</h3>
+                <p class="text-gray-600">{{ t('security_temporary_description') }}</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mx-auto mb-4">
+                    <i data-feather="lock" class="h-8 w-8 text-purple-600"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('security_privacy') }}</h3>
+                <p class="text-gray-600">{{ t('security_privacy_description') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Preview -->
+<div class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ t('pricing_title') }}</h2>
+            <p class="text-lg text-gray-600">{{ t('pricing_description') }}</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Free Plan -->
+            <div class="bg-gray-50 rounded-lg p-8 relative">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('plan_free') }}</h3>
+                <div class="text-3xl font-bold text-gray-900 mb-4">{{ t('price_free') }}</div>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center">
+                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
+                        <span class="text-sm">{{ t('plan_free_feature_1') }}</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
+                        <span class="text-sm">{{ t('plan_free_feature_2') }}</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i data-feather="info" class="h-5 w-5 text-yellow-500 mr-2"></i>
+                        <span class="text-sm">{{ t('plan_free_feature_3') }}</span>
+                    </li>
+                </ul>
+                {% if not user %}
+                    <a href="/auth/register" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-2 px-4 rounded-md font-semibold text-center block">{{ t('btn_get_started') }}</a>
+                {% endif %}
+            </div>
+            
+            <!-- Pro Plan -->
+            <div class="bg-red-50 rounded-lg p-8 relative border-2 border-red-200">
+                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold">{{ t('popular') }}</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('plan_pro') }}</h3>
+                <div class="text-3xl font-bold text-gray-900 mb-4">R$ 14,90<span class="text-base font-normal text-gray-500">/{{ t('month') }}</span></div>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center">
+                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
+                        <span class="text-sm">{{ t('plan_pro_feature_1') }}</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
+                        <span class="text-sm">{{ t('plan_pro_feature_2') }}</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
+                        <span class="text-sm">{{ t('plan_pro_feature_3') }}</span>
+                    </li>
+                </ul>
+                <a href="/billing/pricing" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-semibold text-center block">{{ t('btn_upgrade') }}</a>
+            </div>
+            
+            <!-- Business Plan -->
+            <div class="bg-gray-50 rounded-lg p-8 relative">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('plan_business') }}</h3>
+                <div class="text-3xl font-bold text-gray-900 mb-4">R$ 29,90<span class="text-base font-normal text-gray-500">/{{ t('month') }}</span></div>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center">
+                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
+                        <span class="text-sm">{{ t('plan_business_feature_1') }}</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
+                        <span class="text-sm">{{ t('plan_business_feature_2') }}</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
+                        <span class="text-sm">{{ t('plan_business_feature_3') }}</span>
+                    </li>
+                </ul>
+                <a href="/billing/pricing" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-2 px-4 rounded-md font-semibold text-center block">{{ t('btn_upgrade') }}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

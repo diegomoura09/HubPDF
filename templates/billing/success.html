@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('payment_success') }} - {{ t('title') }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center">
+        <!-- Success Icon -->
+        <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-8">
+            <i data-feather="check" class="h-10 w-10 text-green-600"></i>
+        </div>
+        
+        <!-- Success Message -->
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ t('payment_success_title') }}</h1>
+        <p class="text-lg text-gray-600 mb-8">{{ t('payment_success_message') }}</p>
+        
+        <!-- Next Steps -->
+        <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
+            <h2 class="text-lg font-semibold text-green-900 mb-4">{{ t('next_steps') }}</h2>
+            <ul class="text-left text-green-800 space-y-2">
+                <li class="flex items-center">
+                    <i data-feather="check-circle" class="h-5 w-5 text-green-600 mr-2"></i>
+                    {{ t('next_step_1') }}
+                </li>
+                <li class="flex items-center">
+                    <i data-feather="check-circle" class="h-5 w-5 text-green-600 mr-2"></i>
+                    {{ t('next_step_2') }}
+                </li>
+                <li class="flex items-center">
+                    <i data-feather="check-circle" class="h-5 w-5 text-green-600 mr-2"></i>
+                    {{ t('next_step_3') }}
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/dashboard" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+                <i data-feather="bar-chart-2" class="h-5 w-5 mr-2"></i>
+                {{ t('btn_go_to_dashboard') }}
+            </a>
+            <a href="/tools" class="bg-white hover:bg-gray-50 text-gray-900 px-6 py-3 rounded-lg font-semibold border border-gray-300 transition-colors inline-flex items-center">
+                <i data-feather="tool" class="h-5 w-5 mr-2"></i>
+                {{ t('btn_start_using_tools') }}
+            </a>
+        </div>
+        
+        <!-- Support -->
+        <div class="mt-12 text-center">
+            <p class="text-gray-600 mb-2">{{ t('need_help') }}</p>
+            <a href="/contact" class="text-green-600 hover:text-green-700 font-medium">{{ t('contact_support') }}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

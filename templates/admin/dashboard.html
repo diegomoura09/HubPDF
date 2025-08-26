@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('admin_dashboard') }} - {{ t('title') }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">{{ t('admin_dashboard') }}</h1>
+        <p class="text-gray-600">{{ t('admin_dashboard_description') }}</p>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Users -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100">
+                        <i data-feather="users" class="h-6 w-6 text-blue-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-500">{{ t('total_users') }}</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ kpis.total_users }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Active Users -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-green-100">
+                        <i data-feather="user-check" class="h-6 w-6 text-green-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-500">{{ t('active_users') }}</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ kpis.active_users }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Active Subscriptions -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-purple-100">
+                        <i data-feather="credit-card" class="h-6 w-6 text-purple-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-500">{{ t('active_subscriptions') }}</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ kpis.active_subscriptions }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Revenue (30 days) -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-yellow-100">
+                        <i data-feather="dollar-sign" class="h-6 w-6 text-yellow-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-500">{{ t('revenue_30_days') }}</div>
+                    <div class="text-2xl font-bold text-gray-900">R$ {{ "%.2f"|format(kpis.recent_revenue) }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Recent Registrations -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">{{ t('recent_registrations') }}</h2>
+                <p class="text-sm text-gray-600">{{ t('last_7_days') }}: {{ kpis.recent_registrations }} {{ t('new_users') }}</p>
+            </div>
+            <div class="p-6">
+                <div class="text-center text-gray-500">
+                    <i data-feather="trending-up" class="h-12 w-12 mx-auto mb-2"></i>
+                    <p>{{ t('user_growth_chart_placeholder') }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Audit Logs -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-gray-900">{{ t('recent_admin_actions') }}</h2>
+                <a href="/admin/audit-logs" class="text-blue-600 hover:text-blue-700 text-sm font-medium">{{ t('view_all') }}</a>
+            </div>
+            <div class="p-6">
+                {% if recent_logs %}
+                    <div class="space-y-4">
+                        {% for log in recent_logs %}
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0">
+                                    <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <i data-feather="user" class="h-4 w-4 text-gray-600"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-900">
+                                        <span class="font-medium">{{ log.admin_user.name }}</span>
+                                        {{ t('action_' + log.action) }}
+                                        <span class="font-medium">{{ t('target_' + log.target_type) }}</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500">{{ log.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500 text-center">{{ t('no_recent_actions') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="mt-8 bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">{{ t('quick_actions') }}</h2>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <a href="/admin/users" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                            <i data-feather="users" class="h-5 w-5 text-blue-600"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ t('manage_users') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('view_edit_users') }}</p>
+                    </div>
+                </a>
+                
+                <a href="/admin/subscriptions" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                            <i data-feather="credit-card" class="h-5 w-5 text-purple-600"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ t('manage_subscriptions') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('view_edit_subscriptions') }}</p>
+                    </div>
+                </a>
+                
+                <a href="/admin/coupons" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
+                            <i data-feather="tag" class="h-5 w-5 text-green-600"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ t('manage_coupons') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('create_edit_coupons') }}</p>
+                    </div>
+                </a>
+                
+                <a href="/admin/invoices" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="h-10 w-10 rounded-lg bg-yellow-100 flex items-center justify-center">
+                            <i data-feather="file-text" class="h-5 w-5 text-yellow-600"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ t('view_invoices') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('billing_history') }}</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

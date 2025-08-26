@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('dashboard') }} - {{ t('title') }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">{{ t('dashboard') }}</h1>
+        <p class="text-gray-600">{{ t('dashboard_welcome', name=user.name) }}</p>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Current Plan -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">{{ t('current_plan') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ t('plan_' + usage_summary.plan) }}</p>
+                </div>
+                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg">
+                    <i data-feather="credit-card" class="h-6 w-6 text-red-600"></i>
+                </div>
+            </div>
+            {% if usage_summary.plan != 'free' %}
+                <div class="mt-4">
+                    <a href="/account/plan" class="text-red-600 hover:text-red-700 text-sm font-medium">{{ t('manage_plan') }}</a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Operations Used -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">{{ t('operations_today') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ usage_summary.operations_used }}/{{ usage_summary.operations_limit }}</p>
+                </div>
+                <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
+                    <i data-feather="activity" class="h-6 w-6 text-blue-600"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: {{ (usage_summary.operations_used / usage_summary.operations_limit * 100) | round }}%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">{{ usage_summary.operations_remaining }} {{ t('operations_remaining') }}</p>
+            </div>
+        </div>
+        
+        <!-- File Size Limit -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">{{ t('max_file_size') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ usage_summary.max_file_size_mb }}MB</p>
+                </div>
+                <div class="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg">
+                    <i data-feather="hard-drive" class="h-6 w-6 text-green-600"></i>
+                </div>
+            </div>
+            {% if usage_summary.plan == 'free' %}
+                <div class="mt-4">
+                    <a href="/billing/pricing" class="text-green-600 hover:text-green-700 text-sm font-medium">{{ t('upgrade_for_more') }}</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">{{ t('quick_actions') }}</h2>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <a href="/tools/merge" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center justify-center w-10 h-10 bg-red-100 rounded-lg mr-4">
+                        <i data-feather="layers" class="h-5 w-5 text-red-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ t('tool_merge') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('tool_merge_short_description') }}</p>
+                    </div>
+                </a>
+                
+                <a href="/tools/split" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg mr-4">
+                        <i data-feather="scissors" class="h-5 w-5 text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ t('tool_split') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('tool_split_short_description') }}</p>
+                    </div>
+                </a>
+                
+                <a href="/tools/compress" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg mr-4">
+                        <i data-feather="minimize-2" class="h-5 w-5 text-green-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ t('tool_compress') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('tool_compress_short_description') }}</p>
+                    </div>
+                </a>
+                
+                <a href="/tools/pdf-to-images" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center justify-center w-10 h-10 bg-purple-100 rounded-lg mr-4">
+                        <i data-feather="image" class="h-5 w-5 text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ t('tool_pdf_to_images') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('tool_pdf_to_images_short_description') }}</p>
+                    </div>
+                </a>
+                
+                <a href="/tools/images-to-pdf" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center justify-center w-10 h-10 bg-yellow-100 rounded-lg mr-4">
+                        <i data-feather="file-plus" class="h-5 w-5 text-yellow-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ t('tool_images_to_pdf') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('tool_images_to_pdf_short_description') }}</p>
+                    </div>
+                </a>
+                
+                <a href="/tools/extract-text" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center justify-center w-10 h-10 bg-indigo-100 rounded-lg mr-4">
+                        <i data-feather="type" class="h-5 w-5 text-indigo-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ t('tool_extract_text') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('tool_extract_text_short_description') }}</p>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <a href="/tools" class="text-red-600 hover:text-red-700 font-medium">{{ t('view_all_tools') }} →</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upgrade Notice -->
+    {% if usage_summary.plan == 'free' %}
+        <div class="bg-gradient-to-r from-red-500 to-orange-500 rounded-lg p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">{{ t('upgrade_notice_title') }}</h3>
+                    <p class="text-red-100">{{ t('upgrade_notice_description') }}</p>
+                </div>
+                <div class="ml-6">
+                    <a href="/billing/pricing" class="bg-white text-red-600 px-4 py-2 rounded-md font-semibold hover:bg-gray-100 transition-colors">{{ t('btn_upgrade') }}</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Watermark Notice -->
+    {% if usage_summary.watermark_threshold and usage_summary.operations_used >= usage_summary.watermark_threshold %}
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
+            <div class="flex items-start">
+                <i data-feather="info" class="h-5 w-5 text-yellow-600 mt-0.5 mr-3"></i>
+                <div>
+                    <h4 class="text-sm font-medium text-yellow-800">{{ t('watermark_notice_title') }}</h4>
+                    <p class="text-sm text-yellow-700 mt-1">{{ t('watermark_notice_description') }}</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('tool_merge') }} - {{ t('title') }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <div class="flex items-center justify-center w-16 h-16 bg-red-100 rounded-lg mx-auto mb-4">
+            <i data-feather="layers" class="h-8 w-8 text-red-600"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ t('tool_merge') }}</h1>
+        <p class="text-lg text-gray-600">{{ t('tool_merge_description') }}</p>
+    </div>
+    
+    <!-- Upload Form -->
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <form id="merge-form" method="post" action="/tools/merge" enctype="multipart/form-data"
+              hx-post="/tools/merge" 
+              hx-encoding="multipart/form-data"
+              hx-target="#result"
+              hx-indicator="#loading">
+            
+            <div class="mb-6">
+                <label for="files" class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ t('select_pdf_files') }}
+                </label>
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-red-400 transition-colors">
+                    <div class="space-y-1 text-center">
+                        <i data-feather="upload" class="mx-auto h-12 w-12 text-gray-400"></i>
+                        <div class="flex text-sm text-gray-600">
+                            <label for="files" class="relative cursor-pointer bg-white rounded-md font-medium text-red-600 hover:text-red-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500">
+                                <span>{{ t('upload_files') }}</span>
+                                <input id="files" name="files" type="file" multiple accept=".pdf" required class="sr-only" onchange="updateFileList(this)">
+                            </label>
+                            <p class="pl-1">{{ t('or_drag_and_drop') }}</p>
+                        </div>
+                        <p class="text-xs text-gray-500">{{ t('pdf_files_only') }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- File List -->
+            <div id="file-list" class="mb-6 hidden">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">{{ t('selected_files') }}:</h3>
+                <ul id="file-items" class="space-y-2"></ul>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="flex justify-center">
+                <button type="submit" 
+                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50">
+                    <i data-feather="layers" class="h-5 w-5 mr-2"></i>
+                    {{ t('btn_merge_pdfs') }}
+                </button>
+            </div>
+        </form>
+        
+        <!-- Loading Indicator -->
+        <div id="loading" class="htmx-indicator text-center py-4">
+            <div class="inline-flex items-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ t('processing') }}...
+            </div>
+        </div>
+        
+        <!-- Result Area -->
+        <div id="result" class="mt-6"></div>
+    </div>
+    
+    <!-- Instructions -->
+    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 class="text-lg font-semibold text-blue-900 mb-4">{{ t('instructions') }}</h3>
+        <ul class="list-disc list-inside text-blue-800 space-y-2">
+            <li>{{ t('merge_instruction_1') }}</li>
+            <li>{{ t('merge_instruction_2') }}</li>
+            <li>{{ t('merge_instruction_3') }}</li>
+            <li>{{ t('merge_instruction_4') }}</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+function updateFileList(input) {
+    const fileList = document.getElementById('file-list');
+    const fileItems = document.getElementById('file-items');
+    
+    if (input.files.length > 0) {
+        fileList.classList.remove('hidden');
+        fileItems.innerHTML = '';
+        
+        Array.from(input.files).forEach(file => {
+            const li = document.createElement('li');
+            li.className = 'flex items-center text-sm text-gray-600';
+            li.innerHTML = `
+                <i data-feather="file" class="h-4 w-4 mr-2"></i>
+                <span>${file.name}</span>
+                <span class="ml-auto text-gray-400">${(file.size / 1024 / 1024).toFixed(1)} MB</span>
+            `;
+            fileItems.appendChild(li);
+        });
+        
+        feather.replace();
+    } else {
+        fileList.classList.add('hidden');
+    }
+}
+</script>
+{% endblock %}

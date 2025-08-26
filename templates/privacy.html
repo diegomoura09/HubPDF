@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('nav_privacy') }} - {{ t('title') }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ t('privacy_policy_title') }}</h1>
+        <p class="text-lg text-gray-600">{{ t('privacy_last_updated') }}</p>
+    </div>
+    
+    <div class="prose prose-lg max-w-none">
+        <h2>{{ t('privacy_section_1_title') }}</h2>
+        <p>{{ t('privacy_section_1_content') }}</p>
+        
+        <h2>{{ t('privacy_section_2_title') }}</h2>
+        <p>{{ t('privacy_section_2_content') }}</p>
+        
+        <h2>{{ t('privacy_section_3_title') }}</h2>
+        <p>{{ t('privacy_section_3_content') }}</p>
+        
+        <h2>{{ t('privacy_section_4_title') }}</h2>
+        <p>{{ t('privacy_section_4_content') }}</p>
+        
+        <h2>{{ t('privacy_section_5_title') }}</h2>
+        <p>{{ t('privacy_section_5_content') }}</p>
+        
+        <h2>{{ t('privacy_contact_title') }}</h2>
+        <p>{{ t('privacy_contact_content') }} <a href="/contact" class="text-red-600 hover:text-red-700">{{ t('contact_us') }}</a>.</p>
+    </div>
+</div>
+{% endblock %}

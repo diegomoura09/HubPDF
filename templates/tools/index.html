@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('nav_tools') }} - {{ t('title') }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ t('tools_title') }}</h1>
+        <p class="text-xl text-gray-600">{{ t('tools_description') }}</p>
+    </div>
+    
+    <!-- Tools Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Merge PDFs -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+            <div class="flex items-center justify-center w-16 h-16 bg-red-100 rounded-lg mx-auto mb-4">
+                <i data-feather="layers" class="h-8 w-8 text-red-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_merge') }}</h3>
+            <p class="text-gray-600 text-center mb-6">{{ t('tool_merge_description') }}</p>
+            <a href="/tools/merge" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
+                {{ t('btn_use_tool') }}
+            </a>
+        </div>
+        
+        <!-- Split PDFs -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+            <div class="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-lg mx-auto mb-4">
+                <i data-feather="scissors" class="h-8 w-8 text-blue-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_split') }}</h3>
+            <p class="text-gray-600 text-center mb-6">{{ t('tool_split_description') }}</p>
+            <a href="/tools/split" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
+                {{ t('btn_use_tool') }}
+            </a>
+        </div>
+        
+        <!-- Compress PDFs -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+            <div class="flex items-center justify-center w-16 h-16 bg-green-100 rounded-lg mx-auto mb-4">
+                <i data-feather="minimize-2" class="h-8 w-8 text-green-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_compress') }}</h3>
+            <p class="text-gray-600 text-center mb-6">{{ t('tool_compress_description') }}</p>
+            <a href="/tools/compress" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
+                {{ t('btn_use_tool') }}
+            </a>
+        </div>
+        
+        <!-- PDF to Images -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+            <div class="flex items-center justify-center w-16 h-16 bg-purple-100 rounded-lg mx-auto mb-4">
+                <i data-feather="image" class="h-8 w-8 text-purple-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_pdf_to_images') }}</h3>
+            <p class="text-gray-600 text-center mb-6">{{ t('tool_pdf_to_images_description') }}</p>
+            <a href="/tools/pdf-to-images" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
+                {{ t('btn_use_tool') }}
+            </a>
+        </div>
+        
+        <!-- Images to PDF -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+            <div class="flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-lg mx-auto mb-4">
+                <i data-feather="file-plus" class="h-8 w-8 text-yellow-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_images_to_pdf') }}</h3>
+            <p class="text-gray-600 text-center mb-6">{{ t('tool_images_to_pdf_description') }}</p>
+            <a href="/tools/images-to-pdf" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
+                {{ t('btn_use_tool') }}
+            </a>
+        </div>
+        
+        <!-- Extract Text -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+            <div class="flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-lg mx-auto mb-4">
+                <i data-feather="type" class="h-8 w-8 text-indigo-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_extract_text') }}</h3>
+            <p class="text-gray-600 text-center mb-6">{{ t('tool_extract_text_description') }}</p>
+            <a href="/tools/extract-text" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
+                {{ t('btn_use_tool') }}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
