@@ -104,6 +104,10 @@ async def login(
         locale = get_user_locale(request)
         translations = get_translations(locale)
         
+        # Generate new CSRF token for retry
+        anon_id = request.cookies.get("anon_id", "anon")
+        csrf_token = generate_csrf_token(anon_id)
+        
         return templates.TemplateResponse(
             "auth/login.html",
             {
@@ -112,7 +116,8 @@ async def login(
                 "translations": translations,
                 "error": e.detail,
                 "email": email,
-                "google_client_id": settings.GOOGLE_CLIENT_ID
+                "google_client_id": settings.GOOGLE_CLIENT_ID,
+                "csrf_token": csrf_token
             },
             status_code=400
         )
@@ -145,12 +150,12 @@ async def register_page(
     )
 
 @router.post("/register")
-async def register(
+async def register_post(
     request: Request,
+    name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
     confirm_password: str = Form(...),
-    name: str = Form(...),
     csrf_token: str = Form(...),
     db: Session = Depends(get_db)
 ):
@@ -227,6 +232,10 @@ async def register(
         locale = get_user_locale(request)
         translations = get_translations(locale)
         
+        # Generate new CSRF token for retry
+        anon_id = request.cookies.get("anon_id", "anon")
+        csrf_token = generate_csrf_token(anon_id)
+        
         return templates.TemplateResponse(
             "auth/register.html",
             {
@@ -236,7 +245,8 @@ async def register(
                 "error": e.detail,
                 "email": email,
                 "name": name,
-                "google_client_id": settings.GOOGLE_CLIENT_ID
+                "google_client_id": settings.GOOGLE_CLIENT_ID,
+                "csrf_token": csrf_token
             },
             status_code=400
         )

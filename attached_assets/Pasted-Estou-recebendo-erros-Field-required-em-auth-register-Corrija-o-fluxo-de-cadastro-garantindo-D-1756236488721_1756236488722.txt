@@ -1,0 +1,52 @@
+Estou recebendo erros “Field required” em /auth/register.
+Corrija o fluxo de cadastro garantindo:
+
+Duas rotas distintas em routers/auth.py:
+
+# GET: renderiza o formulário
+@router.get("/auth/register", response_class=HTMLResponse)
+async def register_page(request: Request):
+    anon_id = request.cookies.get("anon_id", "anon")
+    csrf_token = generate_csrf_token(anon_id)
+    return templates.TemplateResponse("auth/register.html", {"request": request, "csrf_token": csrf_token})
+
+# POST: recebe os campos do formulário
+@router.post("/auth/register")
+async def register_post(
+    request: Request,
+    name: str = Form(...),
+    email: EmailStr = Form(...),
+    password: str = Form(...),
+    confirm_password: str = Form(...),
+    csrf_token: str = Form(...)
+):
+    # validar CSRF
+    if not validate_csrf_token(csrf_token):
+        raise HTTPException(status_code=400, detail="CSRF token missing or invalid")
+    # validar senhas iguais e tamanho
+    if password != confirm_password or len(password) < 8:
+        return templates.TemplateResponse(
+            "auth/register.html",
+            {"request": request, "csrf_error": None, "form_error": "Senhas não conferem ou são curtas."},
+            status_code=400
+        )
+    # criar usuário (hash Argon2), tratar e-mail duplicado com mensagem amigável
+    # no sucesso, redirecionar para /auth/login ou logar direto
+
+
+Template templates/auth/register.html deve ter um form assim (ajuste o HTML se preciso):
+
+<form method="post" action="/auth/register">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <input type="text"   name="name"            placeholder="Seu nome" required>
+  <input type="email"  name="email"           placeholder="Seu e-mail" required>
+  <input type="password" name="password"      placeholder="Senha (mín. 8)" minlength="8" required>
+  <input type="password" name="confirm_password" placeholder="Confirmar senha" minlength="8" required>
+  <button type="submit">Registrar</button>
+</form>
+
+
+— Atenção aos name: name, email, password, confirm_password, csrf_token.
+— Sempre passar {"request": request} nos TemplateResponse.
+3) Faça o mesmo padrão de GET + POST para /auth/login (com CSRF): inputs email, password, csrf_token.
+4) Após corrigir, teste /auth/register (GET renderiza HTML; POST aceita os campos). Mostre os logs se ainda houver erro.
