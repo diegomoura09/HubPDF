@@ -21,6 +21,27 @@
               hx-target="#result"
               hx-indicator="#loading">
             
+            <!-- Format Selection -->
+            <div class="mb-6">
+                <label for="output_format" class="block text-sm font-medium text-gray-700 mb-2">
+                    Formato de saída
+                </label>
+                <div class="flex space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="output_format" value="display" checked class="form-radio h-4 w-4 text-indigo-600">
+                        <span class="ml-2 text-sm text-gray-700">Exibir na página</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="output_format" value="txt" class="form-radio h-4 w-4 text-indigo-600">
+                        <span class="ml-2 text-sm text-gray-700">Download TXT</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="output_format" value="xlsx" class="form-radio h-4 w-4 text-indigo-600">
+                        <span class="ml-2 text-sm text-gray-700">Download XLSX</span>
+                    </label>
+                </div>
+            </div>
+
             <div class="mb-6">
                 <label for="file" class="block text-sm font-medium text-gray-700 mb-2">
                     {{ t('select_pdf_file') }}
@@ -64,6 +85,102 @@
         
         <!-- Result Area -->
         <div id="result" class="mt-6"></div>
+    </div>
+</div>
+
+<script>
+// Handle HTMX response for text display
+document.body.addEventListener('htmx:afterRequest', function(event) {
+    if (event.detail.xhr.status === 200) {
+        const result = document.getElementById('result');
+        try {
+            const response = JSON.parse(event.detail.xhr.responseText);
+            if (response.success && response.text) {
+                // Display extracted text
+                result.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                        <div class="flex items-center mb-4">
+                            <i data-feather="check-circle" class="h-5 w-5 text-green-600 mr-2"></i>
+                            <h3 class="text-lg font-medium text-green-800">${response.message}</h3>
+                        </div>
+                        <div class="bg-white rounded border p-4 max-h-96 overflow-y-auto">
+                            <pre class="whitespace-pre-wrap text-sm text-gray-800">${response.text}</pre>
+                        </div>
+                        <div class="mt-4 flex space-x-3">
+                            <button onclick="downloadAsText()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                <i data-feather="download" class="h-4 w-4 mr-2"></i>
+                                Download TXT
+                            </button>
+                            <button onclick="downloadAsExcel()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                <i data-feather="file-text" class="h-4 w-4 mr-2"></i>
+                                Download XLSX
+                            </button>
+                        </div>
+                    </div>
+                `;
+                // Re-initialize feather icons
+                feather.replace();
+                
+                // Store extracted text for download functions
+                window.extractedText = response.text;
+            }
+        } catch (e) {
+            // If not JSON, might be a download response, so do nothing
+        }
+    }
+});
+
+// Download functions
+function downloadAsText() {
+    if (window.extractedText) {
+        const blob = new Blob([window.extractedText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'extracted_text.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+}
+
+function downloadAsExcel() {
+    if (window.extractedText) {
+        // Create a form and submit to get XLSX
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/tools/extract-text';
+        form.style.display = 'none';
+        
+        // Add form data
+        const formData = new FormData(document.getElementById('extract-text-form'));
+        formData.set('output_format', 'xlsx');
+        
+        for (let [key, value] of formData.entries()) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    }
+}
+
+function showFileName(input) {
+    const fileNameDiv = document.getElementById('file-name');
+    if (input.files.length > 0) {
+        fileNameDiv.textContent = `Arquivo selecionado: ${input.files[0].name}`;
+        fileNameDiv.classList.remove('hidden');
+    } else {
+        fileNameDiv.classList.add('hidden');
+    }
+}
+</script>
     </div>
     
     <!-- Instructions -->

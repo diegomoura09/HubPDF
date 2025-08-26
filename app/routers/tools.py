@@ -2,6 +2,7 @@
 PDF tools routes
 """
 import uuid
+import io
 from typing import List
 from fastapi import APIRouter, Request, Depends, UploadFile, File, Form, HTTPException, status, BackgroundTasks
 from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
@@ -493,6 +494,7 @@ async def extract_text(
     request: Request,
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
+    output_format: str = Form(default="display"),
     user: User = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
@@ -524,12 +526,61 @@ async def extract_text(
         # Schedule cleanup
         background_tasks.add_task(cleanup_job_files, user.id, job_id)
         
-        # Return text as download
-        return StreamingResponse(
-            iter([extracted_text.encode('utf-8')]),
-            media_type="text/plain",
-            headers={"Content-Disposition": "attachment; filename=extracted_text.txt"}
-        )
+        # Handle different output formats
+        if output_format == "display":
+            # Return JSON response for HTMX to display
+            return JSONResponse({
+                "success": True,
+                "text": extracted_text,
+                "message": "Texto extraído com sucesso"
+            })
+        elif output_format == "txt":
+            # Return text as TXT download
+            return StreamingResponse(
+                iter([extracted_text.encode('utf-8')]),
+                media_type="text/plain",
+                headers={"Content-Disposition": "attachment; filename=extracted_text.txt"}
+            )
+        elif output_format == "xlsx":
+            # Create Excel file with extracted text
+            import openpyxl
+            from openpyxl.styles import Font, Alignment
+            
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            ws.title = "Extracted Text"
+            
+            # Add header
+            ws['A1'] = "Texto Extraído do PDF"
+            ws['A1'].font = Font(bold=True, size=14)
+            ws['A1'].alignment = Alignment(horizontal='center')
+            
+            # Add extracted text (split by lines for better formatting)
+            lines = extracted_text.split('\n')
+            for i, line in enumerate(lines, start=3):  # Start from row 3
+                ws[f'A{i}'] = line
+                ws[f'A{i}'].alignment = Alignment(wrap_text=True, vertical='top')
+            
+            # Adjust column width
+            ws.column_dimensions['A'].width = 100
+            
+            # Save to bytes
+            excel_buffer = io.BytesIO()
+            wb.save(excel_buffer)
+            excel_buffer.seek(0)
+            
+            return StreamingResponse(
+                iter([excel_buffer.read()]),
+                media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                headers={"Content-Disposition": "attachment; filename=extracted_text.xlsx"}
+            )
+        else:
+            # Default to display
+            return JSONResponse({
+                "success": True,
+                "text": extracted_text,
+                "message": "Texto extraído com sucesso"
+            })
     
     except HTTPException:
         raise
