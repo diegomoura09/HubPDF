@@ -15,11 +15,24 @@ from app.models import User
 from app.services.auth_service import AuthService
 from app.services.i18n import get_user_locale, get_translations
 from app.utils.csrf import generate_csrf_token, validate_csrf_token
+import uuid
 from app.template_helpers import templates
 from app.config import settings
 
 router = APIRouter()
 auth_svc = AuthService()
+
+def ensure_anon_cookie(request: Request, response):
+    """Ensure anonymous cookie is set for visitor tracking"""
+    if not request.cookies.get("anon_id"):
+        response.set_cookie(
+            "anon_id", 
+            str(uuid.uuid4()),
+            httponly=True, 
+            secure=not settings.DEBUG, 
+            samesite="lax", 
+            path="/"
+        )
 
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(
@@ -34,10 +47,9 @@ async def login_page(
     translations = get_translations(locale)
     
     # Generate CSRF token
-    anon_id = request.cookies.get("anon_id", "anon")
-    csrf_token = generate_csrf_token(anon_id)
+    csrf_token = generate_csrf_token()
     
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         "auth/login.html",
         {
             "request": request,
@@ -47,6 +59,10 @@ async def login_page(
             "csrf_token": csrf_token
         }
     )
+    
+    # Ensure anonymous cookie for visitor tracking
+    ensure_anon_cookie(request, response)
+    return response
 
 @router.post("/login")
 async def login(
@@ -105,10 +121,9 @@ async def login(
         translations = get_translations(locale)
         
         # Generate new CSRF token for retry
-        anon_id = request.cookies.get("anon_id", "anon")
-        csrf_token = generate_csrf_token(anon_id)
+        csrf_token = generate_csrf_token()
         
-        return templates.TemplateResponse(
+        response = templates.TemplateResponse(
             "auth/login.html",
             {
                 "request": request,
@@ -121,6 +136,9 @@ async def login(
             },
             status_code=400
         )
+        
+        ensure_anon_cookie(request, response)
+        return response
 
 @router.get("/register", response_class=HTMLResponse)
 async def register_page(
@@ -135,10 +153,9 @@ async def register_page(
     translations = get_translations(locale)
     
     # Generate CSRF token
-    anon_id = request.cookies.get("anon_id", "anon")
-    csrf_token = generate_csrf_token(anon_id)
+    csrf_token = generate_csrf_token()
     
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         "auth/register.html",
         {
             "request": request,
@@ -148,6 +165,10 @@ async def register_page(
             "csrf_token": csrf_token
         }
     )
+    
+    # Ensure anonymous cookie for visitor tracking
+    ensure_anon_cookie(request, response)
+    return response
 
 @router.post("/register")
 async def register_post(
@@ -233,10 +254,9 @@ async def register_post(
         translations = get_translations(locale)
         
         # Generate new CSRF token for retry
-        anon_id = request.cookies.get("anon_id", "anon")
-        csrf_token = generate_csrf_token(anon_id)
+        csrf_token = generate_csrf_token()
         
-        return templates.TemplateResponse(
+        response = templates.TemplateResponse(
             "auth/register.html",
             {
                 "request": request,
@@ -250,6 +270,9 @@ async def register_post(
             },
             status_code=400
         )
+        
+        ensure_anon_cookie(request, response)
+        return response
 
 @router.get("/google")
 async def google_login(request: Request):
