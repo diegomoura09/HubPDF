@@ -177,12 +177,17 @@ async def register_post(
     email: str = Form(...),
     password: str = Form(...),
     confirm_password: str = Form(...),
+    terms: str = Form(...),
     csrf_token: str = Form(...),
     db: Session = Depends(get_db)
 ):
     """Process registration form"""
     locale = get_user_locale(request)
     translations = get_translations(locale)
+    
+    # Debug CSRF token
+    print(f"DEBUG REGISTRATION: Received CSRF token: {csrf_token}")
+    print(f"DEBUG REGISTRATION: Token validation: {validate_csrf_token(csrf_token)}")
     
     # Validate CSRF token
     if not validate_csrf_token(csrf_token):
