@@ -96,7 +96,8 @@ async def merge_pdfs(
         
         for file in files:
             # Check file size
-            file_allowed, size_message = quota_service.check_file_size_allowed(user, file.size)
+            file_size = file.size or 0
+            file_allowed, size_message = quota_service.check_file_size_allowed(user, file_size)
             if not file_allowed:
                 raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
             
@@ -185,7 +186,8 @@ async def split_pdf(
             raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=message)
         
         # Validate file
-        file_allowed, size_message = quota_service.check_file_size_allowed(user, file.size)
+        file_size = file.size or 0
+        file_allowed, size_message = quota_service.check_file_size_allowed(user, file_size)
         if not file_allowed:
             raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
         
@@ -262,7 +264,8 @@ async def compress_pdf(
             raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=message)
         
         # Validate file
-        file_allowed, size_message = quota_service.check_file_size_allowed(user, file.size)
+        file_size = file.size or 0
+        file_allowed, size_message = quota_service.check_file_size_allowed(user, file_size)
         if not file_allowed:
             raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
         
@@ -344,7 +347,8 @@ async def pdf_to_images(
             format = "png"
         
         # Validate file
-        file_allowed, size_message = quota_service.check_file_size_allowed(user, file.size)
+        file_size = file.size or 0
+        file_allowed, size_message = quota_service.check_file_size_allowed(user, file_size)
         if not file_allowed:
             raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
         
@@ -508,7 +512,8 @@ async def extract_text(
             raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=message)
         
         # Validate file
-        file_allowed, size_message = quota_service.check_file_size_allowed(user, file.size)
+        file_size = file.size or 0
+        file_allowed, size_message = quota_service.check_file_size_allowed(user, file_size)
         if not file_allowed:
             raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
         

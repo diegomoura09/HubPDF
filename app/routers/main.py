@@ -169,3 +169,27 @@ async def dashboard(
             "usage_summary": usage_summary
         }
     )
+
+@router.get("/account/plan", response_class=HTMLResponse)
+async def account_plan(
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    """User account plan page"""
+    locale = get_user_locale(request)
+    translations = get_translations(locale)
+    
+    # Get user statistics
+    usage_summary = quota_service.get_usage_summary(db, user)
+    
+    return templates.TemplateResponse(
+        "account/plan.html",
+        {
+            "request": request,
+            "user": user,
+            "locale": locale,
+            "translations": translations,
+            "usage_summary": usage_summary
+        }
+    )
