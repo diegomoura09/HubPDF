@@ -31,7 +31,8 @@
             </div>
         {% endif %}
         
-        <form class="mt-8 space-y-6" method="post" action="/auth/login">
+        <form class="mt-8 space-y-6" method="post" action="/auth/login" id="login-form">
+            <input type="hidden" name="csrf_token" id="csrf_token" value="">
             <div class="space-y-4">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">{{ t('email_label') }}</label>

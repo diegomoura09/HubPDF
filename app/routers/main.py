@@ -122,6 +122,11 @@ async def terms(
         }
     )
 
+@router.get("/healthz")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "ok", "service": "hubpdf"}
+
 @router.get("/contact", response_class=HTMLResponse)
 async def contact(
     request: Request,

@@ -102,35 +102,50 @@ class CSRFMiddleware(BaseHTTPMiddleware):
         return secrets.token_urlsafe(32)
     
     async def dispatch(self, request: Request, call_next):
-        # Skip CSRF for safe methods and API endpoints
+        # Skip CSRF for safe methods, static files, and webhooks
         if (request.method in self.safe_methods or 
             request.url.path.startswith("/static") or
-            request.url.path.startswith("/billing/webhook")):
+            request.url.path.startswith("/billing/webhook") or
+            request.url.path == "/healthz"):
             response = await call_next(request)
             
-            # Add CSRF token to cookie for forms
+            # Add CSRF token to cookie for forms on GET requests
             if request.method == "GET" and not request.url.path.startswith("/static"):
                 csrf_token = self.generate_csrf_token()
                 if isinstance(response, StarletteResponse):
                     response.set_cookie(
                         "csrf_token",
                         csrf_token,
-                        httponly=True,
+                        httponly=False,  # Allow JavaScript access for forms
                         secure=not settings.DEBUG,
-                        samesite="strict"
+                        samesite="lax"
                     )
             
             return response
         
-        # Verify CSRF token for unsafe methods
+        # For form submissions, check either header or form field
         csrf_token_header = request.headers.get("X-CSRF-Token")
         csrf_token_cookie = request.cookies.get("csrf_token")
         
-        if not csrf_token_header or not csrf_token_cookie or csrf_token_header != csrf_token_cookie:
-            return JSONResponse(
-                status_code=status.HTTP_403_FORBIDDEN,
-                content={"detail": "CSRF token missing or invalid"}
-            )
+        # For form submissions, also check form data
+        if not csrf_token_header and request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
+            try:
+                form_data = await request.form()
+                csrf_token_form = form_data.get("csrf_token")
+                if csrf_token_form and csrf_token_cookie and csrf_token_form == csrf_token_cookie:
+                    # Valid CSRF token in form
+                    response = await call_next(request)
+                    return response
+            except:
+                pass
         
-        response = await call_next(request)
-        return response
+        # Check header-based CSRF token
+        if csrf_token_header and csrf_token_cookie and csrf_token_header == csrf_token_cookie:
+            response = await call_next(request)
+            return response
+        
+        # CSRF validation failed
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "CSRF token missing or invalid"}
+        )

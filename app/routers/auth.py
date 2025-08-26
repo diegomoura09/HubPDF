@@ -47,15 +47,19 @@ async def login(
     request: Request,
     email: str = Form(...),
     password: str = Form(...),
+    csrf_token: str = Form(...),
     db: Session = Depends(get_db)
 ):
     """Process login form"""
+    locale = get_user_locale(request)
+    translations = get_translations(locale)
+    
     try:
-        user = auth_svc.authenticate_user(db, email, password)
+        user = auth_svc.authenticate_user(db, email.lower(), password)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid email or password"
+                detail=translations.get("error_invalid_credentials", "Invalid email or password")
             )
         
         # Create JWT tokens
@@ -63,7 +67,7 @@ async def login(
         refresh_token = auth_service.create_refresh_token({"sub": str(user.id)})
         
         # Create response
-        response = RedirectResponse(url="/dashboard", status_code=302)
+        response = RedirectResponse(url="/home", status_code=302)
         
         # Set secure cookies
         response.set_cookie(
@@ -72,7 +76,7 @@ async def login(
             max_age=settings.JWT_EXPIRATION_HOURS * 3600,
             httponly=True,
             secure=not settings.DEBUG,
-            samesite="strict"
+            samesite="lax"
         )
         
         response.set_cookie(
@@ -81,7 +85,7 @@ async def login(
             max_age=settings.JWT_REFRESH_EXPIRATION_DAYS * 24 * 3600,
             httponly=True,
             secure=not settings.DEBUG,
-            samesite="strict"
+            samesite="lax"
         )
         
         return response
@@ -132,24 +136,52 @@ async def register(
     password: str = Form(...),
     confirm_password: str = Form(...),
     name: str = Form(...),
+    csrf_token: str = Form(...),
     db: Session = Depends(get_db)
 ):
     """Process registration form"""
+    locale = get_user_locale(request)
+    translations = get_translations(locale)
+    
     try:
+        # Validate email format
+        if not email or "@" not in email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=translations.get("error_invalid_email", "Invalid email format")
+            )
+        
+        # Validate password length
+        if len(password) < 8:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=translations.get("error_password_length", "Password must be at least 8 characters")
+            )
+        
+        # Validate password confirmation
         if password != confirm_password:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Passwords do not match"
+                detail=translations.get("error_password_mismatch", "Passwords do not match")
             )
         
-        user = auth_svc.create_user(db, email, password, name)
+        # Check if user already exists
+        existing_user = db.query(User).filter(User.email == email.lower()).first()
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=translations.get("error_email_exists", "An account with this email already exists")
+            )
+        
+        # Create user
+        user = auth_svc.create_user(db, email.lower(), password, name.strip())
         
         # Create JWT tokens
         access_token = auth_service.create_access_token({"sub": str(user.id)})
         refresh_token = auth_service.create_refresh_token({"sub": str(user.id)})
         
         # Create response
-        response = RedirectResponse(url="/dashboard", status_code=302)
+        response = RedirectResponse(url="/home", status_code=302)
         
         # Set secure cookies
         response.set_cookie(
@@ -158,7 +190,7 @@ async def register(
             max_age=settings.JWT_EXPIRATION_HOURS * 3600,
             httponly=True,
             secure=not settings.DEBUG,
-            samesite="strict"
+            samesite="lax"
         )
         
         response.set_cookie(
@@ -167,7 +199,7 @@ async def register(
             max_age=settings.JWT_REFRESH_EXPIRATION_DAYS * 24 * 3600,
             httponly=True,
             secure=not settings.DEBUG,
-            samesite="strict"
+            samesite="lax"
         )
         
         return response

@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
  * Main application initialization
  */
 function initializeApp() {
+    initializeCSRF();
     initializeFileUpload();
     initializeDropZones();
     initializeToasts();
@@ -27,6 +28,36 @@ function initializeApp() {
     }
     
     console.log('HubPDF app initialized');
+}
+
+/**
+ * Initialize CSRF token handling
+ */
+function initializeCSRF() {
+    // Get CSRF token from cookie and add to forms
+    const csrfToken = getCookie('csrf_token');
+    if (csrfToken) {
+        document.querySelectorAll('input[name="csrf_token"]').forEach(input => {
+            input.value = csrfToken;
+        });
+        
+        // Set up CSRF for HTMX requests
+        if (typeof htmx !== 'undefined') {
+            document.body.addEventListener('htmx:configRequest', function(evt) {
+                evt.detail.headers['X-CSRF-Token'] = csrfToken;
+            });
+        }
+    }
+}
+
+/**
+ * Get cookie value by name
+ */
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
 }
 
 /**

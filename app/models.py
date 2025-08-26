@@ -2,7 +2,7 @@
 SQLAlchemy models for HubPDF
 """
 from datetime import datetime, date
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, Text, Float, Date, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, Text, Float, Date, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -95,3 +95,16 @@ class QuotaUsage(Base):
     
     # Relationships
     user = relationship("User", back_populates="quota_usage")
+
+class AnonQuota(Base):
+    """Anonymous user quota tracking"""
+    __tablename__ = "anon_quota"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    anon_id_hash = Column(String(64), index=True)  # SHA256 hash of anon_id
+    date = Column(Date, default=date.today)
+    ops_count = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    __table_args__ = (UniqueConstraint('anon_id_hash', 'date', name='_anon_quota_daily'),)

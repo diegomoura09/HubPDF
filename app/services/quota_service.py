@@ -2,11 +2,13 @@
 Quota management service for HubPDF
 """
 from datetime import datetime, date
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Optional, Union
 from sqlalchemy.orm import Session
+from fastapi import Request
 
 from app.models import User, QuotaUsage
 from app.config import settings
+from app.services.anon_service import anon_service
 
 class QuotaService:
     """Service for managing user quotas and limits"""
@@ -26,6 +28,11 @@ class QuotaService:
             "max_file_size": settings.MAX_FILE_SIZE_BUSINESS,
             "daily_operations": 500,
             "watermark_threshold": None  # No watermark
+        },
+        "anonymous": {
+            "max_file_size": settings.MAX_FILE_SIZE_FREE,  # Same as free
+            "daily_operations": 1,  # Only 1 operation per day
+            "watermark_threshold": 0  # Always watermark
         }
     }
     

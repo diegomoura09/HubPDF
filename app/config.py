@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     # File cleanup
     TEMP_FILE_RETENTION_MINUTES: int = Field(default=30)
     
+    # Anonymous users
+    ANON_COOKIE_SECRET: str = Field(default="change-this-anon-secret-in-production")
+    
     # Plans - using ClassVar since it's not a configuration field
     PLAN_PRICES: ClassVar[Dict[str, float]] = {
         "pro": 14.90,
