@@ -173,52 +173,43 @@ async def register_page(
 @router.post("/register")
 async def register_post(
     request: Request,
+    name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    confirm_password: str = Form(...),
+    terms: str = Form(...),
+    csrf_token: str = Form(...),
     db: Session = Depends(get_db)
 ):
     """Process registration form"""
     locale = get_user_locale(request)
     translations = get_translations(locale)
     
-    try:
-        # Get form data manually and ensure string conversion
-        form_data = await request.form()
-        name = str(form_data.get("name", "")).strip()
-        email = str(form_data.get("email", "")).strip()
-        password = str(form_data.get("password", ""))
-        confirm_password = str(form_data.get("confirm_password", ""))
-        terms = str(form_data.get("terms", ""))
-        csrf_token = str(form_data.get("csrf_token", ""))
-        
-        print(f"DEBUG REGISTRATION: Received form data - name='{name}', email='{email}', terms='{terms}'")
-        print(f"DEBUG REGISTRATION: CSRF token='{csrf_token}', validation={validate_csrf_token(csrf_token)}")
-        
-        # Validate required fields
-        if not name or not email or not password or not confirm_password or not terms or not csrf_token:
-            missing_fields = []
-            if not name: missing_fields.append("name")
-            if not email: missing_fields.append("email") 
-            if not password: missing_fields.append("password")
-            if not confirm_password: missing_fields.append("confirm_password")
-            if not terms: missing_fields.append("terms")
-            if not csrf_token: missing_fields.append("csrf_token")
-            
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Missing required fields: {', '.join(missing_fields)}"
-            )
-        
-        # Validate CSRF token - temporarily disabled for testing
-        # if not validate_csrf_token(csrf_token):
-        #     raise HTTPException(status_code=400, detail="CSRF token missing or invalid")
+    # Clean and validate form data
+    name = name.strip()
+    email = email.strip().lower()
     
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"DEBUG REGISTRATION: Error processing form: {e}")
+    print(f"DEBUG REGISTRATION: Received form data - name='{name}', email='{email}', terms='{terms}', password='{password[:3]}...', confirm='{confirm_password[:3]}...'")
+    print(f"DEBUG REGISTRATION: CSRF token='{csrf_token}', validation={validate_csrf_token(csrf_token)}")
+    print(f"DEBUG REGISTRATION: Form validation - name: {bool(name)}, email: {bool(email)}, password: {bool(password)}, confirm: {bool(confirm_password)}, terms: {bool(terms)}")
+    
+    # Validate required fields
+    if not name or not email or not password or not confirm_password or not terms:
+        missing_fields = []
+        if not name: missing_fields.append("name")
+        if not email: missing_fields.append("email") 
+        if not password: missing_fields.append("password")
+        if not confirm_password: missing_fields.append("confirm_password")
+        if not terms: missing_fields.append("terms")
+        
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Error processing form data"
+            detail=f"Missing required fields: {', '.join(missing_fields)}"
         )
+    
+    # Validate CSRF token - temporarily disabled for testing
+    # if not validate_csrf_token(csrf_token):
+    #     raise HTTPException(status_code=400, detail="CSRF token missing or invalid")
     
     try:
         # Validate email format
@@ -242,8 +233,8 @@ async def register_post(
                 detail=translations.get("error_password_mismatch", "Passwords do not match")
             )
         
-        # Check if user already exists
-        existing_user = db.query(User).filter(User.email == email.lower()).first()
+        # Check if user already exists  
+        existing_user = db.query(User).filter(User.email == email).first()
         if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -251,7 +242,7 @@ async def register_post(
             )
         
         # Create user
-        user = auth_svc.create_user(db, email.lower(), password, name.strip())
+        user = auth_svc.create_user(db, email, password, name)
         
         # Create JWT tokens
         access_token = auth_service.create_access_token({"sub": str(user.id)})
