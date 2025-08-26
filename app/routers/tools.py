@@ -4,7 +4,6 @@ PDF tools routes
 import uuid
 from typing import List
 from fastapi import APIRouter, Request, Depends, UploadFile, File, Form, HTTPException, status, BackgroundTasks
-from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
 from sqlalchemy.orm import Session
 
@@ -15,10 +14,10 @@ from app.services.pdf_service import PDFService
 from app.services.quota_service import QuotaService
 from app.services.file_service import FileService
 from app.services.i18n import get_user_locale, get_translations, translate
+from app.template_helpers import templates
 from app.utils.validators import FileValidator
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 pdf_service = PDFService()
 quota_service = QuotaService()
 file_service = FileService()

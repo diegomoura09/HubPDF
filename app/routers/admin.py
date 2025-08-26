@@ -4,7 +4,6 @@ Admin panel routes for HubPDF
 from datetime import datetime, date, timedelta
 from typing import Optional, List
 from fastapi import APIRouter, Request, Depends, Form, HTTPException, status, Query
-from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc, and_
@@ -16,10 +15,10 @@ from app.services.i18n import get_user_locale, get_translations
 from app.services.auth_service import AuthService
 from app.services.billing_service import BillingService
 from app.services.quota_service import QuotaService
+from app.template_helpers import templates
 from app.utils.validators import InputValidator
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 auth_service = AuthService()
 billing_service = BillingService()
 quota_service = QuotaService()

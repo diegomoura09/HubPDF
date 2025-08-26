@@ -95,7 +95,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Templates - Import centralized templates
-from app.templates import templates
+from app.template_helpers import templates
 
 # Include routers
 app.include_router(main_router.router)

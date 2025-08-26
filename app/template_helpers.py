@@ -1,5 +1,5 @@
 """
-Centralized template configuration for HubPDF
+Centralized template helpers for HubPDF
 """
 from fastapi.templating import Jinja2Templates
 from app.services.i18n import get_translations

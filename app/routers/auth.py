@@ -4,7 +4,6 @@ Authentication routes
 import secrets
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Request, Depends, Form, HTTPException, status
-from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
@@ -15,10 +14,10 @@ from app.auth import auth_service, get_current_user, get_optional_user
 from app.models import User
 from app.services.auth_service import AuthService
 from app.services.i18n import get_user_locale, get_translations
+from app.template_helpers import templates
 from app.config import settings
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 auth_svc = AuthService()
 
 @router.get("/login", response_class=HTMLResponse)

@@ -4,7 +4,6 @@ Billing and subscription routes
 import hmac
 import hashlib
 from fastapi import APIRouter, Request, Depends, Form, HTTPException, status, BackgroundTasks
-from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 
@@ -13,10 +12,10 @@ from app.auth import require_auth, get_optional_user
 from app.models import User, Subscription
 from app.services.billing_service import BillingService
 from app.services.i18n import get_user_locale, get_translations
+from app.template_helpers import templates
 from app.config import settings
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 billing_service = BillingService()
 
 @router.get("/pricing", response_class=HTMLResponse)

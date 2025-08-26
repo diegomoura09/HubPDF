@@ -10,7 +10,7 @@ from app.auth import get_optional_user, get_current_user
 from app.models import User
 from app.services.i18n import get_user_locale, set_user_locale, get_translations
 from app.services.quota_service import QuotaService
-from app.templates import get_template_response
+from app.template_helpers import get_template_response, templates
 
 router = APIRouter()
 quota_service = QuotaService()
