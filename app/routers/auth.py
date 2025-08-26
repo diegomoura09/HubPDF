@@ -81,11 +81,19 @@ async def login(
         raise HTTPException(status_code=400, detail="CSRF token missing or invalid")
     
     try:
+        # Check if user exists first
+        existing_user = db.query(User).filter(User.email == email.lower()).first()
+        if not existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Email não cadastrado. <a href="/auth/register" class="text-red-600 hover:text-red-500 font-medium underline">Clique aqui para se cadastrar</a>'
+            )
+        
         user = auth_svc.authenticate_user(db, email.lower(), password)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translations.get("error_invalid_credentials", "Invalid email or password")
+                detail=translations.get("error_invalid_credentials", "Senha incorreta. Verifique sua senha e tente novamente.")
             )
         
         # Create JWT tokens
@@ -192,6 +200,7 @@ async def register_post(
     print(f"DEBUG REGISTRATION: Received form data - name='{name}', email='{email}', terms='{terms}', password='{password[:3]}...', confirm='{confirm_password[:3]}...'")
     print(f"DEBUG REGISTRATION: CSRF token='{csrf_token}', validation={validate_csrf_token(csrf_token)}")
     print(f"DEBUG REGISTRATION: Form validation - name: {bool(name)}, email: {bool(email)}, password: {bool(password)}, confirm: {bool(confirm_password)}, terms: {bool(terms)}")
+    print(f"DEBUG REGISTRATION: Password content check - password='{password}', length={len(password)}")
     
     # Validate required fields
     if not name or not email or not password or not confirm_password or not terms:

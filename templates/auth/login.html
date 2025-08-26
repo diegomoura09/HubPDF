@@ -43,9 +43,15 @@
                 </div>
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">{{ t('password_label') }}</label>
-                    <input id="password" name="password" type="password" required 
-                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" 
-                           placeholder="{{ t('password_placeholder') }}">
+                    <div class="relative">
+                        <input id="password" name="password" type="password" required 
+                               class="mt-1 appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" 
+                               placeholder="{{ t('password_placeholder') }}">
+                        <button type="button" onclick="togglePasswordLogin('password')" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <i id="password-eye" data-feather="eye" class="h-4 w-4 text-gray-400 hover:text-gray-600"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -95,4 +101,28 @@
         </form>
     </div>
 </div>
+
+<script>
+function togglePasswordLogin(fieldId) {
+    const field = document.getElementById(fieldId);
+    const eyeIcon = document.getElementById(fieldId + '-eye');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        eyeIcon.setAttribute('data-feather', 'eye-off');
+    } else {
+        field.type = 'password';
+        eyeIcon.setAttribute('data-feather', 'eye');
+    }
+    
+    // Re-initialize feather icons
+    feather.replace();
+}
+
+// Initialize feather icons when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    feather.replace();
+});
+</script>
+
 {% endblock %}
