@@ -233,16 +233,43 @@ async def register_post(
                 detail=translations.get("error_password_mismatch", "Passwords do not match")
             )
         
-        # Check if user already exists  
-        existing_user = db.query(User).filter(User.email == email).first()
-        if existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=translations.get("error_email_exists", "An account with this email already exists")
-            )
+        # Check if user already exists with proper error handling
+        try:
+            existing_user = db.query(User).filter(User.email == email).first()
+            if existing_user:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=translations.get("error_email_exists", "An account with this email already exists")
+                )
+        except Exception as db_error:
+            print(f"DEBUG REGISTRATION: Database error during user lookup: {db_error}")
+            # Try to reconnect and retry once
+            try:
+                db.rollback()
+                existing_user = db.query(User).filter(User.email == email).first()
+                if existing_user:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=translations.get("error_email_exists", "An account with this email already exists")
+                    )
+            except Exception as retry_error:
+                print(f"DEBUG REGISTRATION: Retry failed: {retry_error}")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Database connection error. Please try again."
+                )
         
-        # Create user
-        user = auth_svc.create_user(db, email, password, name)
+        # Create user with error handling
+        try:
+            user = auth_svc.create_user(db, email, password, name)
+            print(f"DEBUG REGISTRATION: User created successfully: {user.email}")
+        except Exception as create_error:
+            print(f"DEBUG REGISTRATION: Error creating user: {create_error}")
+            db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create account. Please try again."
+            )
         
         # Create JWT tokens
         access_token = auth_service.create_access_token({"sub": str(user.id)})

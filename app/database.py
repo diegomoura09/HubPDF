@@ -39,7 +39,15 @@ if settings.DATABASE_URL.startswith("sqlite"):
             cursor.execute("PRAGMA cache_size=1000")
             cursor.execute("PRAGMA foreign_keys=ON")
 else:
-    engine = create_engine(settings.DATABASE_URL)
+    # PostgreSQL configuration with better connection handling
+    engine = create_engine(
+        settings.DATABASE_URL,
+        pool_pre_ping=True,  # Validate connections before use
+        pool_recycle=300,    # Recycle connections every 5 minutes
+        pool_size=5,         # Connection pool size
+        max_overflow=10,     # Max overflow connections
+        echo=False           # Set to True for SQL debugging
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
