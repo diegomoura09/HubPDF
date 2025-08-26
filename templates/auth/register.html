@@ -50,15 +50,54 @@
                 </div>
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">{{ t('password_label') }}</label>
-                    <input id="password" name="password" type="password" required 
-                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" 
-                           placeholder="{{ t('password_placeholder') }}">
+                    <div class="relative">
+                        <input id="password" name="password" type="password" required 
+                               class="mt-1 appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" 
+                               placeholder="{{ t('password_placeholder') }}">
+                        <button type="button" onclick="togglePassword('password')" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <i id="password-eye" data-feather="eye" class="h-4 w-4 text-gray-400 hover:text-gray-600"></i>
+                        </button>
+                    </div>
+                    <!-- Password Requirements -->
+                    <div class="mt-2 bg-blue-50 border border-blue-200 rounded-md p-3">
+                        <p class="text-xs font-medium text-blue-900 mb-1">Requisitos da senha:</p>
+                        <ul class="text-xs text-blue-800 space-y-1">
+                            <li class="flex items-center">
+                                <i data-feather="check" class="h-3 w-3 mr-1"></i>
+                                Mínimo 8 caracteres
+                            </li>
+                            <li class="flex items-center">
+                                <i data-feather="check" class="h-3 w-3 mr-1"></i>
+                                Pelo menos uma letra maiúscula (A-Z)
+                            </li>
+                            <li class="flex items-center">
+                                <i data-feather="check" class="h-3 w-3 mr-1"></i>
+                                Pelo menos uma letra minúscula (a-z)
+                            </li>
+                            <li class="flex items-center">
+                                <i data-feather="check" class="h-3 w-3 mr-1"></i>
+                                Pelo menos um número (0-9)
+                            </li>
+                            <li class="flex items-center">
+                                <i data-feather="check" class="h-3 w-3 mr-1"></i>
+                                Pelo menos um caractere especial (!@#$%^&*(),.?":{}|&lt;&gt;)
+                            </li>
+                        </ul>
+                        <p class="text-xs text-blue-700 mt-2 font-medium">Exemplo: MinhaSenh@123</p>
+                    </div>
                 </div>
                 <div>
                     <label for="confirm-password" class="block text-sm font-medium text-gray-700">{{ t('confirm_password_label') }}</label>
-                    <input id="confirm-password" name="confirm_password" type="password" required 
-                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" 
-                           placeholder="{{ t('confirm_password_placeholder') }}">
+                    <div class="relative">
+                        <input id="confirm-password" name="confirm_password" type="password" required 
+                               class="mt-1 appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" 
+                               placeholder="{{ t('confirm_password_placeholder') }}">
+                        <button type="button" onclick="togglePassword('confirm-password')" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <i id="confirm-password-eye" data-feather="eye" class="h-4 w-4 text-gray-400 hover:text-gray-600"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -111,4 +150,28 @@
         </form>
     </div>
 </div>
+
+<script>
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const eyeIcon = document.getElementById(fieldId + '-eye');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        eyeIcon.setAttribute('data-feather', 'eye-off');
+    } else {
+        field.type = 'password';
+        eyeIcon.setAttribute('data-feather', 'eye');
+    }
+    
+    // Re-initialize feather icons
+    feather.replace();
+}
+
+// Initialize feather icons when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    feather.replace();
+});
+</script>
+
 {% endblock %}
