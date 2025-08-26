@@ -84,12 +84,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Trusted host middleware - Disable for Replit development
-# if not settings.DEBUG:
-#     app.add_middleware(
-#         TrustedHostMiddleware,
-#         allowed_hosts=[settings.DOMAIN, f"*.{settings.DOMAIN}"]
-#     )
+# Trusted host middleware - Enable for webhook support
+if not settings.DEBUG:
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=[
+            settings.DOMAIN, 
+            f"*.{settings.DOMAIN}",
+            "*.spock.replit.dev",  # For Mercado Pago webhooks
+            "localhost", 
+            "127.0.0.1"
+        ]
+    )
 
 # Static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
