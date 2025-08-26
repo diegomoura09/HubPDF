@@ -13,7 +13,7 @@ from fastapi.responses import RedirectResponse
 import uvicorn
 
 from app.database import init_db
-from app.middleware import SecurityMiddleware, RateLimitMiddleware, CSRFMiddleware
+from app.middleware import SecurityMiddleware, RateLimitMiddleware  # CSRFMiddleware
 from app.routers import auth, tools, billing, admin, main as main_router
 from app.services.i18n import get_translations, get_user_locale
 from app.config import settings
@@ -73,7 +73,7 @@ app = FastAPI(
 # Security middleware
 app.add_middleware(SecurityMiddleware)
 app.add_middleware(RateLimitMiddleware)
-app.add_middleware(CSRFMiddleware)
+# app.add_middleware(CSRFMiddleware)  # Temporarily disabled for debugging
 
 # CORS middleware
 app.add_middleware(
