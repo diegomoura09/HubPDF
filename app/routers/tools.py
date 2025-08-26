@@ -24,14 +24,16 @@ file_service = FileService()
 
 def cleanup_job_files(user_id: int, job_id: str):
     """Background task to cleanup job files after delay"""
-    import asyncio
     import time
+    import threading
     
-    async def delayed_cleanup():
-        await asyncio.sleep(1800)  # 30 minutes
+    def delayed_cleanup():
+        time.sleep(1800)  # 30 minutes
         file_service.cleanup_job_directory(user_id, job_id)
     
-    asyncio.create_task(delayed_cleanup())
+    # Use threading instead of asyncio to avoid event loop issues
+    cleanup_thread = threading.Thread(target=delayed_cleanup, daemon=True)
+    cleanup_thread.start()
 
 @router.get("/", response_class=HTMLResponse)
 async def tools_index(
