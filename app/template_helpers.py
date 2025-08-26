@@ -27,3 +27,12 @@ def get_template_response(template_name: str, context: dict, locale: str = "pt")
     # Add to context
     context["t"] = t_locale
     return templates.TemplateResponse(template_name, context)
+
+def price_brl(value: float) -> str:
+    """Format price in Brazilian Real (BRL) format with comma as decimal separator"""
+    # Avoid depending on locale/babel in MVP
+    txt = f"{value:,.2f}"
+    return "R$ " + txt.replace(",", "X").replace(".", ",").replace("X", ".")
+
+# Register price function globally
+templates.env.globals["price_brl"] = price_brl

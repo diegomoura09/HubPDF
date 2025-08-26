@@ -14,6 +14,7 @@ from app.auth import auth_service, get_current_user, get_optional_user
 from app.models import User
 from app.services.auth_service import AuthService
 from app.services.i18n import get_user_locale, get_translations
+from app.utils.csrf import generate_csrf_token, validate_csrf_token
 from app.template_helpers import templates
 from app.config import settings
 
@@ -32,13 +33,18 @@ async def login_page(
     locale = get_user_locale(request)
     translations = get_translations(locale)
     
+    # Generate CSRF token
+    anon_id = request.cookies.get("anon_id", "anon")
+    csrf_token = generate_csrf_token(anon_id)
+    
     return templates.TemplateResponse(
         "auth/login.html",
         {
             "request": request,
             "locale": locale,
             "translations": translations,
-            "google_client_id": settings.GOOGLE_CLIENT_ID
+            "google_client_id": settings.GOOGLE_CLIENT_ID,
+            "csrf_token": csrf_token
         }
     )
 
@@ -53,6 +59,10 @@ async def login(
     """Process login form"""
     locale = get_user_locale(request)
     translations = get_translations(locale)
+    
+    # Validate CSRF token
+    if not validate_csrf_token(csrf_token):
+        raise HTTPException(status_code=400, detail="CSRF token missing or invalid")
     
     try:
         user = auth_svc.authenticate_user(db, email.lower(), password)
@@ -119,13 +129,18 @@ async def register_page(
     locale = get_user_locale(request)
     translations = get_translations(locale)
     
+    # Generate CSRF token
+    anon_id = request.cookies.get("anon_id", "anon")
+    csrf_token = generate_csrf_token(anon_id)
+    
     return templates.TemplateResponse(
         "auth/register.html",
         {
             "request": request,
             "locale": locale,
             "translations": translations,
-            "google_client_id": settings.GOOGLE_CLIENT_ID
+            "google_client_id": settings.GOOGLE_CLIENT_ID,
+            "csrf_token": csrf_token
         }
     )
 
@@ -142,6 +157,10 @@ async def register(
     """Process registration form"""
     locale = get_user_locale(request)
     translations = get_translations(locale)
+    
+    # Validate CSRF token
+    if not validate_csrf_token(csrf_token):
+        raise HTTPException(status_code=400, detail="CSRF token missing or invalid")
     
     try:
         # Validate email format

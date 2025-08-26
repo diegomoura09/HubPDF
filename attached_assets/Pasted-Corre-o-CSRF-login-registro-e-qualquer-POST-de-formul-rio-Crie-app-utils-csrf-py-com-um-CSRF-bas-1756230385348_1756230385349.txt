@@ -1,0 +1,174 @@
+Correção CSRF (login/registro e qualquer POST de formulário)
+
+Crie app/utils/csrf.py com um CSRF baseado em assinatura (itsdangerous) e expiração:
+
+# app/utils/csrf.py
+import time, os
+from itsdangerous import URLSafeSerializer, BadSignature
+
+CSRF_SECRET = os.getenv("CSRF_SECRET", "dev-csrf-secret-change-me")
+s = URLSafeSerializer(CSRF_SECRET, salt="csrf-v1")
+
+def generate_csrf_token(user_or_anon_id: str) -> str:
+    payload = {"sub": user_or_anon_id or "anon", "ts": int(time.time())}
+    return s.dumps(payload)
+
+def validate_csrf_token(token: str, max_age_seconds: int = 7200) -> bool:
+    try:
+        data = s.loads(token)
+    except BadSignature:
+        return False
+    return (int(time.time()) - int(data.get("ts", 0))) <= max_age_seconds
+
+
+Em routers/auth.py (e em qualquer página com formulário POST), no GET de /auth/register e /auth/login, gere o token e passe para o template. Ex.:
+
+from app.utils.csrf import generate_csrf_token
+from app.template_helpers import templates   # ou o helper central de templates que você criou
+
+@router.get("/auth/register", response_class=HTMLResponse)
+async def register_page(request: Request):
+    anon_id = request.cookies.get("anon_id", "anon")
+    csrf_token = generate_csrf_token(anon_id)
+    return templates.TemplateResponse("auth/register.html", {"request": request, "csrf_token": csrf_token})
+
+
+Nos POST (/auth/register e /auth/login), valide o campo csrf_token:
+
+from app.utils.csrf import validate_csrf_token
+
+@router.post("/auth/register")
+async def register_post(request: Request, email: str = Form(...), password: str = Form(...), csrf_token: str = Form(...)):
+    if not validate_csrf_token(csrf_token):
+        raise HTTPException(status_code=400, detail="CSRF token missing or invalid")
+    # seguir com validações + hash Argon2 etc.
+
+
+Nos templates templates/auth/register.html e templates/auth/login.html, inclua o campo oculto:
+
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+
+Garanta que todas as TemplateResponse(...) passem {"request": request}.
+
+Adicione CSRF_SECRET nas Secrets do Replit.
+
+Isso elimina o {"detail":"CSRF token missing or invalid"}.
+
+2) Preços em R$ com vírgula (0,00)
+
+Vamos formatar preço no padrão BRL no template.
+
+Mensagem para o Agent:
+
+Formatação BRL
+
+Crie helper em app/template_helpers.py:
+
+def price_brl(value: float) -> str:
+    # evita depender de locale/babel no MVP
+    txt = f"{value:,.2f}"
+    return "R$ " + txt.replace(",", "X").replace(".", ",").replace("X", ".")
+
+templates.env.globals["price_brl"] = price_brl
+
+
+Em templates/billing/pricing.html, use:
+
+<span class="price">{{ price_brl(14.90) }}</span>
+<span class="price">{{ price_brl(29.90) }}</span>
+
+3) Drag & drop na Home (detectar arquivo e perguntar a conversão)
+
+Queremos: soltar arquivo → detectar tipo → abrir escolha rápida de conversão (compress / PDF→Imagens / Imagens→PDF / Extrair texto / Merge).
+
+Mensagem para o Agent:
+
+Drag & Drop na Home
+
+Em templates/index.html, adicione uma dropzone com JS leve:
+
+<section id="dropzone" class="dropzone border-2 border-dashed rounded p-8 text-center">
+  <p>{{ t("arraste_arquivo_aqui") }}</p>
+  <input id="fileInput" type="file" class="hidden" />
+</section>
+
+<div id="chooseToolModal" class="hidden modal">
+  <div class="modal-content">
+    <h3>{{ t("escolha_conversao") }}</h3>
+    <div id="toolChoices" class="grid grid-cols-2 gap-3"></div>
+    <button id="closeModal">Fechar</button>
+  </div>
+</div>
+
+<script>
+const dz = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const modal = document.getElementById('chooseToolModal');
+const toolChoices = document.getElementById('toolChoices');
+const closeModal = document.getElementById('closeModal');
+
+function openModal() { modal.classList.remove('hidden'); }
+function close() { modal.classList.add('hidden'); toolChoices.innerHTML = ""; }
+closeModal.onclick = close;
+
+dz.addEventListener('click', () => fileInput.click());
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('bg-gray-50'); });
+dz.addEventListener('dragleave', e => { dz.classList.remove('bg-gray-50'); });
+dz.addEventListener('drop', async e => {
+  e.preventDefault(); dz.classList.remove('bg-gray-50');
+  const f = e.dataTransfer.files[0]; if(!f) return;
+  handleFile(f);
+});
+fileInput.addEventListener('change', e => {
+  const f = e.target.files[0]; if(!f) return;
+  handleFile(f);
+});
+
+function handleFile(file){
+  const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  const isImage = /image\\/(png|jpe?g)/i.test(file.type) || /\\.(png|jpe?g)$/i.test(file.name);
+  const options = [];
+  if(isPDF){
+    options.push({label: "{{ t('compress') }}", path: "/tools/compress"});
+    options.push({label: "{{ t('pdf_para_imagens') }}", path: "/tools/pdf-to-images"});
+    options.push({label: "{{ t('extrair_texto') }}", path: "/tools/extract-text"});
+  }
+  if(isImage){
+    options.push({label: "{{ t('imagens_para_pdf') }}", path: "/tools/images-to-pdf"});
+  }
+  // opção genérica
+  options.push({label: "{{ t('juntar_pdf') }}", path: "/tools/merge"});
+
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = "btn";
+    btn.textContent = opt.label;
+    btn.onclick = () => uploadTo(opt.path, file);
+    toolChoices.appendChild(btn);
+  });
+  openModal();
+}
+
+async function uploadTo(path, file){
+  const form = new FormData();
+  form.append('file', file);
+  // envia com fetch para criar o job e redirecionar para a página do resultado
+  const res = await fetch(path, { method: 'POST', body: form });
+  if(res.redirected){ window.location = res.url; return; }
+  const html = await res.text();
+  document.body.innerHTML = html; // fallback simples
+}
+</script>
+
+
+Nos endpoints POST das ferramentas, se não houver arquivo no formulário da página, aceite o upload vindo da Home (drag&drop) e crie o job normalmente.
+
+Mostre, no topo da Home, um aviso discreto “{{ t('dica_drag_drop') }}”.
+
+Se o usuário for anônimo, respeite a regra de 1 operação/dia com marca d’água; se passar disso, retorne a tela de CTA login/cadastro.
+
+4) Manter o resto funcionando
+
+Não mexer no gating atual (Free 8/dia com watermark 5–8; Pro/Business sem watermark).
+Só adicionar o anônimo 1/dia com watermark (se ainda não implementado) — aquele pedido anterior já cobria isso.
