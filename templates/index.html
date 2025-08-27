@@ -3,51 +3,80 @@
 {% block title %}{{ t('title') }} - {{ t('subtitle') }}{% endblock %}
 
 {% block content %}
-<div class="bg-gradient-to-br from-red-50 to-orange-50">
-    <!-- Hero Section -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+<!-- Hero Section -->
+<div class="relative bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden">
+    <!-- Background Patterns -->
+    <div class="absolute inset-0 bg-grid-slate-100/50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
         <div class="text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                {{ t('hero_title') }}
+            <!-- Badge -->
+            <div class="inline-flex items-center px-4 py-2 rounded-full bg-emerald-100 text-emerald-800 text-sm font-medium mb-8">
+                <i data-lucide="shield-check" class="h-4 w-4 mr-2"></i>
+                100% Seguro e Privado
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-8 leading-tight">
+                Todas as ferramentas <br class="hidden sm:block">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">PDF que você precisa</span>
             </h1>
-            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                {{ t('hero_description') }}
+            
+            <p class="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+                Mescle, divida, comprima e converta PDFs com facilidade. 
+                Tudo processado localmente para máxima segurança.
             </p>
             
             {% if user %}
-                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <a href="/tools" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold text-lg inline-flex items-center">
-                        <i data-feather="tool" class="h-5 w-5 mr-2"></i>
-                        {{ t('btn_start_editing') }}
+                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
+                    <a href="/tools" class="btn btn-primary group">
+                        <i data-lucide="wrench" class="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform duration-200"></i>
+                        Começar a Editar
                     </a>
-                    <a href="/dashboard" class="bg-white hover:bg-gray-50 text-gray-900 px-8 py-3 rounded-lg font-semibold text-lg border border-gray-300 inline-flex items-center">
-                        <i data-feather="bar-chart-2" class="h-5 w-5 mr-2"></i>
-                        {{ t('btn_view_dashboard') }}
+                    <a href="/dashboard" class="btn btn-outline">
+                        <i data-lucide="layout-dashboard" class="h-5 w-5 mr-2"></i>
+                        Ver Dashboard
                     </a>
                 </div>
                 
                 {% if usage_summary %}
-                    <div class="mt-8 bg-white rounded-lg shadow-sm p-6 max-w-md mx-auto">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ t('usage_today') }}</h3>
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm text-gray-600">{{ t('operations_used') }}</span>
-                            <span class="text-sm font-medium">{{ usage_summary.operations_used }}/{{ usage_summary.operations_limit }}</span>
+                    <div class="modern-card max-w-md mx-auto p-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-slate-900">Uso Hoje</h3>
+                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl flex items-center justify-center">
+                                <i data-lucide="activity" class="h-6 w-6 text-emerald-600"></i>
+                            </div>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                            <div class="bg-red-600 h-2 rounded-full" style="width: {{ (usage_summary.operations_used / usage_summary.operations_limit * 100) | round }}%"></div>
+                        
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm text-slate-600">Operações</span>
+                            <span class="text-sm font-semibold text-slate-900">{{ usage_summary.operations_used }}/{{ usage_summary.operations_limit }}</span>
                         </div>
-                        <p class="text-xs text-gray-500">{{ t('plan') }}: {{ t('plan_' + usage_summary.plan) }}</p>
+                        
+                        <div class="w-full bg-slate-200 rounded-full h-3 mb-4">
+                            <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full transition-all duration-300" 
+                                 style="width: {{ (usage_summary.operations_used / usage_summary.operations_limit * 100) | round }}%"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                <i data-lucide="crown" class="h-3 w-3 mr-1"></i>
+                                {{ t('plan_' + usage_summary.plan) }}
+                            </span>
+                            {% if usage_summary.plan == 'free' %}
+                                <a href="/billing/pricing" class="text-emerald-600 hover:text-emerald-700 text-sm font-medium">Upgrade</a>
+                            {% endif %}
+                        </div>
                     </div>
                 {% endif %}
             {% else %}
-                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <a href="/auth/register" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold text-lg inline-flex items-center">
-                        <i data-feather="user-plus" class="h-5 w-5 mr-2"></i>
-                        {{ t('btn_get_started') }}
+                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                    <a href="/auth/register" class="btn btn-primary group">
+                        <i data-lucide="user-plus" class="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-200"></i>
+                        Começar Gratuitamente
                     </a>
-                    <a href="/auth/login" class="bg-white hover:bg-gray-50 text-gray-900 px-8 py-3 rounded-lg font-semibold text-lg border border-gray-300 inline-flex items-center">
-                        <i data-feather="log-in" class="h-5 w-5 mr-2"></i>
-                        {{ t('btn_login') }}
+                    <a href="/auth/login" class="btn btn-outline">
+                        <i data-lucide="log-in" class="h-5 w-5 mr-2"></i>
+                        Fazer Login
                     </a>
                 </div>
             {% endif %}
@@ -55,185 +84,179 @@
     </div>
 </div>
 
-<!-- Features Section -->
-<div class="py-16 bg-white">
+<!-- Features Grid -->
+<div class="py-24 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ t('features_title') }}</h2>
-            <p class="text-lg text-gray-600">{{ t('features_description') }}</p>
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
+                Ferramentas PDF Profissionais
+            </h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                Tudo que você precisa para trabalhar com PDFs de forma eficiente e segura
+            </p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Merge PDFs -->
-            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
-                    <i data-feather="layers" class="h-6 w-6 text-red-600"></i>
+            <div class="modern-card card-body group hover:scale-105 transition-all duration-300">
+                <div class="w-16 h-16 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i data-lucide="layers" class="h-8 w-8 text-emerald-600"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_merge') }}</h3>
-                <p class="text-gray-600 text-sm">{{ t('tool_merge_description') }}</p>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">Mesclar PDFs</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">Combine múltiplos arquivos PDF em um único documento facilmente</p>
+                <a href="/tools/merge" class="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-semibold">
+                    Usar ferramenta
+                    <i data-lucide="arrow-right" class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200"></i>
+                </a>
             </div>
             
             <!-- Split PDFs -->
-            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
-                    <i data-feather="scissors" class="h-6 w-6 text-red-600"></i>
+            <div class="modern-card card-body group hover:scale-105 transition-all duration-300">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i data-lucide="scissors" class="h-8 w-8 text-blue-600"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_split') }}</h3>
-                <p class="text-gray-600 text-sm">{{ t('tool_split_description') }}</p>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">Dividir PDFs</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">Separe um arquivo PDF grande em múltiplos documentos menores</p>
+                <a href="/tools/split" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold">
+                    Usar ferramenta
+                    <i data-lucide="arrow-right" class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200"></i>
+                </a>
             </div>
             
             <!-- Compress PDFs -->
-            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
-                    <i data-feather="minimize-2" class="h-6 w-6 text-red-600"></i>
+            <div class="modern-card card-body group hover:scale-105 transition-all duration-300">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i data-lucide="minimize-2" class="h-8 w-8 text-purple-600"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_compress') }}</h3>
-                <p class="text-gray-600 text-sm">{{ t('tool_compress_description') }}</p>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">Comprimir PDFs</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">Reduza o tamanho dos seus arquivos PDF mantendo a qualidade</p>
+                <a href="/tools/compress" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold">
+                    Usar ferramenta
+                    <i data-lucide="arrow-right" class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200"></i>
+                </a>
             </div>
             
             <!-- PDF to Images -->
-            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
-                    <i data-feather="image" class="h-6 w-6 text-red-600"></i>
+            <div class="modern-card card-body group hover:scale-105 transition-all duration-300">
+                <div class="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i data-lucide="image" class="h-8 w-8 text-amber-600"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_pdf_to_images') }}</h3>
-                <p class="text-gray-600 text-sm">{{ t('tool_pdf_to_images_description') }}</p>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">PDF para Imagens</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">Converta páginas PDF em imagens JPG ou PNG</p>
+                <a href="/tools/pdf-to-images" class="inline-flex items-center text-amber-600 hover:text-amber-700 font-semibold">
+                    Usar ferramenta
+                    <i data-lucide="arrow-right" class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200"></i>
+                </a>
             </div>
             
             <!-- Images to PDF -->
-            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
-                    <i data-feather="file-plus" class="h-6 w-6 text-red-600"></i>
+            <div class="modern-card card-body group hover:scale-105 transition-all duration-300">
+                <div class="w-16 h-16 bg-gradient-to-br from-teal-100 to-teal-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i data-lucide="file-plus" class="h-8 w-8 text-teal-600"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_images_to_pdf') }}</h3>
-                <p class="text-gray-600 text-sm">{{ t('tool_images_to_pdf_description') }}</p>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">Imagens para PDF</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">Combine múltiplas imagens em um único arquivo PDF</p>
+                <a href="/tools/images-to-pdf" class="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold">
+                    Usar ferramenta
+                    <i data-lucide="arrow-right" class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200"></i>
+                </a>
             </div>
             
             <!-- Extract Text -->
-            <div class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg mb-4">
-                    <i data-feather="type" class="h-6 w-6 text-red-600"></i>
+            <div class="modern-card card-body group hover:scale-105 transition-all duration-300">
+                <div class="w-16 h-16 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i data-lucide="type" class="h-8 w-8 text-indigo-600"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('tool_extract_text') }}</h3>
-                <p class="text-gray-600 text-sm">{{ t('tool_extract_text_description') }}</p>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">Extrair Texto</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">Extraia todo o texto de um arquivo PDF facilmente</p>
+                <a href="/tools/extract-text" class="inline-flex items-center text-indigo-600 hover:text-indigo-700 font-semibold">
+                    Usar ferramenta
+                    <i data-lucide="arrow-right" class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200"></i>
+                </a>
             </div>
+        </div>
+        
+        <div class="text-center mt-16">
+            <a href="/tools" class="btn btn-primary">
+                <i data-lucide="grid-3x3" class="h-5 w-5 mr-2"></i>
+                Ver Todas as Ferramentas
+            </a>
         </div>
     </div>
 </div>
 
 <!-- Security Section -->
-<div class="py-16 bg-gray-50">
+<div class="py-24 bg-gradient-to-br from-emerald-50 to-teal-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ t('security_title') }}</h2>
-            <p class="text-lg text-gray-600">{{ t('security_description') }}</p>
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
+                Sua Segurança É Nossa Prioridade
+            </h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                Processamento local, criptografia avançada e exclusão automática de arquivos
+            </p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div class="text-center">
-                <div class="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mx-auto mb-4">
-                    <i data-feather="shield" class="h-8 w-8 text-green-600"></i>
+                <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                    <i data-lucide="shield-check" class="h-10 w-10 text-white"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('security_encryption') }}</h3>
-                <p class="text-gray-600">{{ t('security_encryption_description') }}</p>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">Criptografia TLS</h3>
+                <p class="text-slate-600 leading-relaxed">Todos os dados são transmitidos com criptografia de ponta para garantir máxima segurança</p>
             </div>
             
             <div class="text-center">
-                <div class="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4">
-                    <i data-feather="clock" class="h-8 w-8 text-blue-600"></i>
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                    <i data-lucide="clock" class="h-10 w-10 text-white"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('security_temporary') }}</h3>
-                <p class="text-gray-600">{{ t('security_temporary_description') }}</p>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">Exclusão Automática</h3>
+                <p class="text-slate-600 leading-relaxed">Seus arquivos são automaticamente excluídos após 30 minutos para proteger sua privacidade</p>
             </div>
             
             <div class="text-center">
-                <div class="flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mx-auto mb-4">
-                    <i data-feather="lock" class="h-8 w-8 text-purple-600"></i>
+                <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                    <i data-lucide="server" class="h-10 w-10 text-white"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('security_privacy') }}</h3>
-                <p class="text-gray-600">{{ t('security_privacy_description') }}</p>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">Processamento Local</h3>
+                <p class="text-slate-600 leading-relaxed">Todos os arquivos são processados localmente, sem armazenamento em nuvem externa</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Pricing Preview -->
-<div class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ t('pricing_title') }}</h2>
-            <p class="text-lg text-gray-600">{{ t('pricing_description') }}</p>
-        </div>
+<!-- CTA Section -->
+<div class="py-24 bg-gradient-to-r from-slate-900 via-emerald-900 to-teal-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+            Pronto para começar?
+        </h2>
+        <p class="text-xl text-emerald-100 mb-10">
+            Junte-se a milhares de usuários que confiam no HubPDF para suas necessidades de PDF
+        </p>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Free Plan -->
-            <div class="bg-gray-50 rounded-lg p-8 relative">
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('plan_free') }}</h3>
-                <div class="text-3xl font-bold text-gray-900 mb-4">{{ t('price_free') }}</div>
-                <ul class="space-y-3 mb-8">
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
-                        <span class="text-sm">{{ t('plan_free_feature_1') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
-                        <span class="text-sm">{{ t('plan_free_feature_2') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="info" class="h-5 w-5 text-yellow-500 mr-2"></i>
-                        <span class="text-sm">{{ t('plan_free_feature_3') }}</span>
-                    </li>
-                </ul>
-                {% if not user %}
-                    <a href="/auth/register" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-2 px-4 rounded-md font-semibold text-center block">{{ t('btn_get_started') }}</a>
-                {% endif %}
+        {% if not user %}
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="/auth/register" class="bg-white text-emerald-600 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                    <i data-lucide="rocket" class="h-6 w-6 mr-2 inline"></i>
+                    Começar Gratuitamente
+                </a>
+                <a href="/billing/pricing" class="border-2 border-white text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-white hover:text-emerald-600 transition-all duration-200">
+                    Ver Preços
+                </a>
             </div>
-            
-            <!-- Pro Plan -->
-            <div class="bg-red-50 rounded-lg p-8 relative border-2 border-red-200">
-                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold">{{ t('popular') }}</span>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('plan_pro') }}</h3>
-                <div class="text-3xl font-bold text-gray-900 mb-4">R$ 14,90<span class="text-base font-normal text-gray-500">/{{ t('month') }}</span></div>
-                <ul class="space-y-3 mb-8">
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
-                        <span class="text-sm">{{ t('plan_pro_feature_1') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
-                        <span class="text-sm">{{ t('plan_pro_feature_2') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
-                        <span class="text-sm">{{ t('plan_pro_feature_3') }}</span>
-                    </li>
-                </ul>
-                <a href="/billing/pricing" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-semibold text-center block">{{ t('btn_upgrade') }}</a>
-            </div>
-            
-            <!-- Business Plan -->
-            <div class="bg-gray-50 rounded-lg p-8 relative">
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('plan_business') }}</h3>
-                <div class="text-3xl font-bold text-gray-900 mb-4">R$ 29,90<span class="text-base font-normal text-gray-500">/{{ t('month') }}</span></div>
-                <ul class="space-y-3 mb-8">
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
-                        <span class="text-sm">{{ t('plan_business_feature_1') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
-                        <span class="text-sm">{{ t('plan_business_feature_2') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-2"></i>
-                        <span class="text-sm">{{ t('plan_business_feature_3') }}</span>
-                    </li>
-                </ul>
-                <a href="/billing/pricing" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-2 px-4 rounded-md font-semibold text-center block">{{ t('btn_upgrade') }}</a>
-            </div>
-        </div>
+        {% else %}
+            <a href="/tools" class="bg-white text-emerald-600 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 inline-flex items-center">
+                <i data-lucide="wrench" class="h-6 w-6 mr-2"></i>
+                Acessar Ferramentas
+            </a>
+        {% endif %}
     </div>
 </div>
+
+<style>
+.bg-grid-slate-100\/50 {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(148 163 184 / 0.5)'%3e%3cpath d='m0 .5h32m0 32v-32m-32 0v32'/%3e%3c/svg%3e");
+}
+</style>
 {% endblock %}
