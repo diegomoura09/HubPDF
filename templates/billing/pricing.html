@@ -3,28 +3,39 @@
 {% block title %}Preços - {{ t('title') }}{% endblock %}
 
 {% block content %}
-<div class="bg-white">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
     <!-- Header Section -->
-    <div class="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
-        <div class="absolute inset-0 bg-grid-slate-100/50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]"></div>
-        <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+    <div class="relative py-16 lg:py-24">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                    Software PDF que cabe no seu orçamento
+                <div class="inline-flex items-center px-4 py-2 rounded-full bg-emerald-100 text-emerald-800 text-sm font-medium mb-6">
+                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Hospedado localmente - Sua privacidade garantida
+                </div>
+                
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+                    Todas as ferramentas PDF <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">que você precisa</span>
                 </h1>
-                <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                    Todas as ferramentas PDF que você precisa. Construído no Brasil. Confiado por milhares desde 2024.
+                
+                <p class="text-xl text-slate-600 mb-12 max-w-3xl mx-auto">
+                    Software completo para manipulação de PDFs. Seguro, rápido e totalmente privado.
                 </p>
                 
                 <!-- Billing Toggle -->
-                <div class="flex items-center justify-center mb-12">
-                    <div class="bg-white rounded-full p-1 shadow-sm border border-gray-200">
-                        <div class="flex items-center">
-                            <button id="monthlyBtn" class="px-6 py-2 text-sm font-medium text-gray-900 bg-white rounded-full shadow-sm transition-all duration-200">
+                <div class="flex items-center justify-center mb-16">
+                    <div class="bg-white rounded-2xl p-2 shadow-lg border border-slate-200">
+                        <div class="flex items-center space-x-1">
+                            <button id="monthlyBtn" class="relative px-8 py-3 text-sm font-semibold rounded-xl transition-all duration-300 text-slate-600">
                                 Mensal
                             </button>
-                            <button id="yearlyBtn" class="px-6 py-2 text-sm font-medium text-gray-500 rounded-full transition-all duration-200">
-                                Anual <span class="ml-1 bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs font-medium">-34%</span>
+                            <button id="yearlyBtn" class="relative px-8 py-3 text-sm font-semibold rounded-xl transition-all duration-300 text-white bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg">
+                                Anual 
+                                <span class="absolute -top-2 -right-2 bg-amber-400 text-amber-900 px-2 py-0.5 rounded-full text-xs font-bold">
+                                    -33%
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -34,351 +45,420 @@
     </div>
 
     <!-- Pricing Cards -->
-    <div class="relative -mt-16 pb-16">
+    <div class="relative -mt-8 pb-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-                {% for plan in plans %}
-                <div class="relative">
-                    {% if plan.popular %}
-                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                            <span class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg">
-                                Mais popular
-                            </span>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+                <!-- Free Plan -->
+                <div class="relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-200">
+                    <div class="p-8 lg:p-10">
+                        <!-- Plan Header -->
+                        <div class="text-center mb-8">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-2xl mb-6">
+                                <svg class="h-8 w-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-4">Gratuito</h3>
+                            
+                            <div class="mb-6">
+                                <div class="flex items-baseline justify-center">
+                                    <span class="text-6xl font-bold text-slate-900">R$ 0</span>
+                                    <span class="text-lg text-slate-600 ml-2">/mês</span>
+                                </div>
+                                <p class="text-sm text-slate-500 mt-2">Para sempre gratuito</p>
+                            </div>
                         </div>
-                    {% endif %}
-                    
-                    <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 {% if plan.popular %}ring-2 ring-blue-500 transform scale-105{% endif %}">
-                        <div class="p-8">
-                            <!-- Plan Header -->
-                            <div class="text-center mb-8">
-                                <div class="flex items-center justify-center mb-4">
-                                    <h3 class="text-2xl font-bold text-gray-900 capitalize">{{ plan.name }}</h3>
-                                    {% if plan.name == 'pro' %}
-                                        <div class="ml-3 w-3 h-3 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full"></div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="mb-4">
-                                    {% if plan.name == 'custom' %}
-                                        <div class="text-3xl font-bold text-gray-900">{{ plan.price_display }}</div>
-                                        <p class="text-sm text-gray-600 mt-2">{{ plan.subtitle }}</p>
-                                    {% else %}
-                                        <div class="flex items-baseline justify-center">
-                                            <span class="text-5xl font-bold text-gray-900">{{ plan.price_display }}</span>
-                                            <span class="text-xl text-gray-600 ml-1">{{ plan.subtitle }}</span>
-                                        </div>
-                                        {% if plan.annual_price %}
-                                            <p class="text-sm text-gray-500 mt-2">{{ plan.annual_price }}</p>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
+                        
+                        <!-- CTA Button -->
+                        <div class="mb-8">
+                            <a href="/auth/register" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 text-center block shadow-lg hover:shadow-xl">
+                                Começar Agora
+                            </a>
+                        </div>
+                        
+                        <!-- Features -->
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-emerald-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700">10+ ferramentas essenciais</span>
                             </div>
-                            
-                            <!-- CTA Button -->
-                            <div class="mb-8">
-                                {% if plan.name == 'free' %}
-                                    <a href="/auth/register" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 text-center block text-base">
-                                        Começar
-                                    </a>
-                                {% elif plan.contact %}
-                                    <a href="/contact" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 text-center block text-base">
-                                        Contatar Vendas
-                                    </a>
-                                {% else %}
-                                    <form method="post" action="/billing/checkout">
-                                        <input type="hidden" name="plan" value="{{ plan.name }}">
-                                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 text-base shadow-lg hover:shadow-xl">
-                                            Começar Teste Gratuito
-                                        </button>
-                                    </form>
-                                {% endif %}
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-emerald-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700">Arquivos até 10MB</span>
                             </div>
-                            
-                            <!-- Features -->
-                            <div>
-                                <p class="font-semibold text-gray-900 mb-4">
-                                    {% if plan.name == 'free' %}
-                                        Você obtém:
-                                    {% else %}
-                                        Tudo do Free, além de:
-                                    {% endif %}
-                                </p>
-                                
-                                <ul class="space-y-3">
-                                    {% for feature in plan.features %}
-                                    <li class="flex items-start">
-                                        <div class="flex-shrink-0 mt-1">
-                                            <svg class="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                        </div>
-                                        <span class="ml-3 text-gray-700 text-sm">{{ feature }}</span>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                                
-                                {% if plan.popular %}
-                                    <div class="mt-6 p-4 bg-blue-50 rounded-lg">
-                                        <div class="flex items-center">
-                                            <span class="text-blue-600 font-medium text-sm">✓ Acesso completo</span>
-                                        </div>
-                                    </div>
-                                {% elif plan.name == 'free' %}
-                                    <div class="mt-6 p-4 bg-orange-50 rounded-lg">
-                                        <div class="flex items-center">
-                                            <span class="text-orange-600 font-medium text-sm">⚠️ Acesso limitado</span>
-                                        </div>
-                                    </div>
-                                {% endif %}
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-emerald-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700">8 operações por dia</span>
+                            </div>
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-amber-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                                <span class="text-slate-700">Marca d'água após 4ª operação</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
+
+                <!-- Pro Plan -->
+                <div class="relative bg-white rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300 border-2 border-emerald-500 transform scale-105">
+                    <!-- Most Popular Badge -->
+                    <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 z-10">
+                        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+                            ⭐ Mais Popular
+                        </div>
+                    </div>
+                    
+                    <div class="p-8 lg:p-10">
+                        <!-- Plan Header -->
+                        <div class="text-center mb-8">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl mb-6">
+                                <svg class="h-8 w-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-4">Pro</h3>
+                            
+                            <div class="mb-6">
+                                <div class="flex items-baseline justify-center">
+                                    <span id="proPrice" class="text-6xl font-bold text-slate-900">R$ 9</span>
+                                    <span class="text-lg text-slate-600 ml-2">/mês</span>
+                                </div>
+                                <p id="proBilling" class="text-sm text-emerald-600 mt-2 font-medium">Cobrado anualmente R$ 108</p>
+                            </div>
+                        </div>
+                        
+                        <!-- CTA Button -->
+                        <div class="mb-8">
+                            <form method="post" action="/billing/checkout">
+                                <input type="hidden" name="plan" value="pro">
+                                <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                    Começar Teste Gratuito
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Features -->
+                        <div class="space-y-4">
+                            <p class="font-semibold text-slate-900 mb-4">Tudo do Gratuito, mais:</p>
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-emerald-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700"><strong>Uso ilimitado</strong> de todas as ferramentas</span>
+                            </div>
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-emerald-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700">Arquivos até <strong>100MB</strong></span>
+                            </div>
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-emerald-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700"><strong>Sem marcas d'água</strong></span>
+                            </div>
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-emerald-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700"><strong>Compressão avançada</strong></span>
+                            </div>
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-emerald-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700">Suporte prioritário</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Pro Badge -->
+                        <div class="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-200">
+                            <div class="flex items-center justify-center">
+                                <span class="text-emerald-700 font-medium text-sm">✨ Acesso Completo Premium</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Plan -->
+                <div class="relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-200">
+                    <div class="p-8 lg:p-10">
+                        <!-- Plan Header -->
+                        <div class="text-center mb-8">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl mb-6">
+                                <svg class="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-4">Empresarial</h3>
+                            
+                            <div class="mb-6">
+                                <div class="text-4xl font-bold text-slate-900 mb-2">Personalizado</div>
+                                <p class="text-sm text-slate-600">Soluções sob medida para sua empresa</p>
+                            </div>
+                        </div>
+                        
+                        <!-- CTA Button -->
+                        <div class="mb-8">
+                            <a href="/contact" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 text-center block shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                Falar com Vendas
+                            </a>
+                        </div>
+                        
+                        <!-- Features -->
+                        <div class="space-y-4">
+                            <p class="font-semibold text-slate-900 mb-4">Tudo do Pro, mais:</p>
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-purple-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700"><strong>Volumes ilimitados</strong></span>
+                            </div>
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-purple-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700">Arquivos até <strong>250MB</strong></span>
+                            </div>
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-purple-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700"><strong>Suporte dedicado</strong></span>
+                            </div>
+                            <div class="flex items-start">
+                                <svg class="h-5 w-5 text-purple-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-slate-700">SLA personalizado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Feature Comparison Table -->
-    <div class="bg-gray-50 py-16">
+    <!-- Feature Grid Section -->
+    <div class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Compare todos os recursos</h2>
-                <p class="text-lg text-gray-600">Veja exatamente o que está incluído em cada plano</p>
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">
+                    Mais de 40 ferramentas PDF
+                </h2>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                    Tudo que você precisa para trabalhar com PDFs de forma profissional
+                </p>
             </div>
             
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-2/5"></th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Free</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900 bg-blue-50 relative">
-                                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
-                                    Pro
-                                </th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Custom</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <!-- Compress Features -->
-                            <tr class="bg-gray-25">
-                                <td colspan="4" class="px-6 py-4 text-lg font-bold text-gray-900">Comprimir</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 text-sm text-gray-900">Compressão Básica</td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">Limite diário</span>
-                                </td>
-                                <td class="px-6 py-4 text-center bg-blue-25">
-                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 text-sm text-gray-900">Compressão Forte</td>
-                                <td class="px-6 py-4 text-center">
-                                    <svg class="h-5 w-5 text-red-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </td>
-                                <td class="px-6 py-4 text-center bg-blue-25">
-                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </td>
-                            </tr>
-                            
-                            <!-- Convert Features -->
-                            <tr class="bg-gray-25">
-                                <td colspan="4" class="px-6 py-4 text-lg font-bold text-gray-900">Converter</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 text-sm text-gray-900">PDF para/de Imagens</td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">Limite diário</span>
-                                </td>
-                                <td class="px-6 py-4 text-center bg-blue-25">
-                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </td>
-                            </tr>
-                            
-                            <!-- Organize Features -->
-                            <tr class="bg-gray-25">
-                                <td colspan="4" class="px-6 py-4 text-lg font-bold text-gray-900">Organizar</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 text-sm text-gray-900">Mesclar PDFs</td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">Limite diário</span>
-                                </td>
-                                <td class="px-6 py-4 text-center bg-blue-25">
-                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 text-sm text-gray-900">Dividir PDFs</td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">Limite diário</span>
-                                </td>
-                                <td class="px-6 py-4 text-center bg-blue-25">
-                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </td>
-                            </tr>
-                            
-                            <!-- Additional Features -->
-                            <tr class="bg-gray-25">
-                                <td colspan="4" class="px-6 py-4 text-lg font-bold text-gray-900">Recursos Adicionais</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 text-sm text-gray-900">Limite de tamanho de arquivo</td>
-                                <td class="px-6 py-4 text-center text-sm text-gray-600">10 MB</td>
-                                <td class="px-6 py-4 text-center text-sm text-gray-600 bg-blue-25">100 MB</td>
-                                <td class="px-6 py-4 text-center text-sm text-gray-600">250 MB</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 text-sm text-gray-900">Suporte ao cliente</td>
-                                <td class="px-6 py-4 text-center text-sm text-gray-600">Padrão</td>
-                                <td class="px-6 py-4 text-center text-sm text-gray-600 bg-blue-25">Prioritário</td>
-                                <td class="px-6 py-4 text-center text-sm text-gray-600">Dedicado</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+                <!-- Feature Icons -->
+                <div class="text-center group">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-emerald-100 rounded-2xl flex items-center justify-center group-hover:bg-emerald-200 transition-colors duration-200">
+                        <svg class="h-8 w-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-slate-700">Mesclar</p>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Security Section -->
-    <div class="py-16 bg-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8">
-                <div class="flex items-center justify-center mb-4">
-                    <svg class="h-8 w-8 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
-                    <h2 class="text-2xl font-bold text-gray-900">Certificado para sua Segurança</h2>
+                
+                <div class="text-center group">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200">
+                        <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-slate-700">Dividir</p>
                 </div>
-                <p class="text-gray-600 leading-relaxed">
-                    HubPDF é compatível com LGPD e GDPR. Graças à nossa tecnologia de criptografia TLS, 
-                    seus documentos são sempre processados com uma camada adicional de segurança.
-                </p>
+                
+                <div class="text-center group">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-2xl flex items-center justify-center group-hover:bg-purple-200 transition-colors duration-200">
+                        <svg class="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-slate-700">Converter</p>
+                </div>
+                
+                <div class="text-center group">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-amber-100 rounded-2xl flex items-center justify-center group-hover:bg-amber-200 transition-colors duration-200">
+                        <svg class="h-8 w-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-slate-700">Comprimir</p>
+                </div>
+                
+                <div class="text-center group">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-2xl flex items-center justify-center group-hover:bg-red-200 transition-colors duration-200">
+                        <svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-slate-700">Proteger</p>
+                </div>
+                
+                <div class="text-center group">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-teal-100 rounded-2xl flex items-center justify-center group-hover:bg-teal-200 transition-colors duration-200">
+                        <svg class="h-8 w-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-slate-700">Editar</p>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- FAQ Section -->
-    <div class="bg-gray-50 py-16">
+    <div class="py-24 bg-slate-50">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Perguntas Frequentes</h2>
+            <h2 class="text-3xl font-bold text-slate-900 text-center mb-12">
+                Perguntas Frequentes
+            </h2>
             
-            <div class="space-y-6">
-                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Posso cancelar o teste gratuito facilmente?</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        Sim. Você pode cancelar o teste a qualquer momento e ter certeza de que não cobraremos nada. 
-                        Se você cancelar o teste gratuito, sua conta será automaticamente rebaixada para o plano gratuito 
-                        quando o período de 7 dias expirar.
+            <div class="space-y-8">
+                <div class="bg-white rounded-2xl shadow-sm p-8 hover:shadow-md transition-shadow duration-200">
+                    <h3 class="text-xl font-semibold text-slate-900 mb-4">
+                        Como funciona o teste gratuito de 7 dias?
+                    </h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Você pode cancelar a qualquer momento durante os 7 dias e não será cobrado. 
+                        Após o período, sua conta será automaticamente rebaixada para o plano gratuito.
                     </p>
                 </div>
                 
-                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Como posso comprar um dos planos pagos?</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        Aceitamos pagamentos via PIX, cartão de crédito Visa e Mastercard. 
-                        Você pode usar qualquer um desses métodos de pagamento com segurança para comprar sua assinatura HubPDF.
+                <div class="bg-white rounded-2xl shadow-sm p-8 hover:shadow-md transition-shadow duration-200">
+                    <h3 class="text-xl font-semibold text-slate-900 mb-4">
+                        Meus documentos ficam seguros?
+                    </h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Sim! Todos os arquivos são processados localmente e automaticamente excluídos após 30 minutos. 
+                        Seus documentos nunca ficam armazenados em nossos servidores.
                     </p>
                 </div>
                 
-                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Se eu me inscrever hoje, receberei atualizações futuras do produto?</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        Você receberá! Os clientes em nossos planos pagos mensais e anuais obtêm acesso a todas as novas 
-                        ferramentas e recursos no momento em que os lançamos.
+                <div class="bg-white rounded-2xl shadow-sm p-8 hover:shadow-md transition-shadow duration-200">
+                    <h3 class="text-xl font-semibold text-slate-900 mb-4">
+                        Posso usar offline?
+                    </h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        O HubPDF é uma aplicação web que funciona no seu navegador. 
+                        Uma vez carregada, muitas funcionalidades podem ser usadas sem conexão com internet.
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Final CTA Section -->
-    <div class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 py-16 overflow-hidden">
-        <div class="absolute inset-0 bg-black opacity-10"></div>
-        <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold text-white mb-6">Experimente 7 Dias Grátis</h2>
-            <p class="text-lg text-blue-100 mb-8">Sem compromisso. Cancele a qualquer momento.</p>
-            <a href="/auth/register" class="inline-flex items-center bg-white text-blue-600 font-bold py-4 px-8 rounded-xl hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Final CTA -->
+    <div class="py-24 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold text-white mb-6">
+                Comece seu teste gratuito hoje
+            </h2>
+            <p class="text-xl text-emerald-100 mb-10">
+                7 dias completos. Sem cartão de crédito. Cancele quando quiser.
+            </p>
+            <a href="/auth/register" class="inline-flex items-center bg-white text-emerald-600 font-bold py-4 px-8 rounded-2xl hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                <svg class="h-6 w-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>
-                Começar Teste Gratuito
+                Começar Agora - É Gratuito
             </a>
         </div>
     </div>
 </div>
 
 <script>
+// Price management
+const prices = {
+    monthly: { price: '14', billing: 'Cobrado mensalmente' },
+    yearly: { price: '9', billing: 'Cobrado anualmente R$ 108 (economize 33%)' }
+};
+
+let currentBilling = 'yearly'; // Start with yearly selected
+
+function updatePricing() {
+    const proPrice = document.getElementById('proPrice');
+    const proBilling = document.getElementById('proBilling');
+    
+    if (proPrice && proBilling) {
+        proPrice.textContent = `R$ ${prices[currentBilling].price}`;
+        proBilling.textContent = prices[currentBilling].billing;
+        proBilling.className = currentBilling === 'yearly' ? 
+            'text-sm text-emerald-600 mt-2 font-medium' : 
+            'text-sm text-slate-600 mt-2 font-medium';
+    }
+}
+
 // Billing toggle functionality
 const monthlyBtn = document.getElementById('monthlyBtn');
 const yearlyBtn = document.getElementById('yearlyBtn');
 
-monthlyBtn.addEventListener('click', function() {
-    monthlyBtn.className = 'px-6 py-2 text-sm font-medium text-gray-900 bg-white rounded-full shadow-sm transition-all duration-200';
-    yearlyBtn.className = 'px-6 py-2 text-sm font-medium text-gray-500 rounded-full transition-all duration-200';
-    console.log('Billing toggle: monthly');
-});
+if (monthlyBtn && yearlyBtn) {
+    monthlyBtn.addEventListener('click', function() {
+        currentBilling = 'monthly';
+        
+        // Update button styles
+        monthlyBtn.className = 'relative px-8 py-3 text-sm font-semibold rounded-xl transition-all duration-300 text-white bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg';
+        yearlyBtn.className = 'relative px-8 py-3 text-sm font-semibold rounded-xl transition-all duration-300 text-slate-600';
+        
+        updatePricing();
+        console.log('Billing toggle: monthly');
+    });
 
-yearlyBtn.addEventListener('click', function() {
-    yearlyBtn.className = 'px-6 py-2 text-sm font-medium text-gray-900 bg-white rounded-full shadow-sm transition-all duration-200';
-    monthlyBtn.className = 'px-6 py-2 text-sm font-medium text-gray-500 rounded-full transition-all duration-200';
-    console.log('Billing toggle: yearly');
+    yearlyBtn.addEventListener('click', function() {
+        currentBilling = 'yearly';
+        
+        // Update button styles  
+        yearlyBtn.className = 'relative px-8 py-3 text-sm font-semibold rounded-xl transition-all duration-300 text-white bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg';
+        monthlyBtn.className = 'relative px-8 py-3 text-sm font-semibold rounded-xl transition-all duration-300 text-slate-600';
+        
+        updatePricing();
+        console.log('Billing toggle: yearly');
+    });
+}
+
+// Initialize pricing on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updatePricing();
 });
 </script>
 
 <style>
-.bg-grid-slate-100\/50 {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(148 163 184 / 0.5)'%3e%3cpath d='m0 .5h32m0 32v-32m-32 0v32'/%3e%3c/svg%3e");
+/* Custom gradient background */
+.bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
 
-.bg-gray-25 {
-    background-color: #fafafa;
+/* Hover shadow effects */
+.shadow-3xl {
+    box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
 }
 
-.bg-blue-25 {
-    background-color: #f8faff;
+/* Smooth animations */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom gradients for the new color palette */
+.from-emerald-600 {
+    --tw-gradient-from: #059669;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(5, 150, 105, 0));
+}
+
+.to-teal-600 {
+    --tw-gradient-to: #0d9488;
 }
 </style>
 {% endblock %}
