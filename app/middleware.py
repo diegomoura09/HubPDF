@@ -123,24 +123,31 @@ class CSRFMiddleware(BaseHTTPMiddleware):
             
             return response
         
-        # For form submissions, check either header or form field
+        # Get CSRF tokens
         csrf_token_header = request.headers.get("X-CSRF-Token")
         csrf_token_cookie = request.cookies.get("csrf_token")
+        csrf_token_form = None
         
-        # For form submissions, also check form data
-        if not csrf_token_header and request.headers.get("content-type", "").startswith("application/x-www-form-urlencoded"):
+        # For form submissions, check form data if no header present
+        content_type = request.headers.get("content-type", "")
+        if (not csrf_token_header and 
+            (content_type.startswith("application/x-www-form-urlencoded") or 
+             content_type.startswith("multipart/form-data"))):
             try:
                 form_data = await request.form()
                 csrf_token_form = form_data.get("csrf_token")
-                if csrf_token_form and csrf_token_cookie and csrf_token_form == csrf_token_cookie:
-                    # Valid CSRF token in form
-                    response = await call_next(request)
-                    return response
-            except:
+            except Exception:
                 pass
         
-        # Check header-based CSRF token
-        if csrf_token_header and csrf_token_cookie and csrf_token_header == csrf_token_cookie:
+        # Check CSRF token (header takes precedence)
+        valid_token = False
+        if csrf_token_cookie:
+            if csrf_token_header and csrf_token_header == csrf_token_cookie:
+                valid_token = True
+            elif csrf_token_form and csrf_token_form == csrf_token_cookie:
+                valid_token = True
+        
+        if valid_token:
             response = await call_next(request)
             return response
         

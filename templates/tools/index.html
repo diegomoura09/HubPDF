@@ -28,6 +28,7 @@
                 
                 <!-- Upload Form -->
                 <form id="conversion-form" enctype="multipart/form-data" class="space-y-6">
+                    <input type="hidden" name="csrf_token" value="{{ request.cookies.get('csrf_token', '') }}">
                     <!-- File Upload Area -->
                     <div class="border-2 border-dashed border-slate-300 rounded-2xl p-12 hover:border-emerald-400 hover:bg-emerald-50/30 transition-all duration-300" id="drop-zone">
                         <input type="file" id="file-input" name="files" multiple accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.gif,.bmp,.tiff" class="hidden">

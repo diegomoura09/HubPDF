@@ -3,7 +3,7 @@
  * Handles caching, offline functionality, and PWA features
  */
 
-const CACHE_NAME = 'hubpdf-v1.0.0';
+const CACHE_NAME = 'hubpdf-v1.0.2';
 const STATIC_CACHE = 'hubpdf-static-v1';
 const DYNAMIC_CACHE = 'hubpdf-dynamic-v1';
 const API_CACHE = 'hubpdf-api-v1';
