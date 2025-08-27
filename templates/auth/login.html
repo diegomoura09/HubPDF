@@ -36,7 +36,7 @@
         <div class="modern-card">
             <div class="card-body">
                 <form method="post" action="/auth/login" id="login-form" class="space-y-6">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <!-- CSRF removed - using SameSite cookies for security -->
                     
                     <!-- Email Field -->
                     <div>

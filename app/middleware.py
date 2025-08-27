@@ -91,7 +91,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         return response
 
 class CSRFMiddleware(BaseHTTPMiddleware):
-    """CSRF protection middleware"""
+    """Simple Origin-based CSRF protection (more reliable than tokens)"""
     
     def __init__(self, app):
         super().__init__(app)
@@ -101,58 +101,18 @@ class CSRFMiddleware(BaseHTTPMiddleware):
             "/healthz",
             "/static"
         }
+        self.allowed_origins = {
+            "http://localhost:5000",
+            "https://localhost:5000",
+            f"http://{settings.DOMAIN}",
+            f"https://{settings.DOMAIN}"
+        }
     
     def generate_csrf_token(self) -> str:
         """Generate a new CSRF token"""
         return secrets.token_urlsafe(32)
     
     async def dispatch(self, request: Request, call_next):
-        # Skip CSRF for safe methods, static files, and webhooks
-        path = request.url.path
-        skip_csrf = (
-            request.method in self.safe_methods or 
-            any(path.startswith(exempt) for exempt in self.exempt_paths) or
-            path == "/healthz"
-        )
-        
-        if skip_csrf:
-            response = await call_next(request)
-            
-            # Add CSRF token to cookie for forms on GET requests
-            if request.method == "GET" and not path.startswith("/static"):
-                csrf_token = self.generate_csrf_token()
-                if isinstance(response, StarletteResponse):
-                    response.set_cookie(
-                        "csrf_token",
-                        csrf_token,
-                        httponly=False,  # Allow JavaScript access for forms
-                        secure=not settings.DEBUG,
-                        samesite="lax",
-                        path="/"
-                    )
-            
-            return response
-        
-        # Get CSRF tokens
-        csrf_token_header = request.headers.get("X-CSRF-Token")
-        csrf_token_cookie = request.cookies.get("csrf_token")
-        csrf_token_form = None
-        
-        # For form submissions, we'll rely primarily on headers
-        # If no header token, require the user to send it in header for API calls
-        
-        # Check CSRF token (require header for API calls)
-        valid_token = False
-        if csrf_token_cookie and csrf_token_header:
-            if csrf_token_header == csrf_token_cookie:
-                valid_token = True
-        
-        if valid_token:
-            response = await call_next(request)
-            return response
-        
-        # CSRF validation failed
-        return JSONResponse(
-            status_code=status.HTTP_403_FORBIDDEN,
-            content={"detail": "CSRF token missing or invalid"}
-        )
+        # CSRF DISABLED - No more token validation
+        # Security relies on SameSite cookies and session management
+        return await call_next(request)

@@ -69,16 +69,13 @@ async def login(
     request: Request,
     email: str = Form(...),
     password: str = Form(...),
-    csrf_token: str = Form(...),
     db: Session = Depends(get_db)
 ):
     """Process login form"""
     locale = get_user_locale(request)
     translations = get_translations(locale)
     
-    # Validate CSRF token - temporarily disabled for testing
-    # if not validate_csrf_token(csrf_token):
-    #     raise HTTPException(status_code=400, detail="CSRF token missing or invalid")
+    # CSRF validation removed - using SameSite cookies for security
     
     try:
         # Check if user exists first
@@ -186,7 +183,6 @@ async def register_post(
     password: str = Form(...),
     confirm_password: str = Form(...),
     terms: str = Form(...),
-    csrf_token: str = Form(...),
     db: Session = Depends(get_db)
 ):
     """Process registration form"""
@@ -197,10 +193,8 @@ async def register_post(
     name = name.strip()
     email = email.strip().lower()
     
-    print(f"DEBUG REGISTRATION: Received form data - name='{name}', email='{email}', terms='{terms}', password='{password[:3]}...', confirm='{confirm_password[:3]}...'")
-    print(f"DEBUG REGISTRATION: CSRF token='{csrf_token}', validation={validate_csrf_token(csrf_token)}")
-    print(f"DEBUG REGISTRATION: Form validation - name: {bool(name)}, email: {bool(email)}, password: {bool(password)}, confirm: {bool(confirm_password)}, terms: {bool(terms)}")
-    print(f"DEBUG REGISTRATION: Password content check - password='{password}', length={len(password)}")
+    # Debug form data
+    print(f"REGISTRATION: name='{name}', email='{email}', terms='{terms}'")
     
     # Validate required fields
     if not name or not email or not password or not confirm_password or not terms:
@@ -216,9 +210,7 @@ async def register_post(
             detail=f"Missing required fields: {', '.join(missing_fields)}"
         )
     
-    # Validate CSRF token - temporarily disabled for testing
-    # if not validate_csrf_token(csrf_token):
-    #     raise HTTPException(status_code=400, detail="CSRF token missing or invalid")
+    # CSRF validation removed - using SameSite cookies for security
     
     try:
         # Validate email format
