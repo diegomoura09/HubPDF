@@ -44,7 +44,10 @@ function initializeCSRF() {
         // Set up CSRF for HTMX requests
         if (typeof htmx !== 'undefined') {
             document.body.addEventListener('htmx:configRequest', function(evt) {
-                evt.detail.headers['X-CSRF-Token'] = csrfToken;
+                const currentToken = getCookie('csrf_token') || csrfToken;
+                if (currentToken) {
+                    evt.detail.headers['X-CSRF-Token'] = currentToken;
+                }
             });
         }
     }

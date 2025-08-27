@@ -1,0 +1,190 @@
+A mensagem “CSRF token missing or invalid” aparece quando o backend exige CSRF e o frontend não envia o token correto (ou o cookie/sessão). Abaixo vai um passo-a-passo com código pronto para 2 cenários comuns:
+
+1) App com páginas HTML (forms <form>)
+
+Use Flask-WTF + CSRFProtect.
+
+Instale
+pip install flask flask-wtf
+
+app.py (mínimo funcional)
+import os
+from flask import Flask, render_template, redirect, url_for, request
+from flask_wtf import CSRFProtect
+from wtforms import StringField, SubmitField
+from flask_wtf import FlaskForm
+from wtforms.validators import DataRequired
+
+app = Flask(__name__)
+# chaves seguras vindas do Replit (Secrets)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret')
+# Ajuste de cookies p/ proxy/https do Replit (ajuda a evitar bloqueio do navegador)
+app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1h
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = True  # em replit.dev é HTTPS
+app.config['REMEMBER_COOKIE_SECURE'] = True
+
+csrf = CSRFProtect(app)
+
+class NomeForm(FlaskForm):
+    nome = StringField('Seu nome', validators=[DataRequired()])
+    submit = SubmitField('Enviar')
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    form = NomeForm()
+    if form.validate_on_submit():
+        # processa...
+        return redirect(url_for('ok'))
+    return render_template('index.html', form=form)
+
+@app.route('/ok')
+def ok():
+    return "Deu certo! CSRF passou."
+
+# Tratamento de erro CSRF (mensagem amigável)
+@app.errorhandler(400)
+def bad_request(e):
+    if 'The CSRF token is missing' in str(e) or 'CSRF' in str(e):
+        return "Erro: CSRF token ausente ou inválido. Atualize a página e tente de novo.", 400
+    return "Requisição inválida.", 400
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+templates/index.html
+
+(note o {{ form.csrf_token }} — é obrigatório!)
+
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>Teste CSRF</title></head>
+  <body>
+    <h1>Form com CSRF</h1>
+    <form method="POST" action="/">
+      {{ form.csrf_token }}
+      {{ form.nome.label }} {{ form.nome(size=30) }}
+      {{ form.submit() }}
+    </form>
+  </body>
+</html>
+
+
+✅ Se sua app é “páginas + forms”, isso resolve.
+
+2) API JSON + Frontend (fetch/axios)
+
+Para SPA/requests AJAX, use o padrão “double submit cookie”: o backend define um cookie csrf_token e o frontend manda o mesmo valor num cabeçalho X-CSRFToken. O CSRFProtect do Flask-WTF já entende isso.
+
+Instale
+pip install flask flask-wtf itsdangerous
+
+app.py (API com CSRF via header)
+import os
+from flask import Flask, request, jsonify, make_response
+from flask_wtf.csrf import CSRFProtect, generate_csrf, validate_csrf
+from werkzeug.exceptions import BadRequest
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret')
+app.config['WTF_CSRF_TIME_LIMIT'] = 3600
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = True
+
+csrf = CSRFProtect(app)
+
+# Endpoint para expor o token e setar o cookie (use no carregamento da página/app)
+@app.route('/csrf-token', methods=['GET'])
+def get_csrf():
+    token = generate_csrf()  # usa SECRET_KEY por baixo
+    resp = make_response(jsonify({'csrfToken': token}))
+    # cookie de CSRF (não httpOnly para leitura pelo front)
+    resp.set_cookie('csrf_token', token, secure=True, samesite='Lax')
+    return resp
+
+# Exemplo de endpoint protegido (POST JSON)
+@app.route('/api/start', methods=['POST'])
+def start():
+    # 1) Lê token do header (ou do body, se preferir)
+    header_token = request.headers.get('X-CSRFToken') or request.headers.get('X-CSRF-Token')
+    if not header_token:
+        raise BadRequest('CSRF token missing')
+
+    # 2) Valida token (levando em conta SECRET_KEY e time limit)
+    try:
+        validate_csrf(header_token)
+    except Exception as e:
+        raise BadRequest(f'CSRF token invalid: {e}')
+
+    data = request.get_json(silent=True) or {}
+    # ... processe a ação
+    return jsonify({'ok': True, 'msg': 'Conversa iniciada com sucesso!'})
+
+# Erro amigável
+@app.errorhandler(400)
+def bad_request(e):
+    if 'CSRF' in str(e):
+        return jsonify({'ok': False, 'error': 'CSRF token ausente ou inválido'}), 400
+    return jsonify({'ok': False, 'error': 'Bad Request'}), 400
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+Frontend (fetch)
+
+Importante: sempre credentials: 'include' para enviar/receber cookies no domínio *.replit.dev.
+
+// 1) Buscar token e setar cookie
+await fetch('/csrf-token', { credentials: 'include' })
+  .then(r => r.json())
+  .then(({ csrfToken }) => window.csrfToken = csrfToken);
+
+// 2) Usar o token nas requests "unsafe" (POST/PUT/PATCH/DELETE)
+const res = await fetch('/api/start', {
+  method: 'POST',
+  credentials: 'include',        // envia cookies de sessão e o csrf_token
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRFToken': window.csrfToken // ou leia do cookie
+  },
+  body: JSON.stringify({ foo: 'bar' })
+});
+const data = await res.json();
+
+
+Se preferir ler do cookie:
+
+function getCookie(name) {
+  return document.cookie.split('; ').find(r => r.startsWith(name+'='))?.split('=')[1];
+}
+const csrf = getCookie('csrf_token');
+
+Variáveis no Replit (Secrets)
+
+Crie duas:
+
+SECRET_KEY → string longa e aleatória (32–64 chars)
+
+(Opcional) FLASK_ENV=production
+
+Você pode gerar no shell Python:
+
+import secrets, string
+abc = string.ascii_letters + string.digits + "!@#$%^&*()-_=+[]{}"
+print(''.join(secrets.choice(abc) for _ in range(48)))
+
+Checklist rápido de causas comuns
+
+Faltou credentials:'include' no fetch → cookie não vai/volta → CSRF quebra.
+
+Não chamou /csrf-token antes → não há token/cookie no navegador.
+
+Cabeçalho errado → use X-CSRFToken (ou X-CSRF-Token).
+
+Token expirado → recarregue /csrf-token ou atualize a página.
+
+Domínio/HTTPS/SameSite → em *.replit.dev use Secure e SameSite='Lax'.
+
+Conflito de múltiplas abas gerando tokens diferentes → feche/atualize.
+
+Misturar CSRF de formulário e API sem enviar {{ csrf_token() }} no form ou sem header no fetch.

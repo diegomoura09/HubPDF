@@ -28,7 +28,7 @@
                 {% if user.plan != 'free' %}
                     <div class="text-right">
                         <p class="text-sm text-gray-600">{{ t('next_billing') }}</p>
-                        <p class="font-semibold">{{ subscription.current_period_end.strftime('%d/%m/%Y') }}</p>
+                        <p class="font-semibold">{{ subscription.current_period_end.strftime('%d/%m/%Y') if subscription else 'N/A' }}</p>
                     </div>
                 {% endif %}
             </div>
