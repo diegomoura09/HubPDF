@@ -121,8 +121,15 @@ class ConversionJobService:
         job_id: str = None
     ) -> str:
         """Start a new conversion job"""
+        # Create job if not provided
         if job_id is None:
-            job_id = self.registry.create_job()
+            job_id = str(uuid.uuid4())
+            
+        # Ensure job is registered
+        if job_id not in self.registry.jobs:
+            self.registry.create_job(job_id)
+            
+        logger.info(f"Starting conversion job {job_id} with operation {operation}")
         
         # Start the conversion in the background
         asyncio.create_task(self._run_conversion_job(job_id, operation, input_files, options or {}))
@@ -137,8 +144,14 @@ class ConversionJobService:
         options: Dict[str, Any]
     ):
         """Run the conversion job"""
-        async with self.registry.locks[job_id]:
-            try:
+        try:
+            # Ensure job exists and has lock
+            if job_id not in self.registry.locks:
+                self.registry.locks[job_id] = asyncio.Lock()
+                
+            async with self.registry.locks[job_id]:
+                logger.info(f"Running conversion job {job_id}")
+                
                 self.registry.update_job(
                     job_id,
                     status=JobStatus.RUNNING,
@@ -159,17 +172,18 @@ class ConversionJobService:
                     output_files=output_files,
                     completed_at=time.time()
                 )
+                logger.info(f"Job {job_id} completed successfully")
                 
-            except Exception as e:
-                logger.error(f"Job {job_id} failed: {str(e)}")
-                self.registry.update_job(
-                    job_id,
-                    status=JobStatus.FAILED,
-                    progress=0,
-                    message="Conversion failed",
-                    error=str(e),
-                    completed_at=time.time()
-                )
+        except Exception as e:
+            logger.error(f"Job {job_id} failed: {str(e)}", exc_info=True)
+            self.registry.update_job(
+                job_id,
+                status=JobStatus.FAILED,
+                progress=0,
+                message=f"Conversion failed: {str(e)}",
+                error=str(e),
+                completed_at=time.time()
+            )
     
     async def _execute_conversion(
         self, 

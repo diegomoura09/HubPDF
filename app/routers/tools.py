@@ -202,16 +202,27 @@ async def start_conversion(
                     detail=f"File {file.filename} exceeds maximum size limit"
                 )
         
+        # Validate files exist and are accessible
+        if not files or len(files) == 0:
+            raise HTTPException(status_code=400, detail="No files uploaded")
+        
         # Create job ID and work directory
         job_id = str(uuid.uuid4())
         work_dir = Path(tempfile.gettempdir()) / "hubpdf_jobs" / job_id
         work_dir.mkdir(parents=True, exist_ok=True)
         
+        logger.info(f"Processing {len(files)} files for job {job_id}")
+        
         # Save uploaded files
         input_files = []
-        for file in files:
-            file_path = await save_uploaded_file(file, work_dir)
-            input_files.append(file_path)
+        for i, file in enumerate(files):
+            if file.filename:
+                file_path = await save_uploaded_file(file, work_dir)
+                input_files.append(file_path)
+                logger.info(f"Saved file {i+1}: {file.filename} -> {file_path}")
+        
+        if not input_files:
+            raise HTTPException(status_code=400, detail="No valid files found")
         
         # Prepare options
         options = {
@@ -223,7 +234,8 @@ async def start_conversion(
         }
         
         # Start conversion job
-        job_id = await job_service.start_conversion(
+        logger.info(f"Starting conversion job {job_id} with operation {operation}")
+        result_job_id = await job_service.start_conversion(
             operation=operation,
             input_files=input_files,
             options=options,
@@ -235,7 +247,7 @@ async def start_conversion(
             quota_service.increment_operation_count(db, user)
         
         return JSONResponse({
-            "job_id": job_id,
+            "job_id": result_job_id,
             "status": "started",
             "message": "Conversion job started successfully"
         })
