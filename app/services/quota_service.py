@@ -24,9 +24,14 @@ class QuotaService:
             "daily_operations": 200,
             "watermark_threshold": None  # No watermark
         },
+        "team": {
+            "max_file_size": 200 * 1024 * 1024,  # 200MB
+            "daily_operations": 500,
+            "watermark_threshold": None  # No watermark
+        },
         "business": {
             "max_file_size": settings.MAX_FILE_SIZE_BUSINESS,
-            "daily_operations": 500,
+            "daily_operations": 1000,
             "watermark_threshold": None  # No watermark
         },
         "anonymous": {

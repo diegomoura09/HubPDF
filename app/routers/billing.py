@@ -30,32 +30,62 @@ async def pricing(
     plans = [
         {
             "name": "free",
-            "price": 0,
+            "price": 0.00,
+            "price_display": "R$ 0,00",
+            "subtitle": "/mês",
+            "popular": False,
             "features": [
-                translations.get("plan_free_feature_1", "10MB max file size"),
-                translations.get("plan_free_feature_2", "8 operations per day"),
-                translations.get("plan_free_feature_3", "Watermark on operations 5-8")
+                "10 MB tamanho máximo de arquivo",
+                "8 operações por dia", 
+                "Marca d'água após 4ª operação",
+                "Acesso limitado a todas as ferramentas",
+                "Downloads limitados"
             ]
         },
         {
             "name": "pro",
             "price": settings.PLAN_PRICES["pro"],
+            "price_display": "R$ 9,90",
+            "subtitle": "/mês",
+            "popular": True,
             "features": [
-                translations.get("plan_pro_feature_1", "100MB max file size"),
-                translations.get("plan_pro_feature_2", "200 operations per day"),
-                translations.get("plan_pro_feature_3", "No watermarks"),
-                translations.get("plan_pro_feature_4", "Job history")
+                "100 MB tamanho máximo de arquivo",
+                "200 operações por dia",
+                "Sem marcas d'água",
+                "Acesso ilimitado a todas ferramentas",
+                "Downloads ilimitados",
+                "Histórico de trabalhos",
+                "Compressão forte"
+            ]
+        },
+        {
+            "name": "team",
+            "price": settings.PLAN_PRICES["team"],
+            "price_display": "R$ 16,90",
+            "subtitle": "/mês por usuário",
+            "popular": False,
+            "features": [
+                "200 MB tamanho máximo de arquivo",
+                "500 operações por dia",
+                "Preços especiais com desconto",
+                "Suporte prioritário ao cliente",
+                "Gerenciamento de acesso de membros",
+                "Faturamento centralizado"
             ]
         },
         {
             "name": "business",
-            "price": settings.PLAN_PRICES["business"],
+            "price": 0,
+            "price_display": "Personalizado",
+            "subtitle": "Entre em contato para obter uma oferta personalizada",
+            "popular": False,
+            "contact": True,
             "features": [
-                translations.get("plan_business_feature_1", "250MB max file size"),
-                translations.get("plan_business_feature_2", "500 operations per day"),
-                translations.get("plan_business_feature_3", "No watermarks"),
-                translations.get("plan_business_feature_4", "Advanced features"),
-                translations.get("plan_business_feature_5", "Priority support")
+                "Preços personalizados",
+                "Opções flexíveis de pagamento",
+                "Suporte dedicado ao cliente",
+                "Acesso ilimitado Premium",
+                "Assinatura Premium ilimitada para cada membro da equipe"
             ]
         }
     ]
@@ -80,7 +110,7 @@ async def create_checkout(
 ):
     """Create Mercado Pago checkout preference"""
     try:
-        if plan not in ["pro", "business"]:
+        if plan not in ["pro", "team", "business"]:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid plan"

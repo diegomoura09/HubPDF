@@ -1,210 +1,127 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t('pricing_title') }} - {{ t('title') }}{% endblock %}
+{% block title %}Preços - {{ t('title') }}{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <!-- Header -->
-    <div class="text-center mb-16">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ t('pricing_title') }}</h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">{{ t('pricing_subtitle') }}</p>
-    </div>
-    
-    <!-- Pricing Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        <!-- Free Plan -->
-        <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-8 relative">
-            <div class="text-center">
-                <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ t('plan_free') }}</h3>
-                <div class="text-4xl font-bold text-gray-900 mb-6">
-                    {{ t('price_free') }}
-                    <span class="text-base font-normal text-gray-500">/{{ t('month') }}</span>
-                </div>
-                
-                <ul class="space-y-4 mb-8 text-left">
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_free_feature_1') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_free_feature_2') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="info" class="h-5 w-5 text-yellow-500 mr-3"></i>
-                        <span>{{ t('plan_free_feature_3') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_free_feature_4') }}</span>
-                    </li>
-                </ul>
-                
-                {% if not user %}
-                    <a href="/auth/register" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-3 px-6 rounded-lg font-semibold transition-colors block text-center">
-                        {{ t('btn_get_started') }}
-                    </a>
-                {% elif user.plan == 'free' %}
-                    <div class="w-full bg-green-100 text-green-800 py-3 px-6 rounded-lg font-semibold text-center">
-                        {{ t('current_plan') }}
-                    </div>
-                {% else %}
-                    <div class="w-full bg-gray-100 text-gray-500 py-3 px-6 rounded-lg font-semibold text-center">
-                        {{ t('plan_unavailable') }}
-                    </div>
-                {% endif %}
-            </div>
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Escolha seu plano</h1>
+            <p class="text-xl text-gray-600">Planos flexíveis para todas as necessidades</p>
         </div>
         
-        <!-- Pro Plan -->
-        <div class="bg-white rounded-lg shadow-lg border-2 border-red-200 p-8 relative">
-            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <span class="bg-red-600 text-white px-4 py-1 rounded-full text-sm font-semibold">{{ t('most_popular') }}</span>
-            </div>
-            
-            <div class="text-center">
-                <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ t('plan_pro') }}</h3>
-                <div class="text-4xl font-bold text-gray-900 mb-6">
-                    R$ {{ plans[1].price }}
-                    <span class="text-base font-normal text-gray-500">/{{ t('month') }}</span>
-                </div>
-                
-                <ul class="space-y-4 mb-8 text-left">
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_pro_feature_1') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_pro_feature_2') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_pro_feature_3') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_pro_feature_4') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_pro_feature_5') }}</span>
-                    </li>
-                </ul>
-                
-                {% if not user %}
-                    <a href="/auth/register" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors block text-center">
-                        {{ t('btn_start_trial') }}
-                    </a>
-                {% elif user.plan == 'pro' %}
-                    <div class="w-full bg-green-100 text-green-800 py-3 px-6 rounded-lg font-semibold text-center">
-                        {{ t('current_plan') }}
+        <!-- Pricing Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {% for plan in plans %}
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden relative
+                    {% if plan.popular %}ring-2 ring-green-500 transform scale-105{% else %}hover:shadow-xl transition-shadow{% endif %}">
+                    
+                    {% if plan.popular %}
+                        <div class="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-2 text-sm font-medium">
+                            Mais popular
+                        </div>
+                        <div class="pt-8"></div>
+                    {% endif %}
+                    
+                    <div class="px-6 py-6">
+                        <!-- Plan Header -->
+                        <div class="text-center mb-6">
+                            <div class="flex items-center justify-center mb-3">
+                                <h3 class="text-xl font-bold text-gray-900 capitalize">{{ plan.name }}</h3>
+                                {% if plan.name == 'pro' %}
+                                    <span class="ml-2 w-3 h-3 bg-orange-500 rounded-full"></span>
+                                {% elif plan.name == 'team' %}
+                                    <span class="ml-2 w-3 h-3 bg-yellow-500 rounded-full"></span>
+                                {% elif plan.name == 'business' %}
+                                    <span class="ml-2 w-3 h-3 bg-purple-500 rounded-full"></span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-2">
+                                <span class="text-3xl font-bold text-gray-900">{{ plan.price_display }}</span>
+                            </div>
+                            <p class="text-sm text-gray-600">{{ plan.subtitle }}</p>
+                        </div>
+                        
+                        <!-- Action Button -->
+                        <div class="text-center mb-6">
+                            {% if plan.name == 'free' %}
+                                {% if user %}
+                                    <a href="/tools" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors inline-block text-sm">
+                                        Começar
+                                    </a>
+                                {% else %}
+                                    <a href="/auth/register" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors inline-block text-sm">
+                                        Começar
+                                    </a>
+                                {% endif %}
+                            {% elif plan.contact %}
+                                <a href="/contact" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors inline-block text-sm">
+                                    Contatar Vendas
+                                </a>
+                            {% elif plan.popular %}
+                                {% if user %}
+                                    <form method="post" action="/billing/checkout" class="w-full">
+                                        <input type="hidden" name="plan" value="{{ plan.name }}">
+                                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
+                                            Começar teste gratuito
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <a href="/auth/login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors inline-block text-sm">
+                                        Começar teste gratuito
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                {% if user %}
+                                    <form method="post" action="/billing/checkout" class="w-full">
+                                        <input type="hidden" name="plan" value="{{ plan.name }}">
+                                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
+                                            Começar teste gratuito
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <a href="/auth/login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors inline-block text-sm">
+                                        Começar teste gratuito
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Features List -->
+                        <div class="text-left">
+                            <p class="text-sm font-medium text-gray-900 mb-3">
+                                {% if plan.name == 'free' %}
+                                    Você obtém:
+                                {% else %}
+                                    Tudo do Free, além de:
+                                {% endif %}
+                            </p>
+                            
+                            <ul class="space-y-2">
+                                {% for feature in plan.features %}
+                                    <li class="flex items-start text-sm">
+                                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                        <span class="text-gray-700">{{ feature }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
-                {% elif user.plan == 'free' %}
-                    <form method="post" action="/billing/checkout">
-                        <input type="hidden" name="plan" value="pro">
-                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors">
-                            {{ t('btn_upgrade') }}
-                        </button>
-                    </form>
-                {% else %}
-                    <a href="/account/plan" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-3 px-6 rounded-lg font-semibold transition-colors block text-center">
-                        {{ t('btn_change_plan') }}
-                    </a>
-                {% endif %}
-            </div>
+                </div>
+            {% endfor %}
         </div>
         
-        <!-- Business Plan -->
-        <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-8 relative">
-            <div class="text-center">
-                <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ t('plan_business') }}</h3>
-                <div class="text-4xl font-bold text-gray-900 mb-6">
-                    R$ {{ plans[2].price }}
-                    <span class="text-base font-normal text-gray-500">/{{ t('month') }}</span>
-                </div>
-                
-                <ul class="space-y-4 mb-8 text-left">
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_business_feature_1') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_business_feature_2') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_business_feature_3') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_business_feature_4') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_business_feature_5') }}</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i data-feather="check" class="h-5 w-5 text-green-500 mr-3"></i>
-                        <span>{{ t('plan_business_feature_6') }}</span>
-                    </li>
-                </ul>
-                
-                {% if not user %}
-                    <a href="/auth/register" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-3 px-6 rounded-lg font-semibold transition-colors block text-center">
-                        {{ t('btn_contact_sales') }}
-                    </a>
-                {% elif user.plan == 'business' %}
-                    <div class="w-full bg-green-100 text-green-800 py-3 px-6 rounded-lg font-semibold text-center">
-                        {{ t('current_plan') }}
-                    </div>
-                {% elif user.plan in ['free', 'pro'] %}
-                    <form method="post" action="/billing/checkout">
-                        <input type="hidden" name="plan" value="business">
-                        <button type="submit" class="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors">
-                            {{ t('btn_upgrade') }}
-                        </button>
-                    </form>
-                {% endif %}
+        <!-- Additional Info -->
+        <div class="mt-12 text-center">
+            <p class="text-gray-600 mb-4">Tem dúvidas? <a href="/contact" class="text-blue-600 hover:text-blue-700 font-medium">Entre em contato conosco.</a></p>
+            <div class="flex justify-center space-x-6 text-sm text-gray-500">
+                <span>✓ Cancelamento a qualquer momento</span>
+                <span>✓ Suporte 24/7</span>
+                <span>✓ Sem compromissos</span>
             </div>
         </div>
-    </div>
-    
-    <!-- FAQ Section -->
-    <div class="mt-20 max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">{{ t('faq_title') }}</h2>
-        
-        <div class="space-y-8">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ t('faq_question_1') }}</h3>
-                <p class="text-gray-600">{{ t('faq_answer_1') }}</p>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ t('faq_question_2') }}</h3>
-                <p class="text-gray-600">{{ t('faq_answer_2') }}</p>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ t('faq_question_3') }}</h3>
-                <p class="text-gray-600">{{ t('faq_answer_3') }}</p>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ t('faq_question_4') }}</h3>
-                <p class="text-gray-600">{{ t('faq_answer_4') }}</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Contact Section -->
-    <div class="mt-16 text-center">
-        <p class="text-lg text-gray-600 mb-4">{{ t('pricing_contact_text') }}</p>
-        <a href="/contact" class="inline-flex items-center text-red-600 hover:text-red-700 font-semibold">
-            <i data-feather="mail" class="h-5 w-5 mr-2"></i>
-            {{ t('contact_us') }}
-        </a>
     </div>
 </div>
 {% endblock %}
