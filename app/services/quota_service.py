@@ -43,6 +43,34 @@ class QuotaService:
         """Get limits for a specific plan"""
         return self.PLAN_LIMITS.get(plan, self.PLAN_LIMITS["free"])
     
+    def get_usage_summary(self, db: Session, user: User) -> Dict[str, Any]:
+        """Get comprehensive usage summary for user"""
+        if not user:
+            # Return default summary for anonymous users
+            return {
+                "plan": "anonymous",
+                "operations_used": 0,
+                "operations_limit": 1,
+                "operations_percentage": 0,
+                "max_file_size_mb": 10,
+                "watermark_threshold": 0
+            }
+        
+        quota_usage = self.get_user_quota_usage(db, user)
+        plan_limits = self.get_plan_limits(user.plan)
+        
+        # Convert file size to MB for display
+        max_file_size_mb = plan_limits["max_file_size"] // (1024 * 1024)
+        
+        return {
+            "plan": user.plan,
+            "operations_used": quota_usage.operations_count,
+            "operations_limit": plan_limits["daily_operations"],
+            "operations_percentage": min(100, (quota_usage.operations_count / plan_limits["daily_operations"]) * 100) if plan_limits["daily_operations"] > 0 else 0,
+            "max_file_size_mb": max_file_size_mb,
+            "watermark_threshold": plan_limits["watermark_threshold"]
+        }
+    
     def get_user_quota_usage(self, db: Session, user: User) -> QuotaUsage:
         """Get or create today's quota usage for user"""
         today = date.today()
@@ -105,6 +133,18 @@ class QuotaService:
     
     def get_usage_summary(self, db: Session, user: User) -> Dict[str, Any]:
         """Get usage summary for user"""
+        if not user:
+            # Return default summary for anonymous users
+            return {
+                "plan": "anonymous",
+                "operations_used": 0,
+                "operations_limit": 1,
+                "operations_remaining": 1,
+                "max_file_size_mb": 10,
+                "watermark_threshold": 0,
+                "date": date.today()
+            }
+        
         limits = self.get_plan_limits(user.plan)
         quota_usage = self.get_user_quota_usage(db, user)
         

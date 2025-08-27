@@ -135,34 +135,34 @@ async def tools_index(
 
 # Legacy tool routes (for backward compatibility)
 @router.get("/merge")
-async def merge_tool(request: Request, user: User = Depends(get_optional_user)):
+async def merge_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
     """PDF merge tool page"""
-    return await tools_index(request, user)
+    return await tools_index(request, user, db)
 
 @router.get("/split")
-async def split_tool(request: Request, user: User = Depends(get_optional_user)):
+async def split_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
     """PDF split tool page"""
-    return await tools_index(request, user)
+    return await tools_index(request, user, db)
 
 @router.get("/compress")
-async def compress_tool(request: Request, user: User = Depends(get_optional_user)):
+async def compress_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
     """PDF compress tool page"""
-    return await tools_index(request, user)
+    return await tools_index(request, user, db)
 
 @router.get("/extract-text")
-async def extract_text_tool(request: Request, user: User = Depends(get_optional_user)):
+async def extract_text_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
     """PDF text extraction tool page"""
-    return await tools_index(request, user)
+    return await tools_index(request, user, db)
 
 @router.get("/pdf-to-images")
-async def pdf_to_images_tool(request: Request, user: User = Depends(get_optional_user)):
+async def pdf_to_images_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
     """PDF to images tool page"""
-    return await tools_index(request, user)
+    return await tools_index(request, user, db)
 
 @router.get("/images-to-pdf")
-async def images_to_pdf_tool(request: Request, user: User = Depends(get_optional_user)):
+async def images_to_pdf_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
     """Images to PDF tool page"""
-    return await tools_index(request, user)
+    return await tools_index(request, user, db)
 
 # API Endpoints for conversions
 @router.post("/api/convert")
