@@ -115,10 +115,11 @@
                             {{ t('nav_home') }}
                         </a>
                         {% if user %}
-                            <a href="/tools" class="nav-link">
-                                <i data-lucide="wrench" class="h-4 w-4"></i>
-                                {{ t('nav_tools') }}
-                            </a>
+                            <!-- All Tools Button -->
+                            <button onclick="toggleToolsModal()" class="nav-link cursor-pointer">
+                                <i data-lucide="grid-3x3" class="h-4 w-4"></i>
+                                Todas as Ferramentas
+                            </button>
                             <a href="/dashboard" class="nav-link">
                                 <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
                                 {{ t('nav_dashboard') }}
@@ -168,7 +169,7 @@
                                 {% if user.role == 'admin' %}
                                     <a href="/admin" class="dropdown-item">
                                         <i data-lucide="settings" class="h-4 w-4"></i>
-                                        {{ t('nav_admin') }}
+                                        Painel Admin
                                     </a>
                                 {% endif %}
                                 <div class="border-t border-slate-200/60 mt-2 pt-2">
@@ -351,6 +352,131 @@
     </script>
     
     {% block scripts %}{% endblock %}
+    <!-- Tools Modal -->
+    <div id="tools-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeToolsModal()"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-8 border-b border-slate-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                            <i data-lucide="grid-3x3" class="h-6 w-6 text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900">Todas as Ferramentas</h2>
+                            <p class="text-slate-600">Escolha a ferramenta que você precisa</p>
+                        </div>
+                    </div>
+                    <button onclick="closeToolsModal()" class="p-2 hover:bg-slate-100 rounded-xl transition-colors">
+                        <i data-lucide="x" class="h-6 w-6 text-slate-600"></i>
+                    </button>
+                </div>
+                
+                <!-- Tools Grid -->
+                <div class="p-8">
+                    <!-- Conversions Section -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-slate-900 mb-6 flex items-center space-x-2">
+                            <i data-lucide="repeat" class="h-5 w-5 text-emerald-600"></i>
+                            <span>Conversões</span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <a href="/tools/pdf-to-images" class="tool-card">
+                                <i data-lucide="image" class="h-6 w-6 text-blue-600"></i>
+                                <span>PDF para Imagens</span>
+                            </a>
+                            <a href="/tools/images-to-pdf" class="tool-card">
+                                <i data-lucide="images" class="h-6 w-6 text-purple-600"></i>
+                                <span>Imagens para PDF</span>
+                            </a>
+                            <a href="/tools/pdf-to-docx" class="tool-card">
+                                <i data-lucide="file-text" class="h-6 w-6 text-blue-600"></i>
+                                <span>PDF para DOCX</span>
+                            </a>
+                            <a href="/tools/docx-to-pdf" class="tool-card">
+                                <i data-lucide="file-text" class="h-6 w-6 text-blue-600"></i>
+                                <span>DOCX para PDF</span>
+                            </a>
+                            <a href="/tools/pdf-to-xlsx" class="tool-card">
+                                <i data-lucide="sheet" class="h-6 w-6 text-green-600"></i>
+                                <span>PDF para XLSX</span>
+                            </a>
+                            <a href="/tools/xlsx-to-pdf" class="tool-card">
+                                <i data-lucide="sheet" class="h-6 w-6 text-green-600"></i>
+                                <span>XLSX para PDF</span>
+                            </a>
+                            <a href="/tools/pdf-to-pptx" class="tool-card">
+                                <i data-lucide="presentation" class="h-6 w-6 text-orange-600"></i>
+                                <span>PDF para PPTX</span>
+                            </a>
+                            <a href="/tools/pptx-to-pdf" class="tool-card">
+                                <i data-lucide="presentation" class="h-6 w-6 text-orange-600"></i>
+                                <span>PPTX para PDF</span>
+                            </a>
+                            <a href="/tools/pdf-to-txt" class="tool-card">
+                                <i data-lucide="file-text" class="h-6 w-6 text-slate-600"></i>
+                                <span>PDF para Texto</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- PDF Tools Section -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-slate-900 mb-6 flex items-center space-x-2">
+                            <i data-lucide="file" class="h-5 w-5 text-red-600"></i>
+                            <span>Ferramentas PDF</span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <a href="/tools/merge" class="tool-card">
+                                <i data-lucide="merge" class="h-6 w-6 text-green-600"></i>
+                                <span>Mesclar PDFs</span>
+                            </a>
+                            <a href="/tools/split" class="tool-card">
+                                <i data-lucide="scissors" class="h-6 w-6 text-orange-600"></i>
+                                <span>Dividir PDF</span>
+                            </a>
+                            <a href="/tools/compress" class="tool-card">
+                                <i data-lucide="archive" class="h-6 w-6 text-blue-600"></i>
+                                <span>Comprimir PDF</span>
+                            </a>
+                            <a href="/tools/rotate" class="tool-card">
+                                <i data-lucide="rotate-cw" class="h-6 w-6 text-purple-600"></i>
+                                <span>Girar PDF</span>
+                            </a>
+                            <a href="/tools/watermark" class="tool-card">
+                                <i data-lucide="droplets" class="h-6 w-6 text-cyan-600"></i>
+                                <span>Marca d'água</span>
+                            </a>
+                            <a href="/tools/extract-pages" class="tool-card">
+                                <i data-lucide="copy" class="h-6 w-6 text-indigo-600"></i>
+                                <span>Extrair Páginas</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Section -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-900 mb-6 flex items-center space-x-2">
+                            <i data-lucide="shield" class="h-5 w-5 text-green-600"></i>
+                            <span>Segurança</span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <a href="/tools/protect" class="tool-card">
+                                <i data-lucide="lock" class="h-6 w-6 text-red-600"></i>
+                                <span>Proteger PDF</span>
+                            </a>
+                            <a href="/tools/unlock" class="tool-card">
+                                <i data-lucide="unlock" class="h-6 w-6 text-green-600"></i>
+                                <span>Desbloquear PDF</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
 
@@ -468,5 +594,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('htmx:afterSwap', () => {
   if (window.lucide) lucide.createIcons();
+});
+
+// Tools Modal Functions
+function toggleToolsModal() {
+  const modal = document.getElementById('tools-modal');
+  if (modal.classList.contains('hidden')) {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  } else {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+}
+
+function closeToolsModal() {
+  const modal = document.getElementById('tools-modal');
+  modal.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('tools-modal');
+    if (modal && !modal.classList.contains('hidden')) {
+      closeToolsModal();
+    }
+  }
 });
 </script>
