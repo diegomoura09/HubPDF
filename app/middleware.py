@@ -96,6 +96,11 @@ class CSRFMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
         super().__init__(app)
         self.safe_methods = {"GET", "HEAD", "OPTIONS", "TRACE"}
+        self.exempt_paths = {
+            "/billing/webhook",
+            "/healthz",
+            "/static"
+        }
     
     def generate_csrf_token(self) -> str:
         """Generate a new CSRF token"""
@@ -103,14 +108,18 @@ class CSRFMiddleware(BaseHTTPMiddleware):
     
     async def dispatch(self, request: Request, call_next):
         # Skip CSRF for safe methods, static files, and webhooks
-        if (request.method in self.safe_methods or 
-            request.url.path.startswith("/static") or
-            request.url.path.startswith("/billing/webhook") or
-            request.url.path == "/healthz"):
+        path = request.url.path
+        skip_csrf = (
+            request.method in self.safe_methods or 
+            any(path.startswith(exempt) for exempt in self.exempt_paths) or
+            path == "/healthz"
+        )
+        
+        if skip_csrf:
             response = await call_next(request)
             
             # Add CSRF token to cookie for forms on GET requests
-            if request.method == "GET" and not request.url.path.startswith("/static"):
+            if request.method == "GET" and not path.startswith("/static"):
                 csrf_token = self.generate_csrf_token()
                 if isinstance(response, StarletteResponse):
                     response.set_cookie(
@@ -118,7 +127,8 @@ class CSRFMiddleware(BaseHTTPMiddleware):
                         csrf_token,
                         httponly=False,  # Allow JavaScript access for forms
                         secure=not settings.DEBUG,
-                        samesite="lax"
+                        samesite="lax",
+                        path="/"
                     )
             
             return response
@@ -128,23 +138,13 @@ class CSRFMiddleware(BaseHTTPMiddleware):
         csrf_token_cookie = request.cookies.get("csrf_token")
         csrf_token_form = None
         
-        # For form submissions, check form data if no header present
-        content_type = request.headers.get("content-type", "")
-        if (not csrf_token_header and 
-            (content_type.startswith("application/x-www-form-urlencoded") or 
-             content_type.startswith("multipart/form-data"))):
-            try:
-                form_data = await request.form()
-                csrf_token_form = form_data.get("csrf_token")
-            except Exception:
-                pass
+        # For form submissions, we'll rely primarily on headers
+        # If no header token, require the user to send it in header for API calls
         
-        # Check CSRF token (header takes precedence)
+        # Check CSRF token (require header for API calls)
         valid_token = False
-        if csrf_token_cookie:
-            if csrf_token_header and csrf_token_header == csrf_token_cookie:
-                valid_token = True
-            elif csrf_token_form and csrf_token_form == csrf_token_cookie:
+        if csrf_token_cookie and csrf_token_header:
+            if csrf_token_header == csrf_token_cookie:
                 valid_token = True
         
         if valid_token:

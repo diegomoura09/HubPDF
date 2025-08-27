@@ -52,6 +52,10 @@ class Settings(BaseSettings):
     MAX_CONCURRENT_JOBS: int = Field(default=4)
     JOB_CLEANUP_HOURS: int = Field(default=24)
     
+    # Security & CSRF
+    CSRF_SECRET: str = Field(default="csrf-secret-key-change-in-production")
+    SESSION_SECRET: str = Field(default="session-secret-key-change-in-production")
+    
     # Anonymous users
     ANON_COOKIE_SECRET: str = Field(default="change-this-anon-secret-in-production")
     
