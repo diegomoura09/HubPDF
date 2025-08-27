@@ -31,61 +31,43 @@ async def pricing(
         {
             "name": "free",
             "price": 0.00,
-            "price_display": "R$ 0,00",
+            "price_display": "R$ 0",
             "subtitle": "/mês",
             "popular": False,
             "features": [
-                "10 MB tamanho máximo de arquivo",
-                "8 operações por dia", 
+                "10+ ferramentas de gerenciamento de documentos",
+                "Downloads limitados de documentos", 
                 "Marca d'água após 4ª operação",
-                "Acesso limitado a todas as ferramentas",
-                "Downloads limitados"
+                "Acesso limitado"
             ]
         },
         {
             "name": "pro",
             "price": settings.PLAN_PRICES["pro"],
-            "price_display": "R$ 9,90",
+            "price_display": "R$ 9",
             "subtitle": "/mês",
+            "annual_price": "Cobrado como R$ 108/ano",
             "popular": True,
             "features": [
-                "100 MB tamanho máximo de arquivo",
-                "200 operações por dia",
+                "Acesso ilimitado a todas as ferramentas",
+                "Downloads ilimitados de documentos",
+                "Compressão forte",
                 "Sem marcas d'água",
-                "Acesso ilimitado a todas ferramentas",
-                "Downloads ilimitados",
-                "Histórico de trabalhos",
-                "Compressão forte"
+                "Acesso completo"
             ]
         },
         {
-            "name": "team",
-            "price": settings.PLAN_PRICES["team"],
-            "price_display": "R$ 16,90",
-            "subtitle": "/mês por usuário",
-            "popular": False,
-            "features": [
-                "200 MB tamanho máximo de arquivo",
-                "500 operações por dia",
-                "Preços especiais com desconto",
-                "Suporte prioritário ao cliente",
-                "Gerenciamento de acesso de membros",
-                "Faturamento centralizado"
-            ]
-        },
-        {
-            "name": "business",
+            "name": "custom",
             "price": 0,
             "price_display": "Personalizado",
-            "subtitle": "Entre em contato para obter uma oferta personalizada",
+            "subtitle": "Fale com nossa equipe para obter uma oferta personalizada",
             "popular": False,
             "contact": True,
             "features": [
                 "Preços personalizados",
                 "Opções flexíveis de pagamento",
                 "Suporte dedicado ao cliente",
-                "Acesso ilimitado Premium",
-                "Assinatura Premium ilimitada para cada membro da equipe"
+                "Acesso completo"
             ]
         }
     ]
@@ -110,7 +92,7 @@ async def create_checkout(
 ):
     """Create Mercado Pago checkout preference"""
     try:
-        if plan not in ["pro", "team", "business"]:
+        if plan not in ["pro", "custom"]:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid plan"

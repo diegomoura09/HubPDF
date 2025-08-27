@@ -3,190 +3,138 @@
 {% block title %}Preços - {{ t('title') }}{% endblock %}
 
 {% block content %}
-<div class="bg-white min-h-screen">
+<div class="bg-white">
     <!-- Header Section -->
-    <div class="bg-gray-50 py-16">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl font-bold text-gray-900 mb-4">Software PDF que cabe no seu orçamento</h1>
-            <p class="text-xl text-gray-600 mb-8">Todas as ferramentas PDF que você precisa. Construído no Brasil. Confiado por milhares desde 2024.</p>
-            
-            <!-- Toggle Switch -->
-            <div class="flex items-center justify-center mb-12">
-                <span class="mr-3 text-gray-700">Mensal</span>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" value="" class="sr-only peer" id="billingToggle">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-                <span class="ml-3 text-gray-700">Anual <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium ml-1">-31%</span></span>
+    <div class="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+        <div class="absolute inset-0 bg-grid-slate-100/50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]"></div>
+        <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                    Software PDF que cabe no seu orçamento
+                </h1>
+                <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Todas as ferramentas PDF que você precisa. Construído no Brasil. Confiado por milhares desde 2024.
+                </p>
+                
+                <!-- Billing Toggle -->
+                <div class="flex items-center justify-center mb-12">
+                    <div class="bg-white rounded-full p-1 shadow-sm border border-gray-200">
+                        <div class="flex items-center">
+                            <button id="monthlyBtn" class="px-6 py-2 text-sm font-medium text-gray-900 bg-white rounded-full shadow-sm transition-all duration-200">
+                                Mensal
+                            </button>
+                            <button id="yearlyBtn" class="px-6 py-2 text-sm font-medium text-gray-500 rounded-full transition-all duration-200">
+                                Anual <span class="ml-1 bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs font-medium">-34%</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Pricing Cards -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 pb-16">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Free Plan -->
-            <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
-                <div class="text-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">Free</h3>
-                    <div class="mb-4">
-                        <span class="text-4xl font-bold text-gray-900">R$ 0</span>
-                        <span class="text-gray-600">/mês</span>
-                    </div>
-                    <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors">
-                        Começar
-                    </button>
-                </div>
-                
-                <div class="space-y-3">
-                    <p class="font-semibold text-gray-900 mb-3">Você obtém:</p>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>8 operações por dia</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Downloads limitados de documentos</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Acesso limitado a app mobile</span>
-                    </div>
-                    <div class="flex items-center text-sm text-gray-500">
-                        <span class="w-4 h-4 mr-2 text-center text-xs">⚠️</span>
-                        <span>Acesso limitado</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pro Plan -->
-            <div class="bg-white rounded-lg shadow-lg border-2 border-blue-500 p-6 relative transform scale-105">
-                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">Mais popular</span>
-                </div>
-                
-                <div class="text-center mb-6">
-                    <div class="flex items-center justify-center mb-2">
-                        <h3 class="text-xl font-bold text-gray-900">Pro</h3>
-                        <span class="ml-2 w-3 h-3 bg-orange-500 rounded-full"></span>
-                    </div>
-                    <div class="mb-4">
-                        <span class="text-4xl font-bold text-gray-900">R$ 9</span>
-                        <span class="text-gray-600">/mês</span>
-                        <div class="text-sm text-gray-500">Cobrado como R$ 108/ano</div>
-                    </div>
-                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                        Iniciar Teste Gratuito
-                    </button>
-                </div>
-                
-                <div class="space-y-3">
-                    <p class="font-semibold text-gray-900 mb-3">Tudo do Free, além de:</p>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Acesso ilimitado a todas as ferramentas</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Downloads ilimitados de documentos</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Compressão forte</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Acesso ilimitado ao app mobile</span>
-                    </div>
-                    <div class="flex items-center text-sm text-green-600">
-                        <span class="w-4 h-4 mr-2 text-center text-xs">✓</span>
-                        <span>Acesso completo</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Team Plan -->
-            <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
-                <div class="text-center mb-6">
-                    <div class="flex items-center justify-center mb-2">
-                        <h3 class="text-xl font-bold text-gray-900">Team</h3>
-                        <span class="ml-2 w-3 h-3 bg-yellow-500 rounded-full"></span>
-                        <span class="ml-2 text-sm text-gray-600">2-19</span>
-                    </div>
-                    <div class="mb-4">
-                        <span class="text-4xl font-bold text-gray-900">R$ 7</span>
-                        <span class="text-gray-600">/mês por usuário</span>
-                        <div class="text-sm text-gray-500">
-                            <span class="line-through">R$ 216</span> R$ 168/ano
+    <div class="relative -mt-16 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+                {% for plan in plans %}
+                <div class="relative">
+                    {% if plan.popular %}
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+                            <span class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg">
+                                Mais popular
+                            </span>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 {% if plan.popular %}ring-2 ring-blue-500 transform scale-105{% endif %}">
+                        <div class="p-8">
+                            <!-- Plan Header -->
+                            <div class="text-center mb-8">
+                                <div class="flex items-center justify-center mb-4">
+                                    <h3 class="text-2xl font-bold text-gray-900 capitalize">{{ plan.name }}</h3>
+                                    {% if plan.name == 'pro' %}
+                                        <div class="ml-3 w-3 h-3 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full"></div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-4">
+                                    {% if plan.name == 'custom' %}
+                                        <div class="text-3xl font-bold text-gray-900">{{ plan.price_display }}</div>
+                                        <p class="text-sm text-gray-600 mt-2">{{ plan.subtitle }}</p>
+                                    {% else %}
+                                        <div class="flex items-baseline justify-center">
+                                            <span class="text-5xl font-bold text-gray-900">{{ plan.price_display }}</span>
+                                            <span class="text-xl text-gray-600 ml-1">{{ plan.subtitle }}</span>
+                                        </div>
+                                        {% if plan.annual_price %}
+                                            <p class="text-sm text-gray-500 mt-2">{{ plan.annual_price }}</p>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- CTA Button -->
+                            <div class="mb-8">
+                                {% if plan.name == 'free' %}
+                                    <a href="/auth/register" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 text-center block text-base">
+                                        Começar
+                                    </a>
+                                {% elif plan.contact %}
+                                    <a href="/contact" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 text-center block text-base">
+                                        Contatar Vendas
+                                    </a>
+                                {% else %}
+                                    <form method="post" action="/billing/checkout">
+                                        <input type="hidden" name="plan" value="{{ plan.name }}">
+                                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 text-base shadow-lg hover:shadow-xl">
+                                            Começar Teste Gratuito
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Features -->
+                            <div>
+                                <p class="font-semibold text-gray-900 mb-4">
+                                    {% if plan.name == 'free' %}
+                                        Você obtém:
+                                    {% else %}
+                                        Tudo do Free, além de:
+                                    {% endif %}
+                                </p>
+                                
+                                <ul class="space-y-3">
+                                    {% for feature in plan.features %}
+                                    <li class="flex items-start">
+                                        <div class="flex-shrink-0 mt-1">
+                                            <svg class="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="ml-3 text-gray-700 text-sm">{{ feature }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                
+                                {% if plan.popular %}
+                                    <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <span class="text-blue-600 font-medium text-sm">✓ Acesso completo</span>
+                                        </div>
+                                    </div>
+                                {% elif plan.name == 'free' %}
+                                    <div class="mt-6 p-4 bg-orange-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <span class="text-orange-600 font-medium text-sm">⚠️ Acesso limitado</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                        Iniciar Teste Gratuito
-                    </button>
-                    <p class="text-sm text-blue-600 mt-2">Tem dúvidas? <a href="/contact" class="underline">Contate Vendas</a></p>
                 </div>
-                
-                <div class="space-y-3">
-                    <p class="font-semibold text-gray-900 mb-3">Tudo do Pro, além de:</p>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Preços especiais com desconto</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Suporte prioritário ao cliente</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Faturamento centralizado</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Gerenciamento de acesso de membros</span>
-                    </div>
-                    <div class="flex items-center text-sm text-green-600">
-                        <span class="w-4 h-4 mr-2 text-center text-xs">✓</span>
-                        <span>Acesso completo</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Business Plan -->
-            <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
-                <div class="text-center mb-6">
-                    <div class="flex items-center justify-center mb-2">
-                        <h3 class="text-xl font-bold text-gray-900">Business</h3>
-                        <span class="ml-2 w-3 h-3 bg-purple-500 rounded-full"></span>
-                        <span class="ml-2 text-sm text-gray-600">20+</span>
-                    </div>
-                    <div class="mb-4">
-                        <span class="text-4xl font-bold text-gray-900">Personalizado</span>
-                        <div class="text-sm text-gray-600 mt-2">Fale com nossa equipe para obter uma oferta personalizada.</div>
-                    </div>
-                    <button class="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                        Contatar Vendas
-                    </button>
-                </div>
-                
-                <div class="space-y-3">
-                    <p class="font-semibold text-gray-900 mb-3">Tudo do Pro para Times, além de:</p>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Preços personalizados</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Opções flexíveis de pagamento</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <i data-feather="check" class="h-4 w-4 text-green-500 mr-2"></i>
-                        <span>Suporte dedicado ao cliente</span>
-                    </div>
-                    <div class="flex items-center text-sm text-green-600">
-                        <span class="w-4 h-4 mr-2 text-center text-xs">✓</span>
-                        <span>Acesso completo</span>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -194,211 +142,142 @@
     <!-- Feature Comparison Table -->
     <div class="bg-gray-50 py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                        <tr class="border-b border-gray-200">
-                            <th class="text-left py-4 px-4"></th>
-                            <th class="text-center py-4 px-4 font-bold">Free</th>
-                            <th class="text-center py-4 px-4 font-bold">Pro</th>
-                            <th class="text-center py-4 px-4 font-bold">Team</th>
-                            <th class="text-center py-4 px-4 font-bold">Business</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-sm">
-                        <!-- Compress Section -->
-                        <tr class="border-b border-gray-100">
-                            <td colspan="5" class="py-4 px-4 font-bold text-lg">Comprimir</td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Compressão Básica</td>
-                            <td class="text-center py-3 px-4">
-                                <span class="text-orange-500">Limite diário de download</span>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Compressão Forte</td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-
-                        <!-- Convert Section -->
-                        <tr class="border-b border-gray-100">
-                            <td colspan="5" class="py-4 px-4 font-bold text-lg">Converter</td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Converter PDF para/de Imagens</td>
-                            <td class="text-center py-3 px-4">
-                                <span class="text-orange-500">Limite diário de download</span>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-
-                        <!-- Organize Section -->
-                        <tr class="border-b border-gray-100">
-                            <td colspan="5" class="py-4 px-4 font-bold text-lg">Organizar</td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Mesclar</td>
-                            <td class="text-center py-3 px-4">
-                                <span class="text-orange-500">Limite diário de download</span>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Dividir</td>
-                            <td class="text-center py-3 px-4">
-                                <span class="text-orange-500">Limite diário de download</span>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-
-                        <!-- Additional Features -->
-                        <tr class="border-b border-gray-100">
-                            <td colspan="5" class="py-4 px-4 font-bold text-lg">Recursos Adicionais</td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Acesso ao App Mobile</td>
-                            <td class="text-center py-3 px-4">
-                                <span class="text-orange-500">Limite diário de tarefas</span>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Limite de tamanho de arquivo</td>
-                            <td class="text-center py-3 px-4">10 MB</td>
-                            <td class="text-center py-3 px-4">100 MB</td>
-                            <td class="text-center py-3 px-4">200 MB</td>
-                            <td class="text-center py-3 px-4">250 MB</td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Suporte prioritário ao cliente</td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Suporte dedicado ao cliente</td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Faturamento centralizado</td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Preços personalizados</td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4">Gerenciamento de acesso da equipe</td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="x" class="h-5 w-5 text-red-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                            <td class="text-center py-3 px-4">
-                                <i data-feather="check" class="h-5 w-5 text-green-500 mx-auto"></i>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Compare todos os recursos</h2>
+                <p class="text-lg text-gray-600">Veja exatamente o que está incluído em cada plano</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-2/5"></th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Free</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900 bg-blue-50 relative">
+                                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                                    Pro
+                                </th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-900">Custom</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <!-- Compress Features -->
+                            <tr class="bg-gray-25">
+                                <td colspan="4" class="px-6 py-4 text-lg font-bold text-gray-900">Comprimir</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-sm text-gray-900">Compressão Básica</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">Limite diário</span>
+                                </td>
+                                <td class="px-6 py-4 text-center bg-blue-25">
+                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-sm text-gray-900">Compressão Forte</td>
+                                <td class="px-6 py-4 text-center">
+                                    <svg class="h-5 w-5 text-red-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </td>
+                                <td class="px-6 py-4 text-center bg-blue-25">
+                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </td>
+                            </tr>
+                            
+                            <!-- Convert Features -->
+                            <tr class="bg-gray-25">
+                                <td colspan="4" class="px-6 py-4 text-lg font-bold text-gray-900">Converter</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-sm text-gray-900">PDF para/de Imagens</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">Limite diário</span>
+                                </td>
+                                <td class="px-6 py-4 text-center bg-blue-25">
+                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </td>
+                            </tr>
+                            
+                            <!-- Organize Features -->
+                            <tr class="bg-gray-25">
+                                <td colspan="4" class="px-6 py-4 text-lg font-bold text-gray-900">Organizar</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-sm text-gray-900">Mesclar PDFs</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">Limite diário</span>
+                                </td>
+                                <td class="px-6 py-4 text-center bg-blue-25">
+                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-sm text-gray-900">Dividir PDFs</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">Limite diário</span>
+                                </td>
+                                <td class="px-6 py-4 text-center bg-blue-25">
+                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <svg class="h-5 w-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </td>
+                            </tr>
+                            
+                            <!-- Additional Features -->
+                            <tr class="bg-gray-25">
+                                <td colspan="4" class="px-6 py-4 text-lg font-bold text-gray-900">Recursos Adicionais</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-sm text-gray-900">Limite de tamanho de arquivo</td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-600">10 MB</td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-600 bg-blue-25">100 MB</td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-600">250 MB</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-sm text-gray-900">Suporte ao cliente</td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-600">Padrão</td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-600 bg-blue-25">Prioritário</td>
+                                <td class="px-6 py-4 text-center text-sm text-gray-600">Dedicado</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -406,40 +285,47 @@
     <!-- Security Section -->
     <div class="py-16 bg-white">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Certificado para sua Segurança</h2>
-            <p class="text-lg text-gray-600 mb-8">
-                HubPDF é compatível com LGPD e GDPR. Graças à nossa tecnologia de criptografia TLS, 
-                seus documentos são sempre processados com uma camada adicional de segurança.
-            </p>
+            <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8">
+                <div class="flex items-center justify-center mb-4">
+                    <svg class="h-8 w-8 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <h2 class="text-2xl font-bold text-gray-900">Certificado para sua Segurança</h2>
+                </div>
+                <p class="text-gray-600 leading-relaxed">
+                    HubPDF é compatível com LGPD e GDPR. Graças à nossa tecnologia de criptografia TLS, 
+                    seus documentos são sempre processados com uma camada adicional de segurança.
+                </p>
+            </div>
         </div>
     </div>
 
     <!-- FAQ Section -->
     <div class="bg-gray-50 py-16">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">FAQs</h2>
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Perguntas Frequentes</h2>
             
-            <div class="space-y-8">
-                <div class="bg-white rounded-lg shadow p-6">
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-3">Posso cancelar o teste gratuito facilmente?</h3>
-                    <p class="text-gray-600">
+                    <p class="text-gray-600 leading-relaxed">
                         Sim. Você pode cancelar o teste a qualquer momento e ter certeza de que não cobraremos nada. 
                         Se você cancelar o teste gratuito, sua conta será automaticamente rebaixada para o plano gratuito 
                         quando o período de 7 dias expirar.
                     </p>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-3">Como posso comprar um dos planos pagos?</h3>
-                    <p class="text-gray-600">
+                    <p class="text-gray-600 leading-relaxed">
                         Aceitamos pagamentos via PIX, cartão de crédito Visa e Mastercard. 
                         Você pode usar qualquer um desses métodos de pagamento com segurança para comprar sua assinatura HubPDF.
                     </p>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-3">Se eu me inscrever hoje, receberei atualizações futuras do produto?</h3>
-                    <p class="text-gray-600">
+                    <p class="text-gray-600 leading-relaxed">
                         Você receberá! Os clientes em nossos planos pagos mensais e anuais obtêm acesso a todas as novas 
                         ferramentas e recursos no momento em que os lançamos.
                     </p>
@@ -448,11 +334,16 @@
         </div>
     </div>
 
-    <!-- CTA Section -->
-    <div class="bg-blue-600 py-16">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold text-white mb-4">Experimente 7 Dias Grátis</h2>
-            <a href="/auth/register" class="inline-block bg-white text-blue-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors">
+    <!-- Final CTA Section -->
+    <div class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 py-16 overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-10"></div>
+        <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-white mb-6">Experimente 7 Dias Grátis</h2>
+            <p class="text-lg text-blue-100 mb-8">Sem compromisso. Cancele a qualquer momento.</p>
+            <a href="/auth/register" class="inline-flex items-center bg-white text-blue-600 font-bold py-4 px-8 rounded-xl hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
                 Começar Teste Gratuito
             </a>
         </div>
@@ -460,10 +351,34 @@
 </div>
 
 <script>
-// Toggle billing switch functionality
-document.getElementById('billingToggle').addEventListener('change', function() {
-    // Here you could update prices for annual vs monthly
-    console.log('Billing toggle changed:', this.checked ? 'annual' : 'monthly');
+// Billing toggle functionality
+const monthlyBtn = document.getElementById('monthlyBtn');
+const yearlyBtn = document.getElementById('yearlyBtn');
+
+monthlyBtn.addEventListener('click', function() {
+    monthlyBtn.className = 'px-6 py-2 text-sm font-medium text-gray-900 bg-white rounded-full shadow-sm transition-all duration-200';
+    yearlyBtn.className = 'px-6 py-2 text-sm font-medium text-gray-500 rounded-full transition-all duration-200';
+    console.log('Billing toggle: monthly');
+});
+
+yearlyBtn.addEventListener('click', function() {
+    yearlyBtn.className = 'px-6 py-2 text-sm font-medium text-gray-900 bg-white rounded-full shadow-sm transition-all duration-200';
+    monthlyBtn.className = 'px-6 py-2 text-sm font-medium text-gray-500 rounded-full transition-all duration-200';
+    console.log('Billing toggle: yearly');
 });
 </script>
+
+<style>
+.bg-grid-slate-100\/50 {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(148 163 184 / 0.5)'%3e%3cpath d='m0 .5h32m0 32v-32m-32 0v32'/%3e%3c/svg%3e");
+}
+
+.bg-gray-25 {
+    background-color: #fafafa;
+}
+
+.bg-blue-25 {
+    background-color: #f8faff;
+}
+</style>
 {% endblock %}

@@ -49,8 +49,7 @@ class Settings(BaseSettings):
     # Plans - using ClassVar since it's not a configuration field
     PLAN_PRICES: ClassVar[Dict[str, float]] = {
         "pro": 9.90,
-        "team": 16.90,
-        "business": 0.00  # Contact for pricing
+        "custom": 0.00  # Contact for pricing
     }
     
     model_config = {

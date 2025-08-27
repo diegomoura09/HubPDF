@@ -21,17 +21,12 @@ class QuotaService:
         },
         "pro": {
             "max_file_size": settings.MAX_FILE_SIZE_PRO,
-            "daily_operations": 200,
+            "daily_operations": 999999,  # Unlimited
             "watermark_threshold": None  # No watermark
         },
-        "team": {
-            "max_file_size": 200 * 1024 * 1024,  # 200MB
-            "daily_operations": 500,
-            "watermark_threshold": None  # No watermark
-        },
-        "business": {
+        "custom": {
             "max_file_size": settings.MAX_FILE_SIZE_BUSINESS,
-            "daily_operations": 1000,
+            "daily_operations": 999999,  # Unlimited
             "watermark_threshold": None  # No watermark
         },
         "anonymous": {
