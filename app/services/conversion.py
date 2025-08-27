@@ -39,6 +39,28 @@ try:
 except ImportError:
     pytesseract = None
 
+try:
+    from docx import Document
+except ImportError:
+    Document = None
+
+try:
+    from openpyxl import Workbook, load_workbook
+except ImportError:
+    Workbook = load_workbook = None
+
+try:
+    from pptx import Presentation
+except ImportError:
+    Presentation = None
+
+try:
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet
+    from reportlab.lib.pagesizes import letter
+except ImportError:
+    SimpleDocTemplate = Paragraph = Spacer = getSampleStyleSheet = letter = None
+
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -74,6 +96,12 @@ class ConversionService:
                 shutil.rmtree(work_dir)
         except Exception as e:
             logger.warning(f"Failed to cleanup work directory {work_dir}: {e}")
+    
+    def _get_original_filename_with_suffix(self, file_path: str, suffix: str, new_ext: str) -> str:
+        """Get filename preserving original name with suffix"""
+        file_path = Path(file_path)
+        original_stem = file_path.stem
+        return f"{original_stem}_{suffix}.{new_ext}"
     
     def _run_libreoffice_conversion(self, input_path: str, output_dir: str, target_format: str, timeout: int = 60) -> str:
         """Run LibreOffice headless conversion with timeout"""
@@ -119,43 +147,86 @@ class ConversionService:
     
     # Office format conversions
     async def pdf_to_docx(self, pdf_path: str, job_id: str = None) -> str:
-        """Convert PDF to DOCX using LibreOffice"""
+        """Convert PDF to DOCX using Python libraries"""
+        if Document is None:
+            raise ConversionError("python-docx not available. Please install python-docx package.")
         if job_id is None:
             job_id = str(uuid.uuid4())
             
         work_dir = self._get_work_dir(job_id)
         
         try:
+            def _extract_and_create_docx():
+                import pdfplumber
+                
+                # Create new DOCX document
+                doc = Document()
+                
+                with pdfplumber.open(pdf_path) as pdf:
+                    for page_num, page in enumerate(pdf.pages):
+                        text = page.extract_text()
+                        if text:
+                            # Add page heading
+                            if page_num > 0:
+                                doc.add_page_break()
+                            doc.add_heading(f'Page {page_num + 1}', level=2)
+                            # Add text content
+                            doc.add_paragraph(text)
+                
+                # Save with original filename + suffix
+                output_filename = self._get_original_filename_with_suffix(pdf_path, "to_docx", "docx")
+                output_path = work_dir / output_filename
+                doc.save(str(output_path))
+                return str(output_path)
+            
             loop = asyncio.get_event_loop()
-            output_path = await loop.run_in_executor(
-                self.executor,
-                self._run_libreoffice_conversion,
-                pdf_path,
-                str(work_dir),
-                "docx"
-            )
+            output_path = await loop.run_in_executor(self.executor, _extract_and_create_docx)
             return output_path
+            
         except Exception as e:
             self._cleanup_work_dir(work_dir)
             raise ConversionError(f"PDF to DOCX conversion failed: {str(e)}")
     
     async def docx_to_pdf(self, docx_path: str, job_id: str = None) -> str:
-        """Convert DOCX to PDF using LibreOffice"""
+        """Convert DOCX to PDF using Python libraries"""
+        if Document is None or SimpleDocTemplate is None:
+            raise ConversionError("Required libraries not available. Please install python-docx and reportlab.")
         if job_id is None:
             job_id = str(uuid.uuid4())
             
         work_dir = self._get_work_dir(job_id)
         
         try:
+            def _convert_docx_to_pdf():
+                # Read DOCX content
+                doc = Document(docx_path)
+                
+                # Create PDF with reportlab
+                output_filename = self._get_original_filename_with_suffix(docx_path, "to_pdf", "pdf")
+                output_path = work_dir / output_filename
+                
+                pdf_doc = SimpleDocTemplate(str(output_path), pagesize=letter)
+                styles = getSampleStyleSheet()
+                story = []
+                
+                # Extract text from DOCX paragraphs
+                for paragraph in doc.paragraphs:
+                    if paragraph.text.strip():
+                        p = Paragraph(paragraph.text, styles['Normal'])
+                        story.append(p)
+                        story.append(Spacer(1, 12))
+                
+                if not story:
+                    # Add a placeholder if no content
+                    story.append(Paragraph("Document converted from DOCX", styles['Normal']))
+                
+                pdf_doc.build(story)
+                return str(output_path)
+            
             loop = asyncio.get_event_loop()
-            output_path = await loop.run_in_executor(
-                self.executor,
-                self._run_libreoffice_conversion,
-                docx_path,
-                str(work_dir),
-                "pdf"
-            )
+            output_path = await loop.run_in_executor(self.executor, _convert_docx_to_pdf)
             return output_path
+            
         except Exception as e:
             self._cleanup_work_dir(work_dir)
             raise ConversionError(f"DOCX to PDF conversion failed: {str(e)}")
@@ -304,7 +375,10 @@ class ConversionService:
             job_id = str(uuid.uuid4())
             
         work_dir = self._get_work_dir(job_id)
-        output_path = work_dir / "images_combined.pdf"
+        # Create filename from first image
+        first_image_name = Path(image_paths[0]).stem if image_paths else "images"
+        output_filename = f"{first_image_name}_combined.pdf"
+        output_path = work_dir / output_filename
         
         try:
             def _combine_images():
@@ -347,7 +421,9 @@ class ConversionService:
             job_id = str(uuid.uuid4())
             
         work_dir = self._get_work_dir(job_id)
-        output_path = work_dir / "extracted_text.txt"
+        # Use original filename with suffix
+        output_filename = self._get_original_filename_with_suffix(pdf_path, "extracted", "txt")
+        output_path = work_dir / output_filename
         
         try:
             def _extract_text():
@@ -413,6 +489,52 @@ class ConversionService:
             raise ConversionError(f"Text extraction failed: {str(e)}")
     
     # PDF operations
+    async def merge_pdfs(self, pdf_paths: List[str], job_id: str = None) -> str:
+        """Merge multiple PDFs into a single file preserving original names"""
+        if not pdf_paths:
+            raise ConversionError("No PDF files provided")
+            
+        if fitz is None:
+            raise ConversionError("PyMuPDF not available. Please install pymupdf package.")
+            
+        if job_id is None:
+            job_id = str(uuid.uuid4())
+            
+        work_dir = self._get_work_dir(job_id)
+        
+        try:
+            def _merge_pdfs():
+                # Create output filename from first PDF
+                first_pdf_name = Path(pdf_paths[0]).stem if pdf_paths else "merged"
+                output_filename = f"{first_pdf_name}_merge.pdf"
+                output_path = work_dir / output_filename
+                
+                # Create merged document
+                merged_doc = fitz.open()
+                
+                for pdf_path in pdf_paths:
+                    try:
+                        source_doc = fitz.open(pdf_path)
+                        merged_doc.insert_pdf(source_doc)
+                        source_doc.close()
+                    except Exception as e:
+                        logger.warning(f"Error merging {pdf_path}: {e}")
+                        continue
+                
+                # Save merged PDF
+                merged_doc.save(str(output_path))
+                merged_doc.close()
+                
+                return str(output_path)
+            
+            loop = asyncio.get_event_loop()
+            result_path = await loop.run_in_executor(self.executor, _merge_pdfs)
+            return result_path
+            
+        except Exception as e:
+            self._cleanup_work_dir(work_dir)
+            raise ConversionError(f"PDF merge failed: {str(e)}")
+    
     async def split_pdf(self, pdf_path: str, ranges: str, job_id: str = None) -> List[str]:
         """Split PDF into multiple files based on page ranges"""
         if fitz is None:
@@ -429,6 +551,9 @@ class ConversionService:
                 total_pages = len(doc)
                 output_files = []
                 
+                # Get original filename for prefix
+                original_name = Path(pdf_path).stem
+                
                 # Parse ranges (e.g., "1-3,5,7-10")
                 page_ranges = []
                 for range_part in ranges.split(','):
@@ -440,7 +565,7 @@ class ConversionService:
                         page_num = int(range_part) - 1  # Convert to 0-based
                         page_ranges.append((page_num, page_num))
                 
-                # Create split documents
+                # Create split documents with original filename
                 for i, (start, end) in enumerate(page_ranges):
                     if start < 0 or end >= total_pages or start > end:
                         continue
@@ -448,7 +573,9 @@ class ConversionService:
                     split_doc = fitz.open()
                     split_doc.insert_pdf(doc, from_page=start, to_page=end)
                     
-                    output_path = work_dir / f"split_{i + 1:03d}_pages_{start + 1}-{end + 1}.pdf"
+                    # Use original filename with split suffix
+                    output_filename = f"{original_name}_split_{i + 1}_pages_{start + 1}-{end + 1}.pdf"
+                    output_path = work_dir / output_filename
                     split_doc.save(str(output_path))
                     split_doc.close()
                     
@@ -474,7 +601,9 @@ class ConversionService:
             job_id = str(uuid.uuid4())
             
         work_dir = self._get_work_dir(job_id)
-        output_path = work_dir / "compressed.pdf"
+        # Use original filename with suffix
+        output_filename = self._get_original_filename_with_suffix(pdf_path, "compress", "pdf")
+        output_path = work_dir / output_filename
         
         try:
             def _compress_pdf():
