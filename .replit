@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["freetype", "glibcLocales", "jbig2dec", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "mupdf", "openjpeg", "poppler_utils", "qpdf", "tcl", "tk", "zlib"]
+packages = ["file", "freetype", "ghostscript", "glibcLocales", "gumbo", "harfbuzz", "icoutils", "imagemagick", "jbig2dec", "lcms2", "libimagequant", "libjpeg", "libjpeg_turbo", "libreoffice", "libtiff", "libwebp", "libxcrypt", "mupdf", "openjpeg", "poppler", "poppler_utils", "qpdf", "swig", "tcl", "tesseract", "tesseract4", "tk", "xcbuild", "zlib"]
 
 [workflows]
 runButton = "Project"

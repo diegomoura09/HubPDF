@@ -43,6 +43,15 @@ class Settings(BaseSettings):
     # File cleanup
     TEMP_FILE_RETENTION_MINUTES: int = Field(default=30)
     
+    # Conversion settings
+    CONVERSION_TIMEOUT_SECONDS: int = Field(default=300)  # 5 minutes
+    MAX_CONVERSION_FILE_SIZE_MB: int = Field(default=100)
+    ENABLE_OCR: bool = Field(default=False)
+    
+    # Job settings
+    MAX_CONCURRENT_JOBS: int = Field(default=4)
+    JOB_CLEANUP_HOURS: int = Field(default=24)
+    
     # Anonymous users
     ANON_COOKIE_SECRET: str = Field(default="change-this-anon-secret-in-production")
     

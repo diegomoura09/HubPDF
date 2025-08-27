@@ -2,19 +2,28 @@
 Centralized template helpers for HubPDF
 """
 from fastapi.templating import Jinja2Templates
-from app.services.i18n import get_translations
+from app.services.i18n import get_translations, get_user_locale
+
+def get_translation_function(locale: str):
+    """Get translation function for templates"""
+    translations = get_translations(locale)
+    def t(key: str, default: str = None) -> str:
+        return translations.get(key, default or key)
+    return t
 
 # Create centralized templates instance
 templates = Jinja2Templates(directory="templates")
 
-# Add simple translation function to templates
-def t(key: str) -> str:
-    """Simple translation function for templates - defaults to PT"""
-    translations = get_translations("pt")
-    return translations.get(key, key)
+# Translation function for templates
+def create_translate_function(locale: str = "pt"):
+    """Create a translation function for specific locale"""
+    translations = get_translations(locale)
+    def translate(key: str, default: str = None) -> str:
+        return translations.get(key, default or key)
+    return translate
 
-# Register global functions
-templates.env.globals["t"] = t
+# Register global translation function with Portuguese as default
+templates.env.globals["t"] = create_translate_function("pt")
 
 # Helper function to get templates with context
 def get_template_response(template_name: str, context: dict, locale: str = "pt"):

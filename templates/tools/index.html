@@ -1,88 +1,474 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t('nav_tools') }} - {{ t('title') }}{% endblock %}
+{% block title %}Ferramentas PDF - {{ t('title') }}{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header -->
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ t('tools_title') }}</h1>
-        <p class="text-xl text-gray-600">{{ t('tools_description') }}</p>
-    </div>
-    
-    <!-- Tools Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Merge PDFs -->
-        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
-            <div class="flex items-center justify-center w-16 h-16 bg-red-100 rounded-lg mx-auto mb-4">
-                <i data-feather="layers" class="h-8 w-8 text-red-600"></i>
-            </div>
-            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_merge') }}</h3>
-            <p class="text-gray-600 text-center mb-6">{{ t('tool_merge_description') }}</p>
-            <a href="/tools/merge" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
-                {{ t('btn_use_tool') }}
-            </a>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Header -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+                Ferramentas PDF Profissionais
+            </h1>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                Converta, edite e manipule seus arquivos PDF com facilidade usando nossas ferramentas avançadas
+            </p>
         </div>
         
-        <!-- Split PDFs -->
-        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
-            <div class="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-lg mx-auto mb-4">
-                <i data-feather="scissors" class="h-8 w-8 text-blue-600"></i>
+        <!-- Quick Upload Area -->
+        <div class="modern-card mb-16">
+            <div class="card-body text-center">
+                <div class="mb-8">
+                    <div class="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                        <i data-lucide="upload-cloud" class="h-12 w-12 text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-4">Upload & Conversão Rápida</h3>
+                    <p class="text-slate-600 mb-8">Arraste arquivos aqui ou clique para selecionar</p>
+                </div>
+                
+                <!-- Upload Form -->
+                <form id="conversion-form" enctype="multipart/form-data" class="space-y-6">
+                    <!-- File Upload Area -->
+                    <div class="border-2 border-dashed border-slate-300 rounded-2xl p-12 hover:border-emerald-400 hover:bg-emerald-50/30 transition-all duration-300" id="drop-zone">
+                        <input type="file" id="file-input" name="files" multiple accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.gif,.bmp,.tiff" class="hidden">
+                        <div class="text-center">
+                            <i data-lucide="file-plus" class="h-16 w-16 text-slate-400 mx-auto mb-4"></i>
+                            <p class="text-lg font-semibold text-slate-700 mb-2">Clique para selecionar arquivos</p>
+                            <p class="text-sm text-slate-500">ou arraste e solte aqui</p>
+                            <p class="text-xs text-slate-400 mt-2">PDF, DOCX, XLSX, PPTX, PNG, JPG suportados</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Selected Files -->
+                    <div id="selected-files" class="hidden space-y-2"></div>
+                    
+                    <!-- Operation Selection -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="operation-selection" style="display: none;">
+                        <h4 class="col-span-full text-lg font-bold text-slate-900 text-center mb-4">Escolha a operação:</h4>
+                        
+                        <!-- PDF Operations -->
+                        <button type="button" class="operation-btn" data-operation="split_pdf">
+                            <i data-lucide="scissors" class="h-8 w-8 text-blue-600 mb-2"></i>
+                            <span class="font-semibold">Dividir PDF</span>
+                            <span class="text-sm text-slate-500">Separar páginas</span>
+                        </button>
+                        
+                        <button type="button" class="operation-btn" data-operation="compress_pdf">
+                            <i data-lucide="minimize-2" class="h-8 w-8 text-purple-600 mb-2"></i>
+                            <span class="font-semibold">Comprimir PDF</span>
+                            <span class="text-sm text-slate-500">Reduzir tamanho</span>
+                        </button>
+                        
+                        <button type="button" class="operation-btn" data-operation="pdf_to_txt">
+                            <i data-lucide="type" class="h-8 w-8 text-indigo-600 mb-2"></i>
+                            <span class="font-semibold">Extrair Texto</span>
+                            <span class="text-sm text-slate-500">PDF para TXT</span>
+                        </button>
+                        
+                        <!-- Office Conversions -->
+                        <button type="button" class="operation-btn" data-operation="pdf_to_docx">
+                            <i data-lucide="file-text" class="h-8 w-8 text-blue-600 mb-2"></i>
+                            <span class="font-semibold">PDF → DOCX</span>
+                            <span class="text-sm text-slate-500">Word editável</span>
+                        </button>
+                        
+                        <button type="button" class="operation-btn" data-operation="pdf_to_xlsx">
+                            <i data-lucide="sheet" class="h-8 w-8 text-green-600 mb-2"></i>
+                            <span class="font-semibold">PDF → XLSX</span>
+                            <span class="text-sm text-slate-500">Excel editável</span>
+                        </button>
+                        
+                        <button type="button" class="operation-btn" data-operation="pdf_to_pptx">
+                            <i data-lucide="presentation" class="h-8 w-8 text-orange-600 mb-2"></i>
+                            <span class="font-semibold">PDF → PPTX</span>
+                            <span class="text-sm text-slate-500">PowerPoint editável</span>
+                        </button>
+                        
+                        <!-- Image Conversions -->
+                        <button type="button" class="operation-btn" data-operation="pdf_to_images">
+                            <i data-lucide="image" class="h-8 w-8 text-pink-600 mb-2"></i>
+                            <span class="font-semibold">PDF → Imagens</span>
+                            <span class="text-sm text-slate-500">PNG, JPG</span>
+                        </button>
+                        
+                        <button type="button" class="operation-btn" data-operation="images_to_pdf">
+                            <i data-lucide="file-image" class="h-8 w-8 text-teal-600 mb-2"></i>
+                            <span class="font-semibold">Imagens → PDF</span>
+                            <span class="text-sm text-slate-500">Combinar imagens</span>
+                        </button>
+                        
+                        <button type="button" class="operation-btn" data-operation="pdf_to_ico">
+                            <i data-lucide="image" class="h-8 w-8 text-yellow-600 mb-2"></i>
+                            <span class="font-semibold">PDF → Ícone</span>
+                            <span class="text-sm text-slate-500">Arquivo ICO</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Options -->
+                    <div id="conversion-options" class="hidden space-y-4">
+                        <!-- Image options -->
+                        <div id="image-options" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="form-label">Formato da Imagem</label>
+                                <select name="image_format" class="form-input">
+                                    <option value="png">PNG (melhor qualidade)</option>
+                                    <option value="jpg">JPG (menor tamanho)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">DPI (Qualidade)</label>
+                                <select name="image_dpi" class="form-input">
+                                    <option value="150">150 DPI (rápido)</option>
+                                    <option value="200" selected>200 DPI (padrão)</option>
+                                    <option value="300">300 DPI (alta qualidade)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Compression options -->
+                        <div id="compress-options" class="hidden">
+                            <label class="form-label">Nível de Compressão</label>
+                            <select name="compression_level" class="form-input">
+                                <option value="normal" selected>Normal (equilibrado)</option>
+                                <option value="high">Alto (menor arquivo)</option>
+                                <option value="maximum">Máximo (máxima compressão)</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Split options -->
+                        <div id="split-options" class="hidden">
+                            <label class="form-label">Intervalos de Páginas</label>
+                            <input type="text" name="page_ranges" placeholder="Ex: 1-3,5,7-10" class="form-input">
+                            <p class="text-sm text-slate-500 mt-1">Use vírgulas para separar intervalos. Ex: 1-3,5,7-10</p>
+                        </div>
+                        
+                        <!-- OCR option -->
+                        <div id="ocr-options" class="hidden">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" name="use_ocr" class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500">
+                                <span class="text-sm font-medium text-slate-700">Usar OCR para texto em imagens</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="text-center">
+                        <button type="submit" id="convert-btn" class="btn btn-primary text-lg px-12 py-4" disabled>
+                            <i data-lucide="zap" class="h-6 w-6 mr-2"></i>
+                            Iniciar Conversão
+                        </button>
+                    </div>
+                </form>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_split') }}</h3>
-            <p class="text-gray-600 text-center mb-6">{{ t('tool_split_description') }}</p>
-            <a href="/tools/split" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
-                {{ t('btn_use_tool') }}
-            </a>
         </div>
         
-        <!-- Compress PDFs -->
-        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
-            <div class="flex items-center justify-center w-16 h-16 bg-green-100 rounded-lg mx-auto mb-4">
-                <i data-feather="minimize-2" class="h-8 w-8 text-green-600"></i>
+        <!-- Progress Area -->
+        <div id="progress-area" class="hidden modern-card mb-8">
+            <div class="card-body">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-slate-900">Processando...</h3>
+                    <div class="text-sm text-slate-600" id="progress-text">0%</div>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-4 mb-4">
+                    <div id="progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <p id="progress-message" class="text-sm text-slate-600">Iniciando conversão...</p>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_compress') }}</h3>
-            <p class="text-gray-600 text-center mb-6">{{ t('tool_compress_description') }}</p>
-            <a href="/tools/compress" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
-                {{ t('btn_use_tool') }}
-            </a>
         </div>
         
-        <!-- PDF to Images -->
-        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
-            <div class="flex items-center justify-center w-16 h-16 bg-purple-100 rounded-lg mx-auto mb-4">
-                <i data-feather="image" class="h-8 w-8 text-purple-600"></i>
+        <!-- Results Area -->
+        <div id="results-area" class="hidden modern-card">
+            <div class="card-body">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="check-circle" class="h-8 w-8 text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-2">Conversão Concluída!</h3>
+                    <p class="text-slate-600">Seus arquivos estão prontos para download</p>
+                </div>
+                <div id="download-links" class="space-y-3"></div>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_pdf_to_images') }}</h3>
-            <p class="text-gray-600 text-center mb-6">{{ t('tool_pdf_to_images_description') }}</p>
-            <a href="/tools/pdf-to-images" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
-                {{ t('btn_use_tool') }}
-            </a>
         </div>
         
-        <!-- Images to PDF -->
-        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
-            <div class="flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-lg mx-auto mb-4">
-                <i data-feather="file-plus" class="h-8 w-8 text-yellow-600"></i>
+        {% if usage_summary and usage_summary.plan == 'free' %}
+        <!-- Upgrade Banner -->
+        <div class="modern-card bg-gradient-to-r from-emerald-500 to-teal-600 border-0 mt-16">
+            <div class="card-body text-white text-center">
+                <h3 class="text-2xl font-bold mb-4">Desbloqueie Todo o Potencial</h3>
+                <p class="text-emerald-100 mb-6">Upgrade para Pro e tenha acesso ilimitado a todas as conversões</p>
+                <a href="/billing/pricing" class="bg-white text-emerald-600 px-8 py-3 rounded-xl font-bold hover:bg-gray-50 transition-colors">
+                    Ver Planos Pro
+                </a>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_images_to_pdf') }}</h3>
-            <p class="text-gray-600 text-center mb-6">{{ t('tool_images_to_pdf_description') }}</p>
-            <a href="/tools/images-to-pdf" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
-                {{ t('btn_use_tool') }}
-            </a>
         </div>
-        
-        <!-- Extract Text -->
-        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
-            <div class="flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-lg mx-auto mb-4">
-                <i data-feather="type" class="h-8 w-8 text-indigo-600"></i>
-            </div>
-            <h3 class="text-xl font-semibold text-gray-900 text-center mb-3">{{ t('tool_extract_text') }}</h3>
-            <p class="text-gray-600 text-center mb-6">{{ t('tool_extract_text_description') }}</p>
-            <a href="/tools/extract-text" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md font-medium text-center block transition-colors">
-                {{ t('btn_use_tool') }}
-            </a>
-        </div>
+        {% endif %}
     </div>
 </div>
+
+<style>
+.operation-btn {
+    @apply flex flex-col items-center justify-center p-6 bg-white border-2 border-slate-200 rounded-2xl hover:border-emerald-300 hover:bg-emerald-50/30 transition-all duration-300 text-center;
+}
+
+.operation-btn.selected {
+    @apply border-emerald-500 bg-emerald-50;
+}
+
+.file-item {
+    @apply flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200;
+}
+
+.drop-zone-active {
+    @apply border-emerald-500 bg-emerald-50/50;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+    
+    const fileInput = document.getElementById('file-input');
+    const dropZone = document.getElementById('drop-zone');
+    const selectedFiles = document.getElementById('selected-files');
+    const operationSelection = document.getElementById('operation-selection');
+    const conversionOptions = document.getElementById('conversion-options');
+    const convertBtn = document.getElementById('convert-btn');
+    const progressArea = document.getElementById('progress-area');
+    const resultsArea = document.getElementById('results-area');
+    const conversionForm = document.getElementById('conversion-form');
+    
+    let files = [];
+    let selectedOperation = null;
+    
+    // File drag and drop
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drop-zone-active');
+    });
+    dropZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drop-zone-active');
+    });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drop-zone-active');
+        handleFiles(e.dataTransfer.files);
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+    
+    function handleFiles(fileList) {
+        files = Array.from(fileList);
+        displaySelectedFiles();
+        showOperationSelection();
+    }
+    
+    function displaySelectedFiles() {
+        if (files.length === 0) {
+            selectedFiles.classList.add('hidden');
+            return;
+        }
+        
+        selectedFiles.classList.remove('hidden');
+        selectedFiles.innerHTML = files.map((file, index) => `
+            <div class="file-item">
+                <div class="flex items-center space-x-3">
+                    <i data-lucide="file" class="h-5 w-5 text-slate-500"></i>
+                    <span class="font-medium text-slate-900">${file.name}</span>
+                    <span class="text-sm text-slate-500">${formatFileSize(file.size)}</span>
+                </div>
+                <button type="button" onclick="removeFile(${index})" class="text-red-500 hover:text-red-700">
+                    <i data-lucide="x" class="h-4 w-4"></i>
+                </button>
+            </div>
+        `).join('');
+        lucide.createIcons();
+    }
+    
+    function showOperationSelection() {
+        if (files.length > 0) {
+            operationSelection.style.display = 'grid';
+        }
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    window.removeFile = function(index) {
+        files.splice(index, 1);
+        displaySelectedFiles();
+        if (files.length === 0) {
+            operationSelection.style.display = 'none';
+            conversionOptions.classList.add('hidden');
+            convertBtn.disabled = true;
+        }
+    }
+    
+    // Operation selection
+    document.querySelectorAll('.operation-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove previous selection
+            document.querySelectorAll('.operation-btn').forEach(b => b.classList.remove('selected'));
+            
+            // Select current operation
+            this.classList.add('selected');
+            selectedOperation = this.dataset.operation;
+            
+            // Show options based on operation
+            showOperationOptions(selectedOperation);
+            
+            // Enable convert button
+            convertBtn.disabled = false;
+        });
+    });
+    
+    function showOperationOptions(operation) {
+        conversionOptions.classList.remove('hidden');
+        
+        // Hide all options first
+        document.querySelectorAll('#conversion-options > div').forEach(div => {
+            div.classList.add('hidden');
+        });
+        
+        // Show relevant options
+        if (operation === 'pdf_to_images') {
+            document.getElementById('image-options').classList.remove('hidden');
+        } else if (operation === 'compress_pdf') {
+            document.getElementById('compress-options').classList.remove('hidden');
+        } else if (operation === 'split_pdf') {
+            document.getElementById('split-options').classList.remove('hidden');
+        } else if (operation === 'pdf_to_txt') {
+            document.getElementById('ocr-options').classList.remove('hidden');
+        }
+    }
+    
+    // Form submission
+    conversionForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!selectedOperation || files.length === 0) {
+            alert('Por favor, selecione arquivos e uma operação.');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('operation', selectedOperation);
+        
+        // Add files
+        files.forEach(file => {
+            formData.append('files', file);
+        });
+        
+        // Add options
+        const imageFormat = document.querySelector('[name="image_format"]')?.value || 'png';
+        const imageDpi = document.querySelector('[name="image_dpi"]')?.value || '200';
+        const compressionLevel = document.querySelector('[name="compression_level"]')?.value || 'normal';
+        const pageRanges = document.querySelector('[name="page_ranges"]')?.value || '1';
+        const useOcr = document.querySelector('[name="use_ocr"]')?.checked || false;
+        
+        formData.append('image_format', imageFormat);
+        formData.append('image_dpi', imageDpi);
+        formData.append('compression_level', compressionLevel);
+        formData.append('page_ranges', pageRanges);
+        formData.append('use_ocr', useOcr);
+        
+        // Show progress
+        showProgress();
+        
+        try {
+            const response = await fetch('/tools/api/convert', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Poll for job status
+                pollJobStatus(result.job_id);
+            } else {
+                throw new Error(result.detail || 'Conversion failed');
+            }
+        } catch (error) {
+            showError('Erro ao iniciar conversão: ' + error.message);
+        }
+    });
+    
+    function showProgress() {
+        progressArea.classList.remove('hidden');
+        resultsArea.classList.add('hidden');
+        
+        // Scroll to progress area
+        progressArea.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    async function pollJobStatus(jobId) {
+        try {
+            const response = await fetch(`/tools/api/jobs/${jobId}`);
+            const job = await response.json();
+            
+            // Update progress
+            updateProgress(job.progress, job.message);
+            
+            if (job.status === 'completed') {
+                showResults(job.output_files, jobId);
+            } else if (job.status === 'failed') {
+                showError(job.error || 'Conversão falhou');
+            } else {
+                // Continue polling
+                setTimeout(() => pollJobStatus(jobId), 2000);
+            }
+        } catch (error) {
+            showError('Erro ao verificar status: ' + error.message);
+        }
+    }
+    
+    function updateProgress(progress, message) {
+        document.getElementById('progress-bar').style.width = progress + '%';
+        document.getElementById('progress-text').textContent = progress + '%';
+        document.getElementById('progress-message').textContent = message;
+    }
+    
+    function showResults(outputFiles, jobId) {
+        progressArea.classList.add('hidden');
+        resultsArea.classList.remove('hidden');
+        
+        const downloadLinks = document.getElementById('download-links');
+        downloadLinks.innerHTML = outputFiles.map((file, index) => {
+            const fileName = file.split('/').pop();
+            return `
+                <a href="/tools/api/jobs/${jobId}/download/${index}" 
+                   class="flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="download" class="h-5 w-5 text-emerald-600"></i>
+                        <span class="font-medium text-slate-900">${fileName}</span>
+                    </div>
+                    <i data-lucide="external-link" class="h-4 w-4 text-slate-400"></i>
+                </a>
+            `;
+        }).join('');
+        
+        lucide.createIcons();
+        
+        // Scroll to results
+        resultsArea.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function showError(message) {
+        progressArea.classList.add('hidden');
+        alert('Erro: ' + message);
+    }
+});
+</script>
 {% endblock %}

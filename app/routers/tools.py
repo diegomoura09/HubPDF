@@ -1,596 +1,358 @@
 """
-PDF tools routes
+Tools router for PDF conversion and manipulation
 """
+import os
+import tempfile
+import logging
+from pathlib import Path
+from typing import List, Optional, Dict, Any
 import uuid
-import io
-from typing import List
-from fastapi import APIRouter, Request, Depends, UploadFile, File, Form, HTTPException, status, BackgroundTasks
-from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
+import mimetypes
+try:
+    import magic
+except ImportError:
+    magic = None
+
+from fastapi import APIRouter, Request, Response, Form, File, UploadFile, HTTPException, BackgroundTasks, Depends
+from fastapi.responses import JSONResponse, FileResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.auth import require_auth
-from app.models import User
-from app.services.pdf_service import PDFService
-from app.services.quota_service import QuotaService
-from app.services.file_service import FileService
-from app.services.i18n import get_user_locale, get_translations, translate
 from app.template_helpers import templates
-from app.utils.validators import FileValidator
+from app.services.i18n import get_translations, get_user_locale
+from app.auth import require_auth, get_current_user, get_optional_user
+from app.services.job_service import job_service
+from app.services.conversion import ConversionError
+from app.models import User
+from app.config import settings
+from app.services.quota_service import QuotaService
 
 router = APIRouter()
-pdf_service = PDFService()
+logger = logging.getLogger(__name__)
 quota_service = QuotaService()
-file_service = FileService()
 
-def cleanup_job_files(user_id: int, job_id: str):
-    """Background task to cleanup job files after delay"""
-    import time
-    import threading
-    
-    def delayed_cleanup():
-        time.sleep(1800)  # 30 minutes
-        file_service.cleanup_job_directory(user_id, job_id)
-    
-    # Use threading instead of asyncio to avoid event loop issues
-    cleanup_thread = threading.Thread(target=delayed_cleanup, daemon=True)
-    cleanup_thread.start()
+def sanitize_filename(filename: str) -> str:
+    """Sanitize filename for safe storage"""
+    import re
+    # Remove path separators and special characters
+    safe_name = re.sub(r'[^\w\s.-]', '', filename)
+    # Replace spaces with underscores
+    safe_name = re.sub(r'\s+', '_', safe_name)
+    return safe_name[:255]  # Limit length
 
-@router.get("/", response_class=HTMLResponse)
+# Supported conversion operations
+CONVERSION_OPERATIONS = {
+    "pdf_to_docx": {"input": "pdf", "output": "docx", "name": "PDF para DOCX"},
+    "docx_to_pdf": {"input": "docx", "output": "pdf", "name": "DOCX para PDF"},
+    "pdf_to_xlsx": {"input": "pdf", "output": "xlsx", "name": "PDF para XLSX"},
+    "xlsx_to_pdf": {"input": "xlsx", "output": "pdf", "name": "XLSX para PDF"},
+    "pdf_to_pptx": {"input": "pdf", "output": "pptx", "name": "PDF para PPTX"},
+    "pptx_to_pdf": {"input": "pptx", "output": "pdf", "name": "PPTX para PDF"},
+    "pdf_to_images": {"input": "pdf", "output": "images", "name": "PDF para Imagens"},
+    "images_to_pdf": {"input": "images", "output": "pdf", "name": "Imagens para PDF"},
+    "pdf_to_txt": {"input": "pdf", "output": "txt", "name": "PDF para Texto"},
+    "pdf_to_ico": {"input": "pdf", "output": "ico", "name": "PDF para Ícone"},
+    "split_pdf": {"input": "pdf", "output": "pdf", "name": "Dividir PDF"},
+    "compress_pdf": {"input": "pdf", "output": "pdf", "name": "Comprimir PDF"},
+    "extract_text_to_pdf": {"input": "pdf", "output": "pdf", "name": "Extrair Texto para PDF"},
+}
+
+ALLOWED_MIME_TYPES = {
+    "pdf": ["application/pdf"],
+    "docx": ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+    "xlsx": ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+    "pptx": ["application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+    "images": ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/bmp", "image/tiff"],
+    "txt": ["text/plain"],
+}
+
+def get_max_file_size(user: User = None) -> int:
+    """Get maximum file size based on user plan"""
+    if not user:
+        return settings.MAX_FILE_SIZE_FREE
+    
+    if user.subscription and user.subscription.plan == "pro":
+        return settings.MAX_FILE_SIZE_PRO
+    elif user.subscription and user.subscription.plan == "business":
+        return settings.MAX_FILE_SIZE_BUSINESS
+    else:
+        return settings.MAX_FILE_SIZE_FREE
+
+async def save_uploaded_file(upload_file: UploadFile, work_dir: Path) -> str:
+    """Save uploaded file to work directory"""
+    # Validate file type using python-magic if available
+    file_content = await upload_file.read()
+    await upload_file.seek(0)  # Reset file pointer
+    
+    if magic:
+        try:
+            detected_mime = magic.from_buffer(file_content, mime=True)
+            logger.info(f"Detected MIME type: {detected_mime} for file: {upload_file.filename}")
+        except Exception as e:
+            logger.warning(f"Failed to detect MIME type: {e}")
+    else:
+        logger.warning("python-magic not available for MIME type detection")
+    
+    # Save file with sanitized name
+    safe_filename = sanitize_filename(upload_file.filename)
+    file_path = work_dir / safe_filename
+    
+    with open(file_path, "wb") as f:
+        f.write(file_content)
+    
+    return str(file_path)
+
+@router.get("/")
 async def tools_index(
     request: Request,
-    user: User = Depends(require_auth)
-):
-    """Tools overview page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
-    return templates.TemplateResponse(
-        "tools/index.html",
-        {
-            "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
-        }
-    )
-
-@router.get("/merge", response_class=HTMLResponse)
-async def merge_page(
-    request: Request,
-    user: User = Depends(require_auth)
-):
-    """PDF merge tool page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
-    return templates.TemplateResponse(
-        "tools/merge.html",
-        {
-            "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
-        }
-    )
-
-@router.post("/merge")
-async def merge_pdfs(
-    request: Request,
-    background_tasks: BackgroundTasks,
-    files: List[UploadFile] = File(...),
-    user: User = Depends(require_auth),
+    user: User = Depends(get_optional_user),
     db: Session = Depends(get_db)
 ):
-    """Merge multiple PDF files"""
+    """Tools index page"""
+    locale = get_user_locale(request)
+    translations = get_translations(locale)
+    
+    # Get usage summary if user is logged in
+    usage_summary = None
+    if user:
+        quota_usage = quota_service.get_user_quota_usage(db, user)
+        plan_limits = quota_service.get_plan_limits(user.plan)
+        usage_summary = {
+            "plan": user.plan,
+            "operations_used": quota_usage.operations_count,
+            "operations_limit": plan_limits["daily_operations"],
+            "operations_percentage": min(100, (quota_usage.operations_count / plan_limits["daily_operations"]) * 100) if plan_limits["daily_operations"] > 0 else 0
+        }
+    
+    return templates.TemplateResponse("tools/index.html", {
+        "request": request,
+        "locale": locale,
+        "user": user,
+        "usage_summary": usage_summary,
+        "operations": CONVERSION_OPERATIONS
+    })
+
+# Legacy tool routes (for backward compatibility)
+@router.get("/merge")
+async def merge_tool(request: Request, user: User = Depends(get_optional_user)):
+    """PDF merge tool page"""
+    return await tools_index(request, user)
+
+@router.get("/split")
+async def split_tool(request: Request, user: User = Depends(get_optional_user)):
+    """PDF split tool page"""
+    return await tools_index(request, user)
+
+@router.get("/compress")
+async def compress_tool(request: Request, user: User = Depends(get_optional_user)):
+    """PDF compress tool page"""
+    return await tools_index(request, user)
+
+@router.get("/extract-text")
+async def extract_text_tool(request: Request, user: User = Depends(get_optional_user)):
+    """PDF text extraction tool page"""
+    return await tools_index(request, user)
+
+@router.get("/pdf-to-images")
+async def pdf_to_images_tool(request: Request, user: User = Depends(get_optional_user)):
+    """PDF to images tool page"""
+    return await tools_index(request, user)
+
+@router.get("/images-to-pdf")
+async def images_to_pdf_tool(request: Request, user: User = Depends(get_optional_user)):
+    """Images to PDF tool page"""
+    return await tools_index(request, user)
+
+# API Endpoints for conversions
+@router.post("/api/convert")
+async def start_conversion(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    operation: str = Form(...),
+    target_format: Optional[str] = Form(None),
+    compression_level: Optional[str] = Form("normal"),
+    page_ranges: Optional[str] = Form(None),
+    image_format: Optional[str] = Form("png"),
+    image_dpi: Optional[int] = Form(200),
+    use_ocr: Optional[bool] = Form(False),
+    files: List[UploadFile] = File(...),
+    user: User = Depends(get_optional_user),
+    db: Session = Depends(get_db)
+):
+    """Start a new conversion job"""
     try:
-        locale = get_user_locale(request)
+        # Validate operation
+        if operation not in CONVERSION_OPERATIONS:
+            raise HTTPException(status_code=400, detail=f"Unsupported operation: {operation}")
         
-        # Check quota
-        allowed, message, requires_watermark = quota_service.check_operation_allowed(db, user)
-        if not allowed:
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=message)
+        # Check quotas and limits
+        if user:
+            allowed, message, requires_watermark = quota_service.check_operation_allowed(db, user)
+            if not allowed:
+                raise HTTPException(status_code=429, detail=message)
         
         # Validate files
-        FileValidator.validate_multiple_files(files, max_count=10)
-        
+        max_file_size = get_max_file_size(user)
         for file in files:
-            # Check file size
-            file_size = file.size or 0
-            file_allowed, size_message = quota_service.check_file_size_allowed(user, file_size)
-            if not file_allowed:
-                raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
-            
-            # Validate PDF
-            FileValidator.validate_pdf_file(file, quota_service.get_plan_limits(user.plan)["max_file_size"])
+            if file.size > max_file_size:
+                raise HTTPException(
+                    status_code=413, 
+                    detail=f"File {file.filename} exceeds maximum size limit"
+                )
         
-        # Create job directory
-        job_id = file_service.create_job_directory(user.id)
+        # Create job ID and work directory
+        job_id = str(uuid.uuid4())
+        work_dir = Path(tempfile.gettempdir()) / "hubpdf_jobs" / job_id
+        work_dir.mkdir(parents=True, exist_ok=True)
         
-        # Process files
-        pdf_files = []
+        # Save uploaded files
+        input_files = []
         for file in files:
-            file.file.seek(0)
-            pdf_files.append(file.file)
+            file_path = await save_uploaded_file(file, work_dir)
+            input_files.append(file_path)
         
-        # Get watermark text if needed
-        watermark_text = ""
-        if requires_watermark:
-            watermark_text = translate("watermark_text", locale)
+        # Prepare options
+        options = {
+            "format": image_format,
+            "dpi": image_dpi,
+            "level": compression_level,
+            "ranges": page_ranges or "1",
+            "use_ocr": use_ocr and settings.ENABLE_OCR,
+        }
         
-        # Merge PDFs
-        result_bytes = pdf_service.merge_pdfs(
-            pdf_files, user.id, job_id, requires_watermark, watermark_text
+        # Start conversion job
+        job_id = await job_service.start_conversion(
+            operation=operation,
+            input_files=input_files,
+            options=options,
+            job_id=job_id
         )
         
-        # Save result
-        result_filename = "merged.pdf"
-        file_service.save_result_file(user.id, job_id, result_bytes, result_filename)
+        # Increment user operations count
+        if user:
+            quota_service.increment_operation_count(db, user)
         
-        # Increment quota
-        quota_service.increment_operation_count(db, user)
+        return JSONResponse({
+            "job_id": job_id,
+            "status": "started",
+            "message": "Conversion job started successfully"
+        })
         
-        # Schedule cleanup
-        background_tasks.add_task(cleanup_job_files, user.id, job_id)
-        
-        # Return download response
-        return StreamingResponse(
-            iter([result_bytes]),
-            media_type="application/pdf",
-            headers={"Content-Disposition": "attachment; filename=merged.pdf"}
-        )
-    
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to merge PDFs: {str(e)}"
-        )
+        logger.error(f"Failed to start conversion: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to start conversion job")
 
-@router.get("/split", response_class=HTMLResponse)
-async def split_page(
-    request: Request,
-    user: User = Depends(require_auth)
+@router.get("/api/jobs/{job_id}")
+async def get_job_status(
+    job_id: str,
+    user: User = Depends(get_optional_user)
 ):
-    """PDF split tool page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
-    return templates.TemplateResponse(
-        "tools/split.html",
-        {
-            "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
-        }
-    )
+    """Get job status and progress"""
+    try:
+        job_status = job_service.get_job_status(job_id)
+        if not job_status:
+            raise HTTPException(status_code=404, detail="Job not found")
+        
+        return JSONResponse(job_status)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get job status: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get job status")
+
+@router.get("/api/jobs/{job_id}/download/{file_index}")
+async def download_job_result(
+    job_id: str,
+    file_index: int,
+    user: User = Depends(get_optional_user)
+):
+    """Download a result file from completed job"""
+    try:
+        job_status = job_service.get_job_status(job_id)
+        if not job_status:
+            raise HTTPException(status_code=404, detail="Job not found")
+        
+        if job_status["status"] != "completed":
+            raise HTTPException(status_code=400, detail="Job not completed yet")
+        
+        output_files = job_status.get("output_files", [])
+        if file_index >= len(output_files):
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        file_path = output_files[file_index]
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="File no longer available")
+        
+        # Determine content type and filename
+        file_name = Path(file_path).name
+        content_type = mimetypes.guess_type(file_path)[0] or "application/octet-stream"
+        
+        return FileResponse(
+            path=file_path,
+            filename=file_name,
+            media_type=content_type
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to download file: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to download file")
+
+@router.delete("/api/jobs/{job_id}")
+async def cancel_job(
+    job_id: str,
+    user: User = Depends(get_optional_user)
+):
+    """Cancel a running job"""
+    try:
+        success = await job_service.cancel_job(job_id)
+        if success:
+            return JSONResponse({"message": "Job cancelled successfully"})
+        else:
+            raise HTTPException(status_code=400, detail="Job cannot be cancelled")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to cancel job: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to cancel job")
+
+@router.get("/api/jobs")
+async def list_jobs(
+    limit: int = 50,
+    user: User = Depends(get_optional_user)
+):
+    """List recent jobs"""
+    try:
+        jobs = job_service.list_jobs(limit)
+        return JSONResponse({"jobs": jobs})
+        
+    except Exception as e:
+        logger.error(f"Failed to list jobs: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to list jobs")
+
+# Legacy endpoints for backward compatibility
+@router.post("/merge")
+async def legacy_merge_pdf(request: Request):
+    """Legacy merge endpoint - redirect to new API"""
+    return RedirectResponse(url="/tools/api/convert", status_code=307)
 
 @router.post("/split")
-async def split_pdf(
-    request: Request,
-    background_tasks: BackgroundTasks,
-    file: UploadFile = File(...),
-    page_ranges: str = Form(...),
-    user: User = Depends(require_auth),
-    db: Session = Depends(get_db)
-):
-    """Split PDF by page ranges"""
-    try:
-        locale = get_user_locale(request)
-        
-        # Check quota
-        allowed, message, requires_watermark = quota_service.check_operation_allowed(db, user)
-        if not allowed:
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=message)
-        
-        # Validate file
-        file_size = file.size or 0
-        file_allowed, size_message = quota_service.check_file_size_allowed(user, file_size)
-        if not file_allowed:
-            raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
-        
-        FileValidator.validate_pdf_file(file, quota_service.get_plan_limits(user.plan)["max_file_size"])
-        
-        # Create job directory
-        job_id = file_service.create_job_directory(user.id)
-        
-        # Get watermark text if needed
-        watermark_text = ""
-        if requires_watermark:
-            watermark_text = translate("watermark_text", locale)
-        
-        # Split PDF
-        result_bytes = pdf_service.split_pdf(
-            file.file, page_ranges, user.id, job_id, requires_watermark, watermark_text
-        )
-        
-        # Increment quota
-        quota_service.increment_operation_count(db, user)
-        
-        # Schedule cleanup
-        background_tasks.add_task(cleanup_job_files, user.id, job_id)
-        
-        # Return download response
-        return StreamingResponse(
-            iter([result_bytes]),
-            media_type="application/zip",
-            headers={"Content-Disposition": "attachment; filename=split_pdfs.zip"}
-        )
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to split PDF: {str(e)}"
-        )
-
-@router.get("/compress", response_class=HTMLResponse)
-async def compress_page(
-    request: Request,
-    user: User = Depends(require_auth)
-):
-    """PDF compress tool page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
-    return templates.TemplateResponse(
-        "tools/compress.html",
-        {
-            "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
-        }
-    )
+async def legacy_split_pdf(request: Request):
+    """Legacy split endpoint - redirect to new API"""
+    return RedirectResponse(url="/tools/api/convert", status_code=307)
 
 @router.post("/compress")
-async def compress_pdf(
-    request: Request,
-    background_tasks: BackgroundTasks,
-    file: UploadFile = File(...),
-    user: User = Depends(require_auth),
-    db: Session = Depends(get_db)
-):
-    """Compress PDF file"""
-    try:
-        locale = get_user_locale(request)
-        
-        # Check quota
-        allowed, message, requires_watermark = quota_service.check_operation_allowed(db, user)
-        if not allowed:
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=message)
-        
-        # Validate file
-        file_size = file.size or 0
-        file_allowed, size_message = quota_service.check_file_size_allowed(user, file_size)
-        if not file_allowed:
-            raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
-        
-        FileValidator.validate_pdf_file(file, quota_service.get_plan_limits(user.plan)["max_file_size"])
-        
-        # Create job directory
-        job_id = file_service.create_job_directory(user.id)
-        
-        # Get watermark text if needed
-        watermark_text = ""
-        if requires_watermark:
-            watermark_text = translate("watermark_text", locale)
-        
-        # Compress PDF
-        result_bytes = pdf_service.compress_pdf(
-            file.file, user.id, job_id, requires_watermark, watermark_text
-        )
-        
-        # Increment quota
-        quota_service.increment_operation_count(db, user)
-        
-        # Schedule cleanup
-        background_tasks.add_task(cleanup_job_files, user.id, job_id)
-        
-        # Return download response
-        return StreamingResponse(
-            iter([result_bytes]),
-            media_type="application/pdf",
-            headers={"Content-Disposition": "attachment; filename=compressed.pdf"}
-        )
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to compress PDF: {str(e)}"
-        )
-
-@router.get("/pdf-to-images", response_class=HTMLResponse)
-async def pdf_to_images_page(
-    request: Request,
-    user: User = Depends(require_auth)
-):
-    """PDF to images tool page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
-    return templates.TemplateResponse(
-        "tools/pdf_to_images.html",
-        {
-            "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
-        }
-    )
-
-@router.post("/pdf-to-images")
-async def pdf_to_images(
-    request: Request,
-    background_tasks: BackgroundTasks,
-    file: UploadFile = File(...),
-    format: str = Form(default="png"),
-    user: User = Depends(require_auth),
-    db: Session = Depends(get_db)
-):
-    """Convert PDF to images"""
-    try:
-        locale = get_user_locale(request)
-        
-        # Check quota
-        allowed, message, requires_watermark = quota_service.check_operation_allowed(db, user)
-        if not allowed:
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=message)
-        
-        # Validate format
-        if format not in ["png", "jpg", "jpeg"]:
-            format = "png"
-        
-        # Validate file
-        file_size = file.size or 0
-        file_allowed, size_message = quota_service.check_file_size_allowed(user, file_size)
-        if not file_allowed:
-            raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
-        
-        FileValidator.validate_pdf_file(file, quota_service.get_plan_limits(user.plan)["max_file_size"])
-        
-        # Create job directory
-        job_id = file_service.create_job_directory(user.id)
-        
-        # Get watermark text if needed
-        watermark_text = ""
-        if requires_watermark:
-            watermark_text = translate("watermark_text", locale)
-        
-        # Convert PDF to images
-        result_bytes = pdf_service.pdf_to_images(
-            file.file, user.id, job_id, format, requires_watermark, watermark_text
-        )
-        
-        # Increment quota
-        quota_service.increment_operation_count(db, user)
-        
-        # Schedule cleanup
-        background_tasks.add_task(cleanup_job_files, user.id, job_id)
-        
-        # Return download response
-        return StreamingResponse(
-            iter([result_bytes]),
-            media_type="application/zip",
-            headers={"Content-Disposition": f"attachment; filename=pdf_images.zip"}
-        )
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to convert PDF to images: {str(e)}"
-        )
-
-@router.get("/images-to-pdf", response_class=HTMLResponse)
-async def images_to_pdf_page(
-    request: Request,
-    user: User = Depends(require_auth)
-):
-    """Images to PDF tool page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
-    return templates.TemplateResponse(
-        "tools/images_to_pdf.html",
-        {
-            "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
-        }
-    )
-
-@router.post("/images-to-pdf")
-async def images_to_pdf(
-    request: Request,
-    background_tasks: BackgroundTasks,
-    files: List[UploadFile] = File(...),
-    user: User = Depends(require_auth),
-    db: Session = Depends(get_db)
-):
-    """Convert images to PDF"""
-    try:
-        locale = get_user_locale(request)
-        
-        # Check quota
-        allowed, message, requires_watermark = quota_service.check_operation_allowed(db, user)
-        if not allowed:
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=message)
-        
-        # Validate files
-        FileValidator.validate_multiple_files(files, max_count=20)
-        
-        for file in files:
-            file_allowed, size_message = quota_service.check_file_size_allowed(user, file.size)
-            if not file_allowed:
-                raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
-            
-            FileValidator.validate_image_file(file, quota_service.get_plan_limits(user.plan)["max_file_size"])
-        
-        # Create job directory
-        job_id = file_service.create_job_directory(user.id)
-        
-        # Process files
-        image_files = []
-        for file in files:
-            file.file.seek(0)
-            image_files.append(file.file)
-        
-        # Get watermark text if needed
-        watermark_text = ""
-        if requires_watermark:
-            watermark_text = translate("watermark_text", locale)
-        
-        # Convert images to PDF
-        result_bytes = pdf_service.images_to_pdf(
-            image_files, user.id, job_id, requires_watermark, watermark_text
-        )
-        
-        # Increment quota
-        quota_service.increment_operation_count(db, user)
-        
-        # Schedule cleanup
-        background_tasks.add_task(cleanup_job_files, user.id, job_id)
-        
-        # Return download response
-        return StreamingResponse(
-            iter([result_bytes]),
-            media_type="application/pdf",
-            headers={"Content-Disposition": "attachment; filename=images.pdf"}
-        )
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to convert images to PDF: {str(e)}"
-        )
-
-@router.get("/extract-text", response_class=HTMLResponse)
-async def extract_text_page(
-    request: Request,
-    user: User = Depends(require_auth)
-):
-    """Extract text tool page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
-    return templates.TemplateResponse(
-        "tools/extract_text.html",
-        {
-            "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
-        }
-    )
+async def legacy_compress_pdf(request: Request):
+    """Legacy compress endpoint - redirect to new API"""
+    return RedirectResponse(url="/tools/api/convert", status_code=307)
 
 @router.post("/extract-text")
-async def extract_text(
-    request: Request,
-    background_tasks: BackgroundTasks,
-    file: UploadFile = File(...),
-    output_format: str = Form(default="display"),
-    user: User = Depends(require_auth),
-    db: Session = Depends(get_db)
-):
-    """Extract text from PDF"""
-    try:
-        locale = get_user_locale(request)
-        
-        # Check quota
-        allowed, message, requires_watermark = quota_service.check_operation_allowed(db, user)
-        if not allowed:
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=message)
-        
-        # Validate file
-        file_size = file.size or 0
-        file_allowed, size_message = quota_service.check_file_size_allowed(user, file_size)
-        if not file_allowed:
-            raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=size_message)
-        
-        FileValidator.validate_pdf_file(file, quota_service.get_plan_limits(user.plan)["max_file_size"])
-        
-        # Create job directory
-        job_id = file_service.create_job_directory(user.id)
-        
-        # Extract text
-        extracted_text = pdf_service.extract_text(file.file, user.id, job_id)
-        
-        # Increment quota
-        quota_service.increment_operation_count(db, user)
-        
-        # Schedule cleanup
-        background_tasks.add_task(cleanup_job_files, user.id, job_id)
-        
-        # Handle different output formats
-        if output_format == "display":
-            # Return JSON response for HTMX to display
-            return JSONResponse({
-                "success": True,
-                "text": extracted_text,
-                "message": "Texto extraído com sucesso"
-            })
-        elif output_format == "txt":
-            # Return text as TXT download
-            return StreamingResponse(
-                iter([extracted_text.encode('utf-8')]),
-                media_type="text/plain",
-                headers={"Content-Disposition": "attachment; filename=extracted_text.txt"}
-            )
-        elif output_format == "xlsx":
-            # Create Excel file with extracted text
-            import openpyxl
-            from openpyxl.styles import Font, Alignment
-            
-            wb = openpyxl.Workbook()
-            ws = wb.active
-            ws.title = "Extracted Text"
-            
-            # Add header
-            ws['A1'] = "Texto Extraído do PDF"
-            ws['A1'].font = Font(bold=True, size=14)
-            ws['A1'].alignment = Alignment(horizontal='center')
-            
-            # Add extracted text (split by lines for better formatting)
-            lines = extracted_text.split('\n')
-            for i, line in enumerate(lines, start=3):  # Start from row 3
-                ws[f'A{i}'] = line
-                ws[f'A{i}'].alignment = Alignment(wrap_text=True, vertical='top')
-            
-            # Adjust column width
-            ws.column_dimensions['A'].width = 100
-            
-            # Save to bytes
-            excel_buffer = io.BytesIO()
-            wb.save(excel_buffer)
-            excel_buffer.seek(0)
-            
-            return StreamingResponse(
-                iter([excel_buffer.read()]),
-                media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                headers={"Content-Disposition": "attachment; filename=extracted_text.xlsx"}
-            )
-        else:
-            # Default to display
-            return JSONResponse({
-                "success": True,
-                "text": extracted_text,
-                "message": "Texto extraído com sucesso"
-            })
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to extract text: {str(e)}"
-        )
+async def legacy_extract_text(request: Request):
+    """Legacy extract text endpoint - redirect to new API"""
+    return RedirectResponse(url="/tools/api/convert", status_code=307)

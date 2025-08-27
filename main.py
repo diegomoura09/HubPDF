@@ -13,7 +13,7 @@ from fastapi.responses import RedirectResponse
 import uvicorn
 
 from app.database import init_db
-from app.middleware import SecurityMiddleware, RateLimitMiddleware  # CSRFMiddleware
+from app.middleware import SecurityMiddleware, RateLimitMiddleware, CSRFMiddleware
 from app.routers import auth, tools, billing, admin, main as main_router
 from app.services.i18n import get_translations, get_user_locale
 from app.config import settings
@@ -47,12 +47,18 @@ async def lifespan(app: FastAPI):
     # Start cleanup task
     cleanup_task = asyncio.create_task(periodic_cleanup())
     
+    # Initialize job registry cleanup
+    from app.services.job_service import job_registry
+    cleanup_job_task = asyncio.create_task(periodic_job_cleanup())
+    
     yield
     
     # Shutdown
     cleanup_task.cancel()
+    cleanup_job_task.cancel()
     try:
         await cleanup_task
+        await cleanup_job_task
     except asyncio.CancelledError:
         pass
 
@@ -61,6 +67,16 @@ async def periodic_cleanup():
     while True:
         await cleanup_temp_files()
         await asyncio.sleep(600)  # 10 minutes
+
+async def periodic_job_cleanup():
+    """Run job cleanup every hour"""
+    while True:
+        try:
+            from app.services.job_service import job_registry
+            job_registry.cleanup_old_jobs(max_age_hours=settings.JOB_CLEANUP_HOURS)
+        except Exception as e:
+            print(f"Job cleanup failed: {e}")
+        await asyncio.sleep(3600)  # 1 hour
 
 # Create FastAPI app
 app = FastAPI(
@@ -73,7 +89,7 @@ app = FastAPI(
 # Security middleware
 app.add_middleware(SecurityMiddleware)
 app.add_middleware(RateLimitMiddleware, calls_per_minute=300, burst=50)
-# app.add_middleware(CSRFMiddleware)  # Temporarily disabled for debugging
+app.add_middleware(CSRFMiddleware)
 
 # CORS middleware
 app.add_middleware(
