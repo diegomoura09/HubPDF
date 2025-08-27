@@ -47,13 +47,16 @@ body {
 .btn-primary {
     background: var(--primary);
     color: white;
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-medium);
+    font-weight: 600;
+    border: 1px solid var(--primary-600);
 }
 
 .btn-primary:hover {
     background: var(--primary-600);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-medium);
+    box-shadow: var(--shadow-large);
+    border-color: var(--primary-700);
 }
 
 .btn-outline {
@@ -108,20 +111,23 @@ body {
     border-color: var(--primary);
 }
 
-/* Dropzone Modern */
+/* Dropzone Modern - Higher Contrast */
 .dropzone {
-    border: 2px dashed #cbd5e1;
+    border: 2px dashed #64748b;
     border-radius: var(--border-radius);
     padding: 1.25rem;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.9);
     text-align: center;
     transition: var(--transition);
+    color: #334155;
+    font-weight: 500;
 }
 
 .dropzone.dragover {
     border-color: var(--primary);
-    background: rgba(20, 184, 166, 0.05);
+    background: rgba(20, 184, 166, 0.1);
     transform: scale(1.01);
+    color: var(--primary-700);
 }
 
 /* Focus Ring System */
@@ -140,18 +146,21 @@ select:focus {
     align-items: center;
     padding: 1.5rem;
     background: white;
-    border: 2px solid #e2e8f0;
+    border: 2px solid #94a3b8;
     border-radius: var(--border-radius);
     transition: var(--transition);
     text-align: center;
     cursor: pointer;
+    color: #334155;
+    font-weight: 500;
 }
 
 .operation-btn:hover {
     border-color: var(--primary);
-    background: rgba(20, 184, 166, 0.02);
+    background: rgba(20, 184, 166, 0.05);
     transform: translateY(-2px);
     box-shadow: var(--shadow-medium);
+    color: var(--primary-700);
 }
 
 .operation-btn.selected {

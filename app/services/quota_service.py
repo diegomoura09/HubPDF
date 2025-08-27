@@ -16,18 +16,18 @@ class QuotaService:
     PLAN_LIMITS = {
         "free": {
             "max_file_size": settings.MAX_FILE_SIZE_FREE,
-            "daily_operations": 8,
-            "watermark_threshold": 4
+            "daily_operations": 999999,  # Beta: All users unlimited
+            "watermark_threshold": None  # Beta: No watermarks
         },
         "pro": {
             "max_file_size": settings.MAX_FILE_SIZE_PRO,
-            "daily_operations": 999999,  # Unlimited
-            "watermark_threshold": None  # No watermark
+            "daily_operations": 999999,  # Beta: Unlimited
+            "watermark_threshold": None  # Beta: No watermark
         },
         "custom": {
             "max_file_size": settings.MAX_FILE_SIZE_BUSINESS,
-            "daily_operations": 999999,  # Unlimited
-            "watermark_threshold": None  # No watermark
+            "daily_operations": 999999,  # Beta: Unlimited  
+            "watermark_threshold": None  # Beta: No watermark
         },
         "anonymous": {
             "max_file_size": settings.MAX_FILE_SIZE_FREE,  # Same as free

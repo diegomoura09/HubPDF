@@ -72,9 +72,10 @@ def get_max_file_size(user: User = None) -> int:
     if not user:
         return settings.MAX_FILE_SIZE_FREE
     
-    if user.subscription and user.subscription.plan == "pro":
+    # Use user.plan directly instead of subscription
+    if user.plan == "pro":
         return settings.MAX_FILE_SIZE_PRO
-    elif user.subscription and user.subscription.plan == "business":
+    elif user.plan == "business" or user.plan == "custom":
         return settings.MAX_FILE_SIZE_BUSINESS
     else:
         return settings.MAX_FILE_SIZE_FREE
