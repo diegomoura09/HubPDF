@@ -72,7 +72,7 @@ app = FastAPI(
 
 # Security middleware
 app.add_middleware(SecurityMiddleware)
-app.add_middleware(RateLimitMiddleware)
+app.add_middleware(RateLimitMiddleware, calls_per_minute=300, burst=50)
 # app.add_middleware(CSRFMiddleware)  # Temporarily disabled for debugging
 
 # CORS middleware
