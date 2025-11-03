@@ -58,15 +58,16 @@ ALLOWED_MIME_TYPES = {
     "images": ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/bmp", "image/tiff"],
 }
 
-def get_max_file_size(user: User = None) -> int:
+def get_max_file_size(user: Optional[User] = None) -> int:
     """Get maximum file size based on user plan"""
     if not user:
         return settings.MAX_FILE_SIZE_FREE
     
     # Use user.plan directly instead of subscription
-    if user.plan == "pro":
+    user_plan = str(user.plan) if user.plan is not None else "free"
+    if user_plan == "pro":
         return settings.MAX_FILE_SIZE_PRO
-    elif user.plan == "business" or user.plan == "custom":
+    elif user_plan == "business" or user_plan == "custom":
         return settings.MAX_FILE_SIZE_BUSINESS
     else:
         return settings.MAX_FILE_SIZE_FREE
@@ -87,7 +88,8 @@ async def save_uploaded_file(upload_file: UploadFile, work_dir: Path) -> str:
         logger.warning("python-magic not available for MIME type detection")
     
     # Save file with sanitized name
-    safe_filename = sanitize_filename(upload_file.filename)
+    filename = upload_file.filename or "uploaded_file"
+    safe_filename = sanitize_filename(filename)
     file_path = work_dir / safe_filename
     
     with open(file_path, "wb") as f:
@@ -109,9 +111,10 @@ async def tools_index(
     usage_summary = None
     if user:
         quota_usage = quota_service.get_user_quota_usage(db, user)
-        plan_limits = quota_service.get_plan_limits(user.plan)
+        user_plan = str(user.plan) if user.plan else "free"
+        plan_limits = quota_service.get_plan_limits(user_plan)
         usage_summary = {
-            "plan": user.plan,
+            "plan": user_plan,
             "operations_used": quota_usage.operations_count,
             "operations_limit": plan_limits["daily_operations"],
             "operations_percentage": min(100, (quota_usage.operations_count / plan_limits["daily_operations"]) * 100) if plan_limits["daily_operations"] > 0 else 0
@@ -187,7 +190,7 @@ async def start_conversion(
         # Validate files
         max_file_size = get_max_file_size(user)
         for file in files:
-            if file.size > max_file_size:
+            if file.size and file.size > max_file_size:
                 raise HTTPException(
                     status_code=413, 
                     detail=f"File {file.filename} exceeds maximum size limit"

@@ -24,6 +24,11 @@ except ImportError:
     pikepdf = None
 
 try:
+    import PyPDF2
+except ImportError:
+    PyPDF2 = None
+
+try:
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:
     Image = ImageDraw = ImageFont = None
@@ -86,7 +91,7 @@ class ConversionService:
     def _get_work_dir(self, job_id: str) -> Path:
         """Create and return a unique working directory for the job"""
         work_dir = self.temp_dir / job_id
-        work_dir.mkdir(exist_ok=True)
+        work_dir.mkdir(parents=True, exist_ok=True)
         return work_dir
         
     def _cleanup_work_dir(self, work_dir: Path):
