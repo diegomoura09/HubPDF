@@ -256,6 +256,11 @@ class ConversionJobService:
                 result = await conversion_service.compress_pdf(input_file, level, job_id)
                 return [result]
                 
+            elif operation == "merge_pdf":
+                self.registry.update_job(job_id, progress=50, message="Merging PDF files...")
+                result = await conversion_service.merge_pdfs(input_files, job_id)
+                return [result]
+                
             elif operation == "extract_text_to_pdf":
                 self.registry.update_job(job_id, progress=50, message="Creating text-only PDF...")
                 result = await conversion_service.extract_text_to_pdf(input_file, job_id)

@@ -232,85 +232,270 @@ class ConversionService:
             raise ConversionError(f"DOCX to PDF conversion failed: {str(e)}")
     
     async def pdf_to_xlsx(self, pdf_path: str, job_id: str = None) -> str:
-        """Convert PDF to XLSX using LibreOffice"""
+        """Convert PDF to XLSX using Python libraries"""
+        if Workbook is None:
+            raise ConversionError("openpyxl not available. Please install openpyxl package.")
         if job_id is None:
             job_id = str(uuid.uuid4())
             
         work_dir = self._get_work_dir(job_id)
         
         try:
+            def _extract_and_create_xlsx():
+                import pdfplumber
+                
+                # Create new Excel workbook
+                wb = Workbook()
+                
+                with pdfplumber.open(pdf_path) as pdf:
+                    for page_num, page in enumerate(pdf.pages):
+                        # Create sheet for each page
+                        if page_num == 0:
+                            ws = wb.active
+                            ws.title = f"Page {page_num + 1}"
+                        else:
+                            ws = wb.create_sheet(title=f"Page {page_num + 1}")
+                        
+                        # Extract tables if available
+                        tables = page.extract_tables()
+                        if tables:
+                            row_offset = 1
+                            for table in tables:
+                                for row in table:
+                                    for col_idx, cell in enumerate(row):
+                                        ws.cell(row=row_offset, column=col_idx + 1, value=cell)
+                                    row_offset += 1
+                                row_offset += 1  # Add space between tables
+                        else:
+                            # Extract text if no tables
+                            text = page.extract_text()
+                            if text:
+                                lines = text.split('\n')
+                                for row_idx, line in enumerate(lines, start=1):
+                                    ws.cell(row=row_idx, column=1, value=line)
+                
+                # Save with original filename + suffix
+                output_filename = self._get_original_filename_with_suffix(pdf_path, "to_xlsx", "xlsx")
+                output_path = work_dir / output_filename
+                wb.save(str(output_path))
+                return str(output_path)
+            
             loop = asyncio.get_event_loop()
-            output_path = await loop.run_in_executor(
-                self.executor,
-                self._run_libreoffice_conversion,
-                pdf_path,
-                str(work_dir),
-                "xlsx"
-            )
+            output_path = await loop.run_in_executor(self.executor, _extract_and_create_xlsx)
             return output_path
+            
         except Exception as e:
             self._cleanup_work_dir(work_dir)
             raise ConversionError(f"PDF to XLSX conversion failed: {str(e)}")
     
     async def xlsx_to_pdf(self, xlsx_path: str, job_id: str = None) -> str:
-        """Convert XLSX to PDF using LibreOffice"""
+        """Convert XLSX to PDF using Python libraries"""
+        if load_workbook is None or SimpleDocTemplate is None:
+            raise ConversionError("Required libraries not available. Please install openpyxl and reportlab.")
         if job_id is None:
             job_id = str(uuid.uuid4())
             
         work_dir = self._get_work_dir(job_id)
         
         try:
+            def _convert_xlsx_to_pdf():
+                from reportlab.lib import colors
+                from reportlab.lib.pagesizes import letter, landscape
+                from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, PageBreak
+                from reportlab.lib.styles import getSampleStyleSheet
+                
+                # Read Excel content
+                wb = load_workbook(xlsx_path, data_only=True)
+                
+                # Create PDF with reportlab
+                output_filename = self._get_original_filename_with_suffix(xlsx_path, "to_pdf", "pdf")
+                output_path = work_dir / output_filename
+                
+                pdf_doc = SimpleDocTemplate(str(output_path), pagesize=landscape(letter))
+                styles = getSampleStyleSheet()
+                story = []
+                
+                # Process each sheet
+                for sheet_name in wb.sheetnames:
+                    ws = wb[sheet_name]
+                    
+                    # Add sheet title
+                    story.append(Paragraph(f"<b>{sheet_name}</b>", styles['Heading1']))
+                    
+                    # Extract data from sheet
+                    data = []
+                    for row in ws.iter_rows(values_only=True):
+                        data.append([str(cell) if cell is not None else "" for cell in row])
+                    
+                    if data:
+                        # Create table
+                        table = Table(data)
+                        table.setStyle(TableStyle([
+                            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                            ('FONTSIZE', (0, 0), (-1, 0), 10),
+                            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+                        ]))
+                        story.append(table)
+                    
+                    story.append(PageBreak())
+                
+                if not story:
+                    story.append(Paragraph("Empty Excel document", styles['Normal']))
+                
+                pdf_doc.build(story)
+                return str(output_path)
+            
             loop = asyncio.get_event_loop()
-            output_path = await loop.run_in_executor(
-                self.executor,
-                self._run_libreoffice_conversion,
-                xlsx_path,
-                str(work_dir),
-                "pdf"
-            )
+            output_path = await loop.run_in_executor(self.executor, _convert_xlsx_to_pdf)
             return output_path
+            
         except Exception as e:
             self._cleanup_work_dir(work_dir)
             raise ConversionError(f"XLSX to PDF conversion failed: {str(e)}")
     
     async def pdf_to_pptx(self, pdf_path: str, job_id: str = None) -> str:
-        """Convert PDF to PPTX using LibreOffice"""
+        """Convert PDF to PPTX using Python libraries"""
+        if Presentation is None or fitz is None:
+            raise ConversionError("Required libraries not available. Please install python-pptx and pymupdf.")
         if job_id is None:
             job_id = str(uuid.uuid4())
             
         work_dir = self._get_work_dir(job_id)
         
         try:
+            def _convert_pdf_to_pptx():
+                from pptx.util import Inches
+                
+                # Create new PowerPoint presentation
+                prs = Presentation()
+                prs.slide_width = Inches(10)
+                prs.slide_height = Inches(7.5)
+                
+                # Convert each PDF page to image and add to presentation
+                doc = fitz.open(pdf_path)
+                
+                for page_num in range(len(doc)):
+                    page = doc.load_page(page_num)
+                    
+                    # Convert page to image
+                    mat = fitz.Matrix(2, 2)  # 2x zoom for better quality
+                    pix = page.get_pixmap(matrix=mat, alpha=False)
+                    
+                    # Save temp image
+                    img_path = work_dir / f"temp_page_{page_num}.png"
+                    pix.save(str(img_path))
+                    
+                    # Add blank slide
+                    blank_slide_layout = prs.slide_layouts[6]  # Blank layout
+                    slide = prs.slides.add_slide(blank_slide_layout)
+                    
+                    # Add image to slide
+                    left = Inches(0.5)
+                    top = Inches(0.5)
+                    height = Inches(6.5)
+                    slide.shapes.add_picture(str(img_path), left, top, height=height)
+                    
+                    # Clean up temp image
+                    img_path.unlink(missing_ok=True)
+                
+                doc.close()
+                
+                # Save with original filename + suffix
+                output_filename = self._get_original_filename_with_suffix(pdf_path, "to_pptx", "pptx")
+                output_path = work_dir / output_filename
+                prs.save(str(output_path))
+                return str(output_path)
+            
             loop = asyncio.get_event_loop()
-            output_path = await loop.run_in_executor(
-                self.executor,
-                self._run_libreoffice_conversion,
-                pdf_path,
-                str(work_dir),
-                "pptx"
-            )
+            output_path = await loop.run_in_executor(self.executor, _convert_pdf_to_pptx)
             return output_path
+            
         except Exception as e:
             self._cleanup_work_dir(work_dir)
             raise ConversionError(f"PDF to PPTX conversion failed: {str(e)}")
     
     async def pptx_to_pdf(self, pptx_path: str, job_id: str = None) -> str:
-        """Convert PPTX to PDF using LibreOffice"""
+        """Convert PPTX to PDF using Python libraries"""
+        if Presentation is None or Image is None or SimpleDocTemplate is None:
+            raise ConversionError("Required libraries not available. Please install python-pptx, pillow, and reportlab.")
         if job_id is None:
             job_id = str(uuid.uuid4())
             
         work_dir = self._get_work_dir(job_id)
         
         try:
+            def _convert_pptx_to_pdf():
+                from reportlab.lib.pagesizes import letter, landscape
+                from reportlab.pdfgen import canvas
+                from reportlab.lib.utils import ImageReader
+                
+                # Read PowerPoint presentation
+                prs = Presentation(pptx_path)
+                
+                # Create PDF with reportlab
+                output_filename = self._get_original_filename_with_suffix(pptx_path, "to_pdf", "pdf")
+                output_path = work_dir / output_filename
+                
+                # Create PDF with landscape orientation
+                c = canvas.Canvas(str(output_path), pagesize=landscape(letter))
+                page_width, page_height = landscape(letter)
+                
+                # Extract text from each slide and add to PDF
+                for slide_num, slide in enumerate(prs.slides):
+                    # Extract all text from slide
+                    text_content = []
+                    for shape in slide.shapes:
+                        if hasattr(shape, "text"):
+                            if shape.text.strip():
+                                text_content.append(shape.text)
+                    
+                    # Add slide number
+                    c.setFont("Helvetica-Bold", 16)
+                    c.drawString(50, page_height - 50, f"Slide {slide_num + 1}")
+                    
+                    # Add text content
+                    c.setFont("Helvetica", 12)
+                    y_position = page_height - 100
+                    for text in text_content:
+                        # Wrap text if too long
+                        max_width = page_width - 100
+                        lines = []
+                        words = text.split()
+                        current_line = ""
+                        
+                        for word in words:
+                            test_line = current_line + " " + word if current_line else word
+                            if c.stringWidth(test_line, "Helvetica", 12) < max_width:
+                                current_line = test_line
+                            else:
+                                if current_line:
+                                    lines.append(current_line)
+                                current_line = word
+                        if current_line:
+                            lines.append(current_line)
+                        
+                        for line in lines:
+                            if y_position < 50:
+                                c.showPage()
+                                c.setFont("Helvetica", 12)
+                                y_position = page_height - 50
+                            c.drawString(50, y_position, line)
+                            y_position -= 20
+                    
+                    c.showPage()
+                
+                c.save()
+                return str(output_path)
+            
             loop = asyncio.get_event_loop()
-            output_path = await loop.run_in_executor(
-                self.executor,
-                self._run_libreoffice_conversion,
-                pptx_path,
-                str(work_dir),
-                "pdf"
-            )
+            output_path = await loop.run_in_executor(self.executor, _convert_pptx_to_pdf)
             return output_path
+            
         except Exception as e:
             self._cleanup_work_dir(work_dir)
             raise ConversionError(f"PPTX to PDF conversion failed: {str(e)}")
@@ -335,6 +520,9 @@ class ConversionService:
                 doc = fitz.open(pdf_path)
                 image_paths = []
                 
+                # Get original filename for prefix
+                original_name = Path(pdf_path).stem
+                
                 for page_num in range(len(doc)):
                     page = doc.load_page(page_num)
                     
@@ -342,12 +530,12 @@ class ConversionService:
                     mat = fitz.Matrix(dpi / 72, dpi / 72)
                     pix = page.get_pixmap(matrix=mat, alpha=False)
                     
-                    # Save image
+                    # Save image with original filename prefix
                     if fmt in ['jpg', 'jpeg']:
-                        image_path = work_dir / f"page_{page_num + 1:03d}.jpg"
+                        image_path = work_dir / f"{original_name}_page_{page_num + 1:03d}.jpg"
                         pix.save(str(image_path), output="jpeg")
                     else:
-                        image_path = work_dir / f"page_{page_num + 1:03d}.png"
+                        image_path = work_dir / f"{original_name}_page_{page_num + 1:03d}.png"
                         pix.save(str(image_path), output="png")
                     
                     image_paths.append(str(image_path))

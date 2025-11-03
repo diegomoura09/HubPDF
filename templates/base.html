@@ -125,10 +125,6 @@
                                 {{ t('nav_dashboard') }}
                             </a>
                         {% endif %}
-                        <a href="/billing/pricing" class="nav-link">
-                            <i data-lucide="zap" class="h-4 w-4"></i>
-                            {{ t('nav_pricing') }}
-                        </a>
                     </div>
                 </div>
                 
@@ -161,10 +157,6 @@
                                 <a href="/dashboard" class="dropdown-item">
                                     <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
                                     {{ t('nav_dashboard') }}
-                                </a>
-                                <a href="/account/plan" class="dropdown-item">
-                                    <i data-lucide="crown" class="h-4 w-4"></i>
-                                    {{ t('nav_plan') }}
                                 </a>
                                 {% if user.role == 'admin' %}
                                     <a href="/admin" class="dropdown-item">
@@ -215,10 +207,6 @@
                         {{ t('nav_dashboard') }}
                     </a>
                 {% endif %}
-                <a href="/billing/pricing" class="mobile-nav-item">
-                    <i data-lucide="zap" class="h-4 w-4"></i>
-                    {{ t('nav_pricing') }}
-                </a>
                 {% if not user %}
                     <div class="pt-4 border-t border-slate-200/60">
                         <a href="/auth/login" class="mobile-nav-item">{{ t('btn_login') }}</a>
