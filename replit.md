@@ -2,7 +2,7 @@
 
 ## Overview
 
-HubPDF is a comprehensive web-based PDF processing platform built with FastAPI that offers secure PDF manipulation tools completely free during the beta period. The application provides essential PDF operations like merging, splitting, compressing, and converting PDFs to/from DOCX, XLSX, PPTX, images, and text, while maintaining strict security and privacy standards. It features multilingual support (Portuguese-BR as default, English optional), Google OAuth integration, and a complete admin dashboard for user management. All features are 100% free with unlimited operations and no watermarks during beta.
+HubPDF is a streamlined web-based PDF processing platform built with FastAPI that offers 7 essential PDF manipulation tools completely free during the beta period. The application provides core PDF operations: juntar PDFs, dividir PDFs, extrair páginas, comprimir PDFs, converter PDF para DOCX, extrair texto, and convert PDF para imagens. Built with security and simplicity in mind, it features a calm color palette (blue, green, gray tones), multilingual support (Portuguese-BR as default, English optional), Google OAuth integration, and admin dashboard for user management. All features are 100% free with unlimited operations and no watermarks during beta.
 
 ## User Preferences
 
@@ -24,14 +24,17 @@ Preferred communication style: Simple, everyday language.
 ### Business Logic
 - **Quota System**: Beta mode with unlimited operations (999999 ops/day) for all registered users
 - **Watermark Logic**: No watermarks applied during beta period
-- **File Processing**: PDF operations using native Python libraries (python-docx, openpyxl, python-pptx, reportlab) instead of LibreOffice
+- **File Processing**: PDF operations using native Python libraries (python-docx, pdfplumber, reportlab, PyPDF2, pikepdf)
 - **Filename Preservation**: All conversions maintain original filename with descriptive suffixes (_merge, _compress, _split, _to_docx, etc)
+- **7 Core Functions Only**: Juntar PDFs, Dividir PDFs, Extrair Páginas, Comprimir PDFs, PDF para DOCX, Extrair Texto, PDF para Imagens
 
 ### Frontend Architecture
 - **UI Framework**: Tailwind CSS with HTMX for dynamic interactions
+- **Color Scheme**: Calm tones of blue, green, gray, white, and black for professional appearance
 - **Progressive Enhancement**: PWA-ready with manifest.json and service worker
 - **Internationalization**: JSON-based translation system with cookie-based locale switching
-- **Tools Modal**: "Todas as Ferramentas" button in header with 18+ organized tools (Conversões, Ferramentas PDF, Segurança)
+- **Tools Modal**: "Todas as Ferramentas" button in header with 7 essential tools displayed in a clean grid
+- **Credits**: Footer displays developer attribution (Diego Moura de Andrade - Cruzeiro do Sul / Braz Cubas)
 
 ### Admin Panel
 - **Dashboard**: KPIs tracking (users, operations, storage)
@@ -45,15 +48,13 @@ Preferred communication style: Simple, everyday language.
 - **JWT Management**: Access and refresh token rotation with secure cookie storage
 
 ### PDF Processing Libraries
-- **PyPDF2**: Core PDF manipulation (merge, split, metadata)
-- **pikepdf**: Advanced PDF operations and compression
+- **PyPDF2**: Core PDF manipulation (merge, split, metadata, compression fallback)
+- **pikepdf**: Advanced PDF compression with recompress_flate for size reduction
 - **pdfplumber**: Text extraction from PDFs
-- **python-docx**: DOCX to PDF and PDF to DOCX conversions
-- **openpyxl**: XLSX to PDF and PDF to XLSX conversions
-- **python-pptx**: PPTX to PDF and PDF to PPTX conversions
-- **reportlab**: PDF generation and document creation
+- **python-docx**: PDF to DOCX conversions
+- **reportlab**: PDF generation from text and document creation
 - **PIL/Pillow**: Image processing for PDF conversion
-- **pdf2image**: PDF to image conversion (optional dependency)
+- **pdf2image**: PDF to image conversion (PNG/JPG)
 
 ### Infrastructure Services
 - **File Storage**: Temporary filesystem storage with automatic cleanup

@@ -14,6 +14,19 @@
                 extend: {
                     colors: {
                         'primary': {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            950: '#172554'
+                        },
+                        'emerald': {
                             50: '#f0fdf4',
                             100: '#dcfce7',
                             200: '#bbf7d0',
@@ -26,31 +39,18 @@
                             900: '#14532d',
                             950: '#052e16'
                         },
-                        'emerald': {
-                            50: '#ecfdf5',
-                            100: '#d1fae5',
-                            200: '#a7f3d0',
-                            300: '#6ee7b7',
-                            400: '#34d399',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                            800: '#065f46',
-                            900: '#064e3b',
-                            950: '#022c22'
-                        },
                         'teal': {
-                            50: '#f0fdfa',
-                            100: '#ccfbf1',
-                            200: '#99f6e4',
-                            300: '#5eead4',
-                            400: '#2dd4bf',
-                            500: '#14b8a6',
-                            600: '#0d9488',
-                            700: '#0f766e',
-                            800: '#115e59',
-                            900: '#134e4a',
-                            950: '#042f2e'
+                            50: '#ecfeff',
+                            100: '#cffafe',
+                            200: '#a5f3fc',
+                            300: '#67e8f9',
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                            700: '#0e7490',
+                            800: '#155e75',
+                            900: '#164e63',
+                            950: '#083344'
                         }
                     },
                     fontFamily: {
@@ -98,13 +98,13 @@
                     <!-- Logo -->
                     <a href="/home" class="flex items-center space-x-3 group">
                         <div class="relative">
-                            <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                                 <i data-lucide="file-text" class="h-5 w-5 text-white"></i>
                             </div>
                         </div>
                         <div class="flex flex-col">
                             <span class="text-xl font-bold text-slate-900 leading-tight">{{ t('title') }}</span>
-                            <span class="text-xs text-emerald-600 font-medium -mt-1">PDF Tools</span>
+                            <span class="text-xs text-green-600 font-medium -mt-1">PDF Tools</span>
                         </div>
                     </a>
                     
@@ -142,7 +142,7 @@
                         <!-- User Menu -->
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center space-x-3 px-4 py-2 text-slate-700 hover:text-slate-900 focus:outline-none rounded-xl hover:bg-slate-100/60 transition-all duration-200">
-                                <div class="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                                <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">
                                     {{ user.name[0].upper() if user.name else 'U' }}
                                 </div>
                                 <span class="text-sm font-semibold hidden md:block">{{ user.name }}</span>
@@ -178,7 +178,7 @@
                         <!-- Auth Buttons -->
                         <div class="flex items-center space-x-3">
                             <a href="/auth/login" class="text-slate-700 hover:text-slate-900 px-4 py-2 rounded-xl text-sm font-semibold transition-colors duration-200">{{ t('btn_login') }}</a>
-                            <a href="/auth/register" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">{{ t('btn_register') }}</a>
+                            <a href="/auth/register" class="bg-gradient-to-r from-blue-600 to-green-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">{{ t('btn_register') }}</a>
                         </div>
                     {% endif %}
                     
@@ -210,7 +210,7 @@
                 {% if not user %}
                     <div class="pt-4 border-t border-slate-200/60">
                         <a href="/auth/login" class="mobile-nav-item">{{ t('btn_login') }}</a>
-                        <a href="/auth/register" class="mobile-nav-item bg-gradient-to-r from-emerald-600 to-teal-600 text-white">{{ t('btn_register') }}</a>
+                        <a href="/auth/register" class="mobile-nav-item bg-gradient-to-r from-blue-600 to-green-600 text-white">{{ t('btn_register') }}</a>
                     </div>
                 {% endif %}
             </div>
@@ -227,7 +227,7 @@
                             {% if message.type == 'error' %}
                                 <i data-lucide="alert-circle" class="h-5 w-5 text-red-500"></i>
                             {% else %}
-                                <i data-lucide="check-circle" class="h-5 w-5 text-emerald-500"></i>
+                                <i data-lucide="check-circle" class="h-5 w-5 text-green-500"></i>
                             {% endif %}
                         </div>
                         <div class="ml-3">
@@ -253,12 +253,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
                 <div class="col-span-1 lg:col-span-2">
                     <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
                             <i data-lucide="file-text" class="h-5 w-5 text-white"></i>
                         </div>
                         <div class="flex flex-col">
                             <span class="text-xl font-bold text-slate-900">{{ t('title') }}</span>
-                            <span class="text-xs text-emerald-600 font-medium -mt-1">PDF Tools</span>
+                            <span class="text-xs text-green-600 font-medium -mt-1">PDF Tools</span>
                         </div>
                     </div>
                     <p class="text-slate-600 text-sm leading-relaxed max-w-md">{{ t('footer_description') }}</p>
@@ -308,7 +308,7 @@
                     </p>
                 </div>
                 <div class="flex items-center justify-center space-x-4 mt-4">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         <i data-lucide="shield-check" class="h-3 w-3 mr-1"></i>
                         Seguro & Privado
                     </span>
@@ -353,7 +353,7 @@
                 <!-- Modal Header -->
                 <div class="flex items-center justify-between p-8 border-b border-slate-200">
                     <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-green-600 rounded-xl flex items-center justify-center">
                             <i data-lucide="grid-3x3" class="h-6 w-6 text-white"></i>
                         </div>
                         <div>
@@ -370,7 +370,7 @@
                 <div class="p-8">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <a href="/tools" class="tool-card-large">
-                            <i data-lucide="layers" class="h-8 w-8 text-emerald-600 mb-2"></i>
+                            <i data-lucide="layers" class="h-8 w-8 text-green-600 mb-2"></i>
                             <span class="font-bold">Juntar PDFs</span>
                             <span class="text-sm text-slate-500">Combinar múltiplos arquivos PDF em um único documento</span>
                         </a>
@@ -395,7 +395,7 @@
                             <span class="text-sm text-slate-500">Converter PDF para documento Word editável</span>
                         </a>
                         <a href="/tools" class="tool-card-large">
-                            <i data-lucide="type" class="h-8 w-8 text-teal-600 mb-2"></i>
+                            <i data-lucide="type" class="h-8 w-8 text-cyan-600 mb-2"></i>
                             <span class="font-bold">Extrair Texto</span>
                             <span class="text-sm text-slate-500">Obter todo o texto do PDF</span>
                         </a>
@@ -428,7 +428,7 @@
 }
 
 .modern-select {
-    @apply text-sm bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200;
+    @apply text-sm bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200;
 }
 
 /* Flash Messages */
@@ -441,16 +441,16 @@
 }
 
 .flash-success {
-    @apply bg-emerald-50/80 text-emerald-900 border-emerald-200/60;
+    @apply bg-green-50/80 text-green-900 border-green-200/60;
 }
 
 /* Footer Links */
 .footer-link {
-    @apply text-slate-600 hover:text-emerald-600 text-sm font-medium transition-colors duration-200;
+    @apply text-slate-600 hover:text-green-600 text-sm font-medium transition-colors duration-200;
 }
 
 .social-link {
-    @apply w-10 h-10 bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110;
+    @apply w-10 h-10 bg-slate-100 hover:bg-green-100 text-slate-600 hover:text-green-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110;
 }
 
 /* Modern Button Styles */
@@ -459,7 +459,7 @@
 }
 
 .btn-primary {
-    @apply bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:ring-emerald-500;
+    @apply bg-gradient-to-r from-blue-600 to-green-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:ring-blue-500;
 }
 
 .btn-secondary {
@@ -467,7 +467,7 @@
 }
 
 .btn-outline {
-    @apply border-2 border-slate-300 hover:border-emerald-500 text-slate-700 hover:text-emerald-600 bg-transparent hover:bg-emerald-50 focus:ring-emerald-500;
+    @apply border-2 border-slate-300 hover:border-blue-500 text-slate-700 hover:text-green-600 bg-transparent hover:bg-green-50 focus:ring-blue-500;
 }
 
 .btn-danger {
@@ -489,7 +489,7 @@
 
 /* Modern Form Styles */
 .form-input {
-    @apply block w-full px-4 py-3 text-slate-900 bg-white border border-slate-300 rounded-xl shadow-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200;
+    @apply block w-full px-4 py-3 text-slate-900 bg-white border border-slate-300 rounded-xl shadow-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200;
 }
 
 .form-label {
@@ -501,12 +501,12 @@
 }
 
 .form-success {
-    @apply mt-2 text-sm text-emerald-600 flex items-center space-x-1;
+    @apply mt-2 text-sm text-green-600 flex items-center space-x-1;
 }
 
 /* Tool Card Large for Modal */
 .tool-card-large {
-    @apply flex flex-col items-center text-center p-6 bg-white border-2 border-slate-200 rounded-2xl hover:border-emerald-500 hover:shadow-lg transition-all duration-200 cursor-pointer;
+    @apply flex flex-col items-center text-center p-6 bg-white border-2 border-slate-200 rounded-2xl hover:border-blue-500 hover:shadow-lg transition-all duration-200 cursor-pointer;
 }
 
 .tool-card-large:hover {

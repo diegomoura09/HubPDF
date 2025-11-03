@@ -19,7 +19,7 @@
         <div class="modern-card mb-16">
             <div class="card-body text-center">
                 <div class="mb-8">
-                    <div class="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                    <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-green-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
                         <i data-lucide="upload-cloud" class="h-12 w-12 text-white"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-slate-900 mb-4">Upload & Conversão Rápida</h3>
@@ -30,7 +30,7 @@
                 <form id="conversion-form" enctype="multipart/form-data" class="space-y-6">
                     <input type="hidden" name="csrf_token" value="{{ request.cookies.get('csrf_token', '') }}">
                     <!-- File Upload Area -->
-                    <div class="border-2 border-dashed border-slate-300 rounded-2xl p-12 hover:border-emerald-400 hover:bg-emerald-50/30 transition-all duration-300" id="drop-zone">
+                    <div class="border-2 border-dashed border-slate-300 rounded-2xl p-12 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-300" id="drop-zone">
                         <input type="file" id="file-input" name="files" multiple accept=".pdf,.png,.jpg,.jpeg,.gif,.bmp" class="hidden">
                         <div class="text-center">
                             <i data-lucide="file-plus" class="h-16 w-16 text-slate-400 mx-auto mb-4"></i>
@@ -48,7 +48,7 @@
                         <h4 class="col-span-full text-lg font-bold text-slate-900 text-center mb-4">Escolha a operação:</h4>
                         
                         <button type="button" class="operation-btn" data-operation="merge_pdf">
-                            <i data-lucide="layers" class="h-8 w-8 text-emerald-600 mb-2"></i>
+                            <i data-lucide="layers" class="h-8 w-8 text-green-600 mb-2"></i>
                             <span class="font-semibold">Juntar PDFs</span>
                             <span class="text-sm text-slate-500">Combinar múltiplos arquivos</span>
                         </button>
@@ -131,7 +131,7 @@
                         <!-- OCR option -->
                         <div id="ocr-options" class="hidden">
                             <label class="flex items-center space-x-3">
-                                <input type="checkbox" name="use_ocr" class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500">
+                                <input type="checkbox" name="use_ocr" class="w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-emerald-500">
                                 <span class="text-sm font-medium text-slate-700">Usar OCR para texto em imagens</span>
                             </label>
                         </div>
@@ -166,7 +166,7 @@
         <div id="results-area" class="hidden modern-card">
             <div class="card-body">
                 <div class="text-center mb-6">
-                    <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <i data-lucide="check-circle" class="h-8 w-8 text-white"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-slate-900 mb-2">Conversão Concluída!</h3>
@@ -177,11 +177,11 @@
         </div>
         
         <!-- Free Beta Banner -->
-        <div class="modern-card bg-gradient-to-r from-emerald-500 to-teal-600 border-0 mt-16">
+        <div class="modern-card bg-gradient-to-r from-blue-500 to-green-600 border-0 mt-16">
             <div class="card-body text-white text-center">
                 <h3 class="text-2xl font-bold mb-4">🎉 HubPDF Beta - 100% Gratuito!</h3>
-                <p class="text-emerald-100 mb-2">Todas as ferramentas e conversões estão disponíveis gratuitamente durante o período beta</p>
-                <p class="text-emerald-50 text-sm">Sem limites • Sem marcas d'água • Sem custos</p>
+                <p class="text-blue-100 mb-2">Todas as ferramentas e conversões estão disponíveis gratuitamente durante o período beta</p>
+                <p class="text-blue-50 text-sm">Sem limites • Sem marcas d'água • Sem custos</p>
             </div>
         </div>
     </div>
@@ -189,7 +189,7 @@
 
 <style>
 .operation-btn {
-    @apply flex flex-col items-center justify-center p-6 bg-white border-2 border-slate-200 rounded-2xl hover:border-emerald-300 hover:bg-emerald-50/30 transition-all duration-300 text-center;
+    @apply flex flex-col items-center justify-center p-6 bg-white border-2 border-slate-200 rounded-2xl hover:border-emerald-300 hover:bg-blue-50/30 transition-all duration-300 text-center;
 }
 
 .operation-btn.selected {
@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <a href="/tools/api/jobs/${jobId}/download/${index}" 
                    class="flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors">
                     <div class="flex items-center space-x-3">
-                        <i data-lucide="download" class="h-5 w-5 text-emerald-600"></i>
+                        <i data-lucide="download" class="h-5 w-5 text-green-600"></i>
                         <span class="font-medium text-slate-900">${fileName}</span>
                     </div>
                     <i data-lucide="external-link" class="h-4 w-4 text-slate-400"></i>
