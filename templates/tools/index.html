@@ -31,27 +31,26 @@
                     <input type="hidden" name="csrf_token" value="{{ request.cookies.get('csrf_token', '') }}">
                     <!-- File Upload Area -->
                     <div class="border-2 border-dashed border-slate-300 rounded-2xl p-12 hover:border-emerald-400 hover:bg-emerald-50/30 transition-all duration-300" id="drop-zone">
-                        <input type="file" id="file-input" name="files" multiple accept=".pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.gif,.bmp,.tiff" class="hidden">
+                        <input type="file" id="file-input" name="files" multiple accept=".pdf,.png,.jpg,.jpeg,.gif,.bmp" class="hidden">
                         <div class="text-center">
                             <i data-lucide="file-plus" class="h-16 w-16 text-slate-400 mx-auto mb-4"></i>
-                            <p class="text-lg font-semibold text-slate-700 mb-2">Clique para selecionar arquivos</p>
+                            <p class="text-lg font-semibold text-slate-700 mb-2">Clique para selecionar arquivos PDF</p>
                             <p class="text-sm text-slate-500">ou arraste e solte aqui</p>
-                            <p class="text-xs text-slate-400 mt-2">PDF, DOCX, XLSX, PPTX, PNG, JPG suportados</p>
+                            <p class="text-xs text-slate-400 mt-2">PDF e imagens (PNG, JPG) suportados</p>
                         </div>
                     </div>
                     
                     <!-- Selected Files -->
                     <div id="selected-files" class="hidden space-y-2"></div>
                     
-                    <!-- Operation Selection -->
+                    <!-- Operation Selection - 7 Funções Essenciais -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="operation-selection" style="display: none;">
                         <h4 class="col-span-full text-lg font-bold text-slate-900 text-center mb-4">Escolha a operação:</h4>
                         
-                        <!-- PDF Operations -->
                         <button type="button" class="operation-btn" data-operation="merge_pdf">
-                            <i data-lucide="merge" class="h-8 w-8 text-emerald-600 mb-2"></i>
-                            <span class="font-semibold">Mesclar PDF</span>
-                            <span class="text-sm text-slate-500">Combinar arquivos</span>
+                            <i data-lucide="layers" class="h-8 w-8 text-emerald-600 mb-2"></i>
+                            <span class="font-semibold">Juntar PDFs</span>
+                            <span class="text-sm text-slate-500">Combinar múltiplos arquivos</span>
                         </button>
                         
                         <button type="button" class="operation-btn" data-operation="split_pdf">
@@ -60,54 +59,34 @@
                             <span class="text-sm text-slate-500">Separar páginas</span>
                         </button>
                         
+                        <button type="button" class="operation-btn" data-operation="extract_pages">
+                            <i data-lucide="file-output" class="h-8 w-8 text-purple-600 mb-2"></i>
+                            <span class="font-semibold">Extrair Páginas</span>
+                            <span class="text-sm text-slate-500">Selecione páginas específicas</span>
+                        </button>
+                        
                         <button type="button" class="operation-btn" data-operation="compress_pdf">
-                            <i data-lucide="minimize-2" class="h-8 w-8 text-purple-600 mb-2"></i>
+                            <i data-lucide="minimize-2" class="h-8 w-8 text-orange-600 mb-2"></i>
                             <span class="font-semibold">Comprimir PDF</span>
-                            <span class="text-sm text-slate-500">Reduzir tamanho</span>
+                            <span class="text-sm text-slate-500">Reduzir tamanho do arquivo</span>
                         </button>
                         
-                        <button type="button" class="operation-btn" data-operation="pdf_to_txt">
-                            <i data-lucide="type" class="h-8 w-8 text-indigo-600 mb-2"></i>
-                            <span class="font-semibold">Extrair Texto</span>
-                            <span class="text-sm text-slate-500">PDF para TXT</span>
-                        </button>
-                        
-                        <!-- Office Conversions -->
                         <button type="button" class="operation-btn" data-operation="pdf_to_docx">
-                            <i data-lucide="file-text" class="h-8 w-8 text-blue-600 mb-2"></i>
-                            <span class="font-semibold">PDF → DOCX</span>
-                            <span class="text-sm text-slate-500">Word editável</span>
+                            <i data-lucide="file-text" class="h-8 w-8 text-indigo-600 mb-2"></i>
+                            <span class="font-semibold">PDF para DOCX</span>
+                            <span class="text-sm text-slate-500">Converter para Word</span>
                         </button>
                         
-                        <button type="button" class="operation-btn" data-operation="pdf_to_xlsx">
-                            <i data-lucide="sheet" class="h-8 w-8 text-green-600 mb-2"></i>
-                            <span class="font-semibold">PDF → XLSX</span>
-                            <span class="text-sm text-slate-500">Excel editável</span>
+                        <button type="button" class="operation-btn" data-operation="extract_text">
+                            <i data-lucide="type" class="h-8 w-8 text-teal-600 mb-2"></i>
+                            <span class="font-semibold">Extrair Texto</span>
+                            <span class="text-sm text-slate-500">Obter texto do PDF</span>
                         </button>
                         
-                        <button type="button" class="operation-btn" data-operation="pdf_to_pptx">
-                            <i data-lucide="presentation" class="h-8 w-8 text-orange-600 mb-2"></i>
-                            <span class="font-semibold">PDF → PPTX</span>
-                            <span class="text-sm text-slate-500">PowerPoint editável</span>
-                        </button>
-                        
-                        <!-- Image Conversions -->
                         <button type="button" class="operation-btn" data-operation="pdf_to_images">
                             <i data-lucide="image" class="h-8 w-8 text-pink-600 mb-2"></i>
-                            <span class="font-semibold">PDF → Imagens</span>
-                            <span class="text-sm text-slate-500">PNG, JPG</span>
-                        </button>
-                        
-                        <button type="button" class="operation-btn" data-operation="images_to_pdf">
-                            <i data-lucide="file-image" class="h-8 w-8 text-teal-600 mb-2"></i>
-                            <span class="font-semibold">Imagens → PDF</span>
-                            <span class="text-sm text-slate-500">Combinar imagens</span>
-                        </button>
-                        
-                        <button type="button" class="operation-btn" data-operation="pdf_to_ico">
-                            <i data-lucide="image" class="h-8 w-8 text-yellow-600 mb-2"></i>
-                            <span class="font-semibold">PDF → Ícone</span>
-                            <span class="text-sm text-slate-500">Arquivo ICO</span>
+                            <span class="font-semibold">PDF para Imagens</span>
+                            <span class="text-sm text-slate-500">Converter para PNG/JPG</span>
                         </button>
                     </div>
                     

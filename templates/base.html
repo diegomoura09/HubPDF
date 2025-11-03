@@ -277,39 +277,44 @@
                 </div>
                 
                 <div>
-                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6">{{ t('footer_tools') }}</h3>
+                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6">Ferramentas</h3>
                     <ul class="space-y-3">
-                        <li><a href="/tools/merge" class="footer-link">{{ t('tool_merge') }}</a></li>
-                        <li><a href="/tools/split" class="footer-link">{{ t('tool_split') }}</a></li>
-                        <li><a href="/tools/compress" class="footer-link">{{ t('tool_compress') }}</a></li>
-                        <li><a href="/tools/extract-text" class="footer-link">{{ t('tool_extract_text') }}</a></li>
-                        <li><a href="/tools/pdf-to-images" class="footer-link">PDF para Imagens</a></li>
-                        <li><a href="/tools/images-to-pdf" class="footer-link">Imagens para PDF</a></li>
+                        <li><a href="/tools" class="footer-link">Juntar PDFs</a></li>
+                        <li><a href="/tools" class="footer-link">Dividir PDF</a></li>
+                        <li><a href="/tools" class="footer-link">Extrair Páginas</a></li>
+                        <li><a href="/tools" class="footer-link">Comprimir PDF</a></li>
+                        <li><a href="/tools" class="footer-link">PDF para DOCX</a></li>
+                        <li><a href="/tools" class="footer-link">Extrair Texto</a></li>
+                        <li><a href="/tools" class="footer-link">PDF para Imagens</a></li>
                     </ul>
                 </div>
                 
                 <div>
-                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6">{{ t('footer_company') }}</h3>
+                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6">Empresa</h3>
                     <ul class="space-y-3">
-                        <li><a href="/about" class="footer-link">{{ t('nav_about') }}</a></li>
-                        <li><a href="/contact" class="footer-link">{{ t('nav_contact') }}</a></li>
-                        <li><a href="/privacy" class="footer-link">{{ t('nav_privacy') }}</a></li>
-                        <li><a href="/terms" class="footer-link">{{ t('nav_terms') }}</a></li>
-                        <li><a href="/billing/pricing" class="footer-link">{{ t('nav_pricing') }}</a></li>
+                        <li><a href="/about" class="footer-link">Sobre</a></li>
+                        <li><a href="/contact" class="footer-link">Contato</a></li>
+                        <li><a href="/privacy" class="footer-link">Privacidade</a></li>
+                        <li><a href="/terms" class="footer-link">Termos de Uso</a></li>
                     </ul>
                 </div>
             </div>
             
-            <div class="mt-12 pt-8 border-t border-slate-200/60 flex flex-col md:flex-row items-center justify-between">
-                <p class="text-slate-500 text-sm">{{ t('footer_copyright') }}</p>
-                <div class="flex items-center space-x-4 mt-4 md:mt-0">
+            <div class="mt-12 pt-8 border-t border-slate-200/60">
+                <div class="text-center mb-4">
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        © 2025 • Sistema desenvolvido por <strong>Diego Moura de Andrade</strong>, em atendimento ao itinerário extensionista<br class="hidden md:block">
+                        <em>"Economia Sustentável"</em> do curso CST em Análise e Desenvolvimento de Sistemas – Cruzeiro do Sul / Braz Cubas
+                    </p>
+                </div>
+                <div class="flex items-center justify-center space-x-4 mt-4">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
                         <i data-lucide="shield-check" class="h-3 w-3 mr-1"></i>
                         Seguro & Privado
                     </span>
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         <i data-lucide="zap" class="h-3 w-3 mr-1"></i>
-                        Rápido
+                        100% Gratuito
                     </span>
                 </div>
             </div>
@@ -361,104 +366,44 @@
                     </button>
                 </div>
                 
-                <!-- Tools Grid -->
+                <!-- Tools Grid - 7 Funções Essenciais -->
                 <div class="p-8">
-                    <!-- Conversions Section -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-slate-900 mb-6 flex items-center space-x-2">
-                            <i data-lucide="repeat" class="h-5 w-5 text-emerald-600"></i>
-                            <span>Conversões</span>
-                        </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            <a href="/tools/pdf-to-images" class="tool-card">
-                                <i data-lucide="image" class="h-6 w-6 text-blue-600"></i>
-                                <span>PDF para Imagens</span>
-                            </a>
-                            <a href="/tools/images-to-pdf" class="tool-card">
-                                <i data-lucide="images" class="h-6 w-6 text-purple-600"></i>
-                                <span>Imagens para PDF</span>
-                            </a>
-                            <a href="/tools/pdf-to-docx" class="tool-card">
-                                <i data-lucide="file-text" class="h-6 w-6 text-blue-600"></i>
-                                <span>PDF para DOCX</span>
-                            </a>
-                            <a href="/tools/docx-to-pdf" class="tool-card">
-                                <i data-lucide="file-text" class="h-6 w-6 text-blue-600"></i>
-                                <span>DOCX para PDF</span>
-                            </a>
-                            <a href="/tools/pdf-to-xlsx" class="tool-card">
-                                <i data-lucide="sheet" class="h-6 w-6 text-green-600"></i>
-                                <span>PDF para XLSX</span>
-                            </a>
-                            <a href="/tools/xlsx-to-pdf" class="tool-card">
-                                <i data-lucide="sheet" class="h-6 w-6 text-green-600"></i>
-                                <span>XLSX para PDF</span>
-                            </a>
-                            <a href="/tools/pdf-to-pptx" class="tool-card">
-                                <i data-lucide="presentation" class="h-6 w-6 text-orange-600"></i>
-                                <span>PDF para PPTX</span>
-                            </a>
-                            <a href="/tools/pptx-to-pdf" class="tool-card">
-                                <i data-lucide="presentation" class="h-6 w-6 text-orange-600"></i>
-                                <span>PPTX para PDF</span>
-                            </a>
-                            <a href="/tools/pdf-to-txt" class="tool-card">
-                                <i data-lucide="file-text" class="h-6 w-6 text-slate-600"></i>
-                                <span>PDF para Texto</span>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- PDF Tools Section -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-slate-900 mb-6 flex items-center space-x-2">
-                            <i data-lucide="file" class="h-5 w-5 text-red-600"></i>
-                            <span>Ferramentas PDF</span>
-                        </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            <a href="/tools/merge" class="tool-card">
-                                <i data-lucide="merge" class="h-6 w-6 text-green-600"></i>
-                                <span>Mesclar PDFs</span>
-                            </a>
-                            <a href="/tools/split" class="tool-card">
-                                <i data-lucide="scissors" class="h-6 w-6 text-orange-600"></i>
-                                <span>Dividir PDF</span>
-                            </a>
-                            <a href="/tools/compress" class="tool-card">
-                                <i data-lucide="archive" class="h-6 w-6 text-blue-600"></i>
-                                <span>Comprimir PDF</span>
-                            </a>
-                            <a href="/tools/rotate" class="tool-card">
-                                <i data-lucide="rotate-cw" class="h-6 w-6 text-purple-600"></i>
-                                <span>Girar PDF</span>
-                            </a>
-                            <a href="/tools/watermark" class="tool-card">
-                                <i data-lucide="droplets" class="h-6 w-6 text-cyan-600"></i>
-                                <span>Marca d'água</span>
-                            </a>
-                            <a href="/tools/extract-pages" class="tool-card">
-                                <i data-lucide="copy" class="h-6 w-6 text-indigo-600"></i>
-                                <span>Extrair Páginas</span>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Security Section -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-slate-900 mb-6 flex items-center space-x-2">
-                            <i data-lucide="shield" class="h-5 w-5 text-green-600"></i>
-                            <span>Segurança</span>
-                        </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            <a href="/tools/protect" class="tool-card">
-                                <i data-lucide="lock" class="h-6 w-6 text-red-600"></i>
-                                <span>Proteger PDF</span>
-                            </a>
-                            <a href="/tools/unlock" class="tool-card">
-                                <i data-lucide="unlock" class="h-6 w-6 text-green-600"></i>
-                                <span>Desbloquear PDF</span>
-                            </a>
-                        </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <a href="/tools" class="tool-card-large">
+                            <i data-lucide="layers" class="h-8 w-8 text-emerald-600 mb-2"></i>
+                            <span class="font-bold">Juntar PDFs</span>
+                            <span class="text-sm text-slate-500">Combinar múltiplos arquivos PDF em um único documento</span>
+                        </a>
+                        <a href="/tools" class="tool-card-large">
+                            <i data-lucide="scissors" class="h-8 w-8 text-blue-600 mb-2"></i>
+                            <span class="font-bold">Dividir PDF</span>
+                            <span class="text-sm text-slate-500">Separar páginas ou intervalos específicos</span>
+                        </a>
+                        <a href="/tools" class="tool-card-large">
+                            <i data-lucide="file-output" class="h-8 w-8 text-purple-600 mb-2"></i>
+                            <span class="font-bold">Extrair Páginas</span>
+                            <span class="text-sm text-slate-500">Selecionar e extrair páginas específicas</span>
+                        </a>
+                        <a href="/tools" class="tool-card-large">
+                            <i data-lucide="minimize-2" class="h-8 w-8 text-orange-600 mb-2"></i>
+                            <span class="font-bold">Comprimir PDF</span>
+                            <span class="text-sm text-slate-500">Reduzir o tamanho do arquivo</span>
+                        </a>
+                        <a href="/tools" class="tool-card-large">
+                            <i data-lucide="file-text" class="h-8 w-8 text-indigo-600 mb-2"></i>
+                            <span class="font-bold">PDF para DOCX</span>
+                            <span class="text-sm text-slate-500">Converter PDF para documento Word editável</span>
+                        </a>
+                        <a href="/tools" class="tool-card-large">
+                            <i data-lucide="type" class="h-8 w-8 text-teal-600 mb-2"></i>
+                            <span class="font-bold">Extrair Texto</span>
+                            <span class="text-sm text-slate-500">Obter todo o texto do PDF</span>
+                        </a>
+                        <a href="/tools" class="tool-card-large">
+                            <i data-lucide="image" class="h-8 w-8 text-pink-600 mb-2"></i>
+                            <span class="font-bold">PDF para Imagens</span>
+                            <span class="text-sm text-slate-500">Converter páginas em PNG ou JPG</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -557,6 +502,15 @@
 
 .form-success {
     @apply mt-2 text-sm text-emerald-600 flex items-center space-x-1;
+}
+
+/* Tool Card Large for Modal */
+.tool-card-large {
+    @apply flex flex-col items-center text-center p-6 bg-white border-2 border-slate-200 rounded-2xl hover:border-emerald-500 hover:shadow-lg transition-all duration-200 cursor-pointer;
+}
+
+.tool-card-large:hover {
+    transform: translateY(-2px);
 }
 </style>
 

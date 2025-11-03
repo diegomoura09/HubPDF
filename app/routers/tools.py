@@ -41,30 +41,21 @@ def sanitize_filename(filename: str) -> str:
     safe_name = re.sub(r'\s+', '_', safe_name)
     return safe_name[:255]  # Limit length
 
-# Supported conversion operations
+# Supported conversion operations - 7 funções essenciais
 CONVERSION_OPERATIONS = {
-    "pdf_to_docx": {"input": "pdf", "output": "docx", "name": "PDF para DOCX"},
-    "docx_to_pdf": {"input": "docx", "output": "pdf", "name": "DOCX para PDF"},
-    "pdf_to_xlsx": {"input": "pdf", "output": "xlsx", "name": "PDF para XLSX"},
-    "xlsx_to_pdf": {"input": "xlsx", "output": "pdf", "name": "XLSX para PDF"},
-    "pdf_to_pptx": {"input": "pdf", "output": "pptx", "name": "PDF para PPTX"},
-    "pptx_to_pdf": {"input": "pptx", "output": "pdf", "name": "PPTX para PDF"},
-    "pdf_to_images": {"input": "pdf", "output": "images", "name": "PDF para Imagens"},
-    "images_to_pdf": {"input": "images", "output": "pdf", "name": "Imagens para PDF"},
-    "pdf_to_txt": {"input": "pdf", "output": "txt", "name": "PDF para Texto"},
-    "pdf_to_ico": {"input": "pdf", "output": "ico", "name": "PDF para Ícone"},
+    "merge_pdf": {"input": "pdf", "output": "pdf", "name": "Juntar PDFs"},
     "split_pdf": {"input": "pdf", "output": "pdf", "name": "Dividir PDF"},
+    "extract_pages": {"input": "pdf", "output": "pdf", "name": "Extrair Páginas"},
     "compress_pdf": {"input": "pdf", "output": "pdf", "name": "Comprimir PDF"},
-    "extract_text_to_pdf": {"input": "pdf", "output": "pdf", "name": "Extrair Texto para PDF"},
+    "pdf_to_docx": {"input": "pdf", "output": "docx", "name": "PDF para DOCX"},
+    "extract_text": {"input": "pdf", "output": "txt", "name": "Extrair Texto"},
+    "pdf_to_images": {"input": "pdf", "output": "images", "name": "PDF para Imagens"},
 }
 
 ALLOWED_MIME_TYPES = {
     "pdf": ["application/pdf"],
     "docx": ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
-    "xlsx": ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
-    "pptx": ["application/vnd.openxmlformats-officedocument.presentationml.presentation"],
     "images": ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/bmp", "image/tiff"],
-    "txt": ["text/plain"],
 }
 
 def get_max_file_size(user: User = None) -> int:
