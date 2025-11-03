@@ -2,7 +2,7 @@
 
 ## Overview
 
-HubPDF is a comprehensive web-based PDF processing platform built with FastAPI that offers secure PDF manipulation tools through a freemium business model. The application provides essential PDF operations like merging, splitting, compressing, and converting PDFs to/from images, while maintaining strict security and privacy standards. It features multilingual support (Portuguese-BR as default, English optional), Google OAuth integration, Mercado Pago payment processing, and a complete admin dashboard for user and subscription management.
+HubPDF is a comprehensive web-based PDF processing platform built with FastAPI that offers secure PDF manipulation tools completely free during the beta period. The application provides essential PDF operations like merging, splitting, compressing, and converting PDFs to/from DOCX, XLSX, PPTX, images, and text, while maintaining strict security and privacy standards. It features multilingual support (Portuguese-BR as default, English optional), Google OAuth integration, and a complete admin dashboard for user management. All features are 100% free with unlimited operations and no watermarks during beta.
 
 ## User Preferences
 
@@ -22,25 +22,23 @@ Preferred communication style: Simple, everyday language.
 - **Data Protection**: No PII in logs, secure token handling, webhook signature verification
 
 ### Business Logic
-- **Quota System**: Plan-based limits (Free: 8 ops/day, Pro: 200 ops/day, Business: 500 ops/day)
-- **Watermark Logic**: Applied to free plan after 4th operation
-- **File Processing**: PDF operations using PyPDF2, pikepdf, and PIL with temporary file management
+- **Quota System**: Beta mode with unlimited operations (999999 ops/day) for all registered users
+- **Watermark Logic**: No watermarks applied during beta period
+- **File Processing**: PDF operations using native Python libraries (python-docx, openpyxl, python-pptx, reportlab) instead of LibreOffice
+- **Filename Preservation**: All conversions maintain original filename with descriptive suffixes (_merge, _compress, _split, _to_docx, etc)
 
 ### Frontend Architecture
 - **UI Framework**: Tailwind CSS with HTMX for dynamic interactions
 - **Progressive Enhancement**: PWA-ready with manifest.json and service worker
 - **Internationalization**: JSON-based translation system with cookie-based locale switching
+- **Tools Modal**: "Todas as Ferramentas" button in header with 18+ organized tools (Conversões, Ferramentas PDF, Segurança)
 
 ### Admin Panel
-- **Dashboard**: KPIs tracking (users, revenue, subscriptions)
+- **Dashboard**: KPIs tracking (users, operations, storage)
 - **User Management**: Search, edit plans, reset quotas with audit logging
-- **Billing Management**: Subscription control, coupon system, invoice tracking
+- **Access**: Available in user profile dropdown menu for admin users
 
 ## External Dependencies
-
-### Payment Processing
-- **Mercado Pago**: Subscription management, checkout preferences, webhook handling
-- **Integration**: Creates payment links, processes callbacks, manages subscription lifecycle
 
 ### Authentication Services
 - **Google OAuth**: Social login integration using Authlib
@@ -49,7 +47,11 @@ Preferred communication style: Simple, everyday language.
 ### PDF Processing Libraries
 - **PyPDF2**: Core PDF manipulation (merge, split, metadata)
 - **pikepdf**: Advanced PDF operations and compression
-- **pdfplumber**: Text extraction capabilities
+- **pdfplumber**: Text extraction from PDFs
+- **python-docx**: DOCX to PDF and PDF to DOCX conversions
+- **openpyxl**: XLSX to PDF and PDF to XLSX conversions
+- **python-pptx**: PPTX to PDF and PDF to PPTX conversions
+- **reportlab**: PDF generation and document creation
 - **PIL/Pillow**: Image processing for PDF conversion
 - **pdf2image**: PDF to image conversion (optional dependency)
 
