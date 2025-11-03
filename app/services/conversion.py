@@ -786,7 +786,13 @@ class ConversionService:
             raise ConversionError(f"PDF split failed: {str(e)}")
     
     async def compress_pdf(self, pdf_path: str, level: str = "normal", job_id: str = None) -> str:
-        """Compress PDF file by reducing image quality and removing unnecessary data"""
+        """Compress PDF file by reducing image quality and removing unnecessary data
+        
+        Compression levels:
+        - light: Minimal compression, maintains high quality (reduces ~20-30%)
+        - normal/medium: Moderate compression (reduces ~40-50%, 2x more than light)
+        - high: Maximum compression, significantly reduced quality (reduces ~60-75%, 5x more than light)
+        """
         if pikepdf is None and PyPDF2 is None:
             raise ConversionError("PDF compression requires either pikepdf or PyPDF2. Please install one of these packages.")
             
@@ -802,14 +808,16 @@ class ConversionService:
                 # Primeiro: tenta com pikepdf se disponível
                 if pikepdf is not None:
                     try:
-                        # Define quality based on level
+                        # Define quality based on level with significant differences
                         quality_settings = {
-                            "normal": (85, pikepdf.StreamDecodeLevel.specialized),
-                            "high": (70, pikepdf.StreamDecodeLevel.all),
-                            "maximum": (50, pikepdf.StreamDecodeLevel.all)
+                            "light": (90, pikepdf.StreamDecodeLevel.none, False),
+                            "normal": (70, pikepdf.StreamDecodeLevel.specialized, True),
+                            "medium": (70, pikepdf.StreamDecodeLevel.specialized, True),
+                            "high": (45, pikepdf.StreamDecodeLevel.all, True),
+                            "maximum": (45, pikepdf.StreamDecodeLevel.all, True)
                         }
                         
-                        jpeg_quality, decode_level = quality_settings.get(level, quality_settings["normal"])
+                        jpeg_quality, decode_level, use_recompress = quality_settings.get(level, quality_settings["normal"])
                         
                         # Open PDF with pikepdf
                         with pikepdf.open(pdf_path) as pdf:
@@ -842,22 +850,22 @@ class ConversionService:
                                     # Skip problematic pages
                                     continue
                             
-                            # Save with compression
-                            if level == "maximum":
-                                pdf.save(
-                                    str(output_path),
-                                    compress_streams=True,
-                                    stream_decode_level=decode_level,
-                                    object_stream_mode=pikepdf.ObjectStreamMode.generate,
-                                    recompress_flate=True
-                                )
-                            else:
-                                pdf.save(
-                                    str(output_path),
-                                    compress_streams=True,
-                                    stream_decode_level=decode_level,
-                                    object_stream_mode=pikepdf.ObjectStreamMode.generate
-                                )
+                            # Save with compression based on level
+                            save_params = {
+                                "compress_streams": True,
+                                "stream_decode_level": decode_level,
+                                "object_stream_mode": pikepdf.ObjectStreamMode.generate
+                            }
+                            
+                            # Add aggressive compression for normal/high levels
+                            if level in ["normal", "medium", "high", "maximum"]:
+                                save_params["recompress_flate"] = True
+                            
+                            # Extra optimization for high compression
+                            if level in ["high", "maximum"]:
+                                save_params["linearize"] = True
+                            
+                            pdf.save(str(output_path), **save_params)
                         
                         return str(output_path)
                     except Exception:

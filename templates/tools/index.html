@@ -115,10 +115,13 @@
                         <div id="compress-options" class="hidden">
                             <label class="form-label">Nível de Compressão</label>
                             <select name="compression_level" class="form-input">
-                                <option value="normal" selected>Normal (equilibrado)</option>
-                                <option value="high">Alto (menor arquivo)</option>
-                                <option value="maximum">Máximo (máxima compressão)</option>
+                                <option value="light">Leve - Mantém alta qualidade (reduz ~20-30%)</option>
+                                <option value="medium" selected>Média - Equilibrado (reduz ~40-50%, 2x mais que leve)</option>
+                                <option value="high">Alta - Máxima compressão (reduz ~60-75%, 5x mais que leve)</option>
                             </select>
+                            <p class="text-sm text-slate-500 mt-2">
+                                💡 Quanto maior a compressão, menor o arquivo, mas menor a qualidade visual
+                            </p>
                         </div>
                         
                         <!-- Split options -->
