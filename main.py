@@ -126,10 +126,6 @@ app.include_router(billing.router, prefix="/billing", tags=["billing"])
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
 app.include_router(health.router, prefix="/api", tags=["health"])
 
-# Root redirect
-@app.get("/")
-async def root():
-    return RedirectResponse(url="/home", status_code=302)
 
 # Demo page for alerts system
 @app.get("/demo/alerts")

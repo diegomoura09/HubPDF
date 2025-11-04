@@ -14,10 +14,16 @@ from app.template_helpers import templates
 router = APIRouter()
 quota_service = QuotaService()
 
-@router.get("/", response_class=HTMLResponse)
-async def root():
-    """Redirect to home page"""
-    return RedirectResponse(url="/home", status_code=302)
+@router.get("/")
+async def root(request: Request):
+    """Root endpoint - returns JSON for health checks, redirects browsers to /home"""
+    # Check if request is from browser (looking for HTML)
+    accept_header = request.headers.get("accept", "")
+    if "text/html" in accept_header:
+        return RedirectResponse(url="/home", status_code=302)
+    
+    # Return JSON for health checks and API clients
+    return {"status": "ok", "service": "HubPDF"}
 
 @router.get("/home", response_class=HTMLResponse)
 async def home(
