@@ -96,7 +96,7 @@ function initializeFileUpload() {
     document.querySelectorAll('input[type="file"]').forEach(input => {
         input.addEventListener('change', function(e) {
             handleFileSelection(e.target);
-            validateFileSize(e.target);
+            // validateFileSize DISABLED - backend handles all validation at 60MB
         });
     });
 }
@@ -190,46 +190,13 @@ function formatFileSize(bytes) {
 
 /**
  * Validate file sizes based on user plan
+ * DISABLED - Backend handles all file size validation at 60MB limit
  */
 function validateFileSize(input) {
-    const ABSOLUTE_MAX_SIZE = 60 * 1024 * 1024; // 60MB hard limit
-    const maxSize = parseInt(input.dataset.maxSize) || (60 * 1024 * 1024); // Default 60MB
-    const effectiveMaxSize = Math.min(maxSize, ABSOLUTE_MAX_SIZE); // Never exceed 60MB
-    const files = Array.from(input.files);
-    const oversizedFiles = files.filter(file => file.size > effectiveMaxSize);
-    
-    if (oversizedFiles.length > 0) {
-        const maxSizeMB = Math.round(effectiveMaxSize / (1024 * 1024));
-        
-        // Check if file exceeded absolute limit
-        const exceedsAbsoluteLimit = oversizedFiles.some(file => file.size > ABSOLUTE_MAX_SIZE);
-        
-        if (exceedsAbsoluteLimit) {
-            const largestFile = oversizedFiles.reduce((max, file) => file.size > max.size ? file : max);
-            const fileSizeFormatted = formatFileSize(largestFile.size);
-            const errorMessage = `Este serviço gratuito aceita arquivos de até 60 MB. O seu arquivo possui ${fileSizeFormatted}. Por favor, envie um arquivo menor.`;
-            
-            if (window.alerts) {
-                window.alerts.error(errorMessage);
-            } else {
-                showToast(errorMessage, 'error');
-            }
-        } else {
-            if (window.alerts) {
-                window.alerts.error(`Arquivo muito grande! Tamanho máximo: ${maxSizeMB}MB`);
-            } else {
-                showToast(`Arquivo muito grande! Tamanho máximo: ${maxSizeMB}MB`, 'error');
-            }
-        }
-        
-        // Remove oversized files
-        const validFiles = files.filter(file => file.size <= effectiveMaxSize);
-        const dt = new DataTransfer();
-        validFiles.forEach(file => dt.items.add(file));
-        input.files = dt.files;
-        
-        handleFileSelection(input);
-    }
+    // VALIDATION COMPLETELY DISABLED
+    // Backend will handle all file size checks with 60MB limit
+    // No client-side restrictions to allow maximum flexibility
+    return true;
 }
 
 /**
@@ -291,7 +258,7 @@ function handleDrop(e) {
     if (fileInput && files.length > 0) {
         fileInput.files = files;
         handleFileSelection(fileInput);
-        validateFileSize(fileInput);
+        // validateFileSize DISABLED - backend handles all validation at 60MB
     }
 }
 
