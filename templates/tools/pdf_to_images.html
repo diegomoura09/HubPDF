@@ -19,7 +19,9 @@
               hx-post="/tools/pdf-to-images" 
               hx-encoding="multipart/form-data"
               hx-target="#result"
-              hx-indicator="#loading">
+              hx-indicator="#loading"
+              hx-ext="disable-element"
+              data-hx-disable-validation="true">
             
             <div class="mb-6">
                 <label for="file" class="block text-sm font-medium text-gray-700 mb-2">

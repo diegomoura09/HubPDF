@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function initializeApp() {
     initializeCSRF();
+    disableHTMXFileValidation();  // DISABLE HTMX FILE SIZE CHECKS
     initializeFileUpload();
     initializeDropZones();
     initializeToasts();
@@ -28,6 +29,30 @@ function initializeApp() {
     }
     
     console.log('HubPDF app initialized');
+}
+
+/**
+ * Completely disable HTMX file size validation
+ */
+function disableHTMXFileValidation() {
+    // Intercept HTMX validation events and force them to pass
+    document.body.addEventListener('htmx:validation:validate', function(evt) {
+        // Always return valid for file inputs
+        const target = evt.detail.elt;
+        if (target && target.type === 'file') {
+            evt.detail.valid = true;
+            evt.stopPropagation();
+        }
+    }, true);
+    
+    // Block any file size error messages from HTMX
+    document.body.addEventListener('htmx:beforeOnLoad', function(evt) {
+        const xhr = evt.detail.xhr;
+        if (xhr && xhr.status !== 413) {
+            // Allow everything except our own 413 errors
+            return true;
+        }
+    }, true);
 }
 
 /**
