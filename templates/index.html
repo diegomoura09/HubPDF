@@ -38,36 +38,6 @@
                     </a>
                 </div>
                 
-                {% if usage_summary %}
-                    <div class="modern-card max-w-md mx-auto p-8">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-bold text-slate-900">Uso Hoje</h3>
-                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl flex items-center justify-center">
-                                <i data-lucide="activity" class="h-6 w-6 text-emerald-600"></i>
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-sm text-slate-600">Operações</span>
-                            <span class="text-sm font-semibold text-slate-900">{{ usage_summary.operations_used }}/{{ usage_summary.operations_limit }}</span>
-                        </div>
-                        
-                        <div class="w-full bg-slate-200 rounded-full h-3 mb-4">
-                            <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full transition-all duration-300" 
-                                 style="width: {{ (usage_summary.operations_used / usage_summary.operations_limit * 100) | round }}%"></div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                <i data-lucide="crown" class="h-3 w-3 mr-1"></i>
-                                {{ t('plan_' + usage_summary.plan) }}
-                            </span>
-                            {% if usage_summary.plan == 'free' %}
-                                <a href="/billing/pricing" class="text-emerald-600 hover:text-emerald-700 text-sm font-medium">Upgrade</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endif %}
             {% else %}
                 <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
                     <a href="/auth/register" class="btn btn-primary group">
@@ -240,9 +210,6 @@
                 <a href="/auth/register" class="bg-white text-emerald-600 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
                     <i data-lucide="rocket" class="h-6 w-6 mr-2 inline"></i>
                     Começar Gratuitamente
-                </a>
-                <a href="/billing/pricing" class="border-2 border-white text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-white hover:text-emerald-600 transition-all duration-200">
-                    Ver Preços
                 </a>
             </div>
         {% else %}

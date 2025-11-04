@@ -20,84 +20,18 @@
             </div>
         </div>
         
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <!-- Current Plan -->
-            <div class="modern-card card-body group hover:scale-105 transition-all duration-300">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <p class="text-sm font-semibold text-slate-600 uppercase tracking-wide">Plano Atual</p>
-                        <p class="text-3xl font-bold text-slate-900 mt-1">
-                            {{ t('plan_' + usage_summary.plan) }}
-                        </p>
+        <!-- Institutional Notice -->
+        <div class="modern-card mb-12 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
+            <div class="card-body">
+                <div class="flex items-start space-x-4">
+                    <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="info" class="h-6 w-6 text-emerald-600"></i>
                     </div>
-                    <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <i data-lucide="crown" class="h-8 w-8 text-purple-600"></i>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-emerald-800 mb-2 text-lg">Plataforma Gratuita e Educacional</h4>
+                        <p class="text-emerald-700 leading-relaxed">Todas as ferramentas do HubPDF estão disponíveis gratuitamente para uso ilimitado, sem necessidade de assinatura ou plano pago. O HubPDF é uma plataforma gratuita e educacional, desenvolvida para uso público e sem fins lucrativos.</p>
                     </div>
                 </div>
-                {% if usage_summary.plan != 'free' %}
-                    <a href="/account/plan" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold">
-                        Gerenciar plano
-                        <i data-lucide="arrow-right" class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200"></i>
-                    </a>
-                {% else %}
-                    <a href="/billing/pricing" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold">
-                        Fazer upgrade
-                        <i data-lucide="arrow-right" class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200"></i>
-                    </a>
-                {% endif %}
-            </div>
-            
-            <!-- Operations Used -->
-            <div class="modern-card card-body group hover:scale-105 transition-all duration-300">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <p class="text-sm font-semibold text-slate-600 uppercase tracking-wide">Operações Hoje</p>
-                        <p class="text-3xl font-bold text-slate-900 mt-1">
-                            {{ usage_summary.operations_used }}<span class="text-lg text-slate-500">/{{ usage_summary.operations_limit }}</span>
-                        </p>
-                    </div>
-                    <div class="w-16 h-16 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <i data-lucide="activity" class="h-8 w-8 text-emerald-600"></i>
-                    </div>
-                </div>
-                
-                <div class="mb-4">
-                    <div class="flex justify-between text-sm mb-2">
-                        <span class="text-slate-600">Progresso</span>
-                        <span class="font-semibold text-slate-900">{{ (usage_summary.operations_used / usage_summary.operations_limit * 100) | round }}%</span>
-                    </div>
-                    <div class="w-full bg-slate-200 rounded-full h-3">
-                        <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full transition-all duration-500" 
-                             style="width: {{ (usage_summary.operations_used / usage_summary.operations_limit * 100) | round }}%"></div>
-                    </div>
-                </div>
-                
-                <p class="text-sm text-slate-600">{{ usage_summary.operations_remaining }} operações restantes</p>
-            </div>
-            
-            <!-- File Size Limit -->
-            <div class="modern-card card-body group hover:scale-105 transition-all duration-300">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <p class="text-sm font-semibold text-slate-600 uppercase tracking-wide">Tamanho Máximo</p>
-                        <p class="text-3xl font-bold text-slate-900 mt-1">{{ usage_summary.max_file_size_mb }}MB</p>
-                    </div>
-                    <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <i data-lucide="hard-drive" class="h-8 w-8 text-blue-600"></i>
-                    </div>
-                </div>
-                {% if usage_summary.plan == 'free' %}
-                    <a href="/billing/pricing" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold">
-                        Aumentar limite
-                        <i data-lucide="arrow-right" class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200"></i>
-                    </a>
-                {% else %}
-                    <span class="inline-flex items-center text-blue-600 font-semibold">
-                        <i data-lucide="check-circle" class="h-4 w-4 mr-2"></i>
-                        Limite premium
-                    </span>
-                {% endif %}
             </div>
         </div>
         
@@ -203,72 +137,6 @@
             </div>
         </div>
         
-        <!-- Upgrade Notice for Free Users -->
-        {% if usage_summary.plan == 'free' %}
-            <div class="modern-card bg-gradient-to-r from-emerald-500 to-teal-600 border-0">
-                <div class="card-body text-white">
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-                                    <i data-lucide="zap" class="h-8 w-8 text-white"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-2xl font-bold mb-2">Desbloqueie o Poder Completo</h3>
-                                    <p class="text-emerald-100 text-lg">Upgrade para Pro e tenha acesso ilimitado a todas as ferramentas</p>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold">∞</div>
-                                    <div class="text-sm text-emerald-100">Operações</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold">100MB</div>
-                                    <div class="text-sm text-emerald-100">Arquivo máximo</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold">0</div>
-                                    <div class="text-sm text-emerald-100">Marcas d'água</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold">24h</div>
-                                    <div class="text-sm text-emerald-100">Suporte</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="ml-8 flex-shrink-0">
-                            <a href="/billing/pricing" class="bg-white text-emerald-600 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 inline-flex items-center">
-                                <i data-lucide="arrow-right" class="h-6 w-6 mr-2"></i>
-                                Fazer Upgrade
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-        
-        <!-- Watermark Notice -->
-        {% if usage_summary.watermark_threshold and usage_summary.operations_used >= usage_summary.watermark_threshold %}
-            <div class="modern-card border-amber-200 bg-amber-50/50 mt-8">
-                <div class="card-body">
-                    <div class="flex items-start space-x-4">
-                        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i data-lucide="info" class="h-6 w-6 text-amber-600"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-amber-800 mb-2">Marcas d'água ativas</h4>
-                            <p class="text-amber-700">Você atingiu o limite de operações gratuitas. As próximas operações incluirão marca d'água. Faça upgrade para removê-las.</p>
-                        </div>
-                        <a href="/billing/pricing" class="btn btn-secondary text-amber-700 border-amber-300 hover:bg-amber-100">
-                            Remover marca d'água
-                        </a>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
