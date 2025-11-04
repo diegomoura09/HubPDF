@@ -24,6 +24,7 @@ wheels/
 .env
 .env.local
 .env.*.local
+*.env
 secrets/
 *.pem
 *.key
@@ -32,6 +33,7 @@ secrets/
 *.db
 *.sqlite
 *.sqlite3
+.DS_Store
 
 # IDE
 .vscode/
