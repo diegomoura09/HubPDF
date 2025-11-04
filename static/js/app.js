@@ -180,10 +180,14 @@ function validateFileSize(input) {
         const exceedsAbsoluteLimit = oversizedFiles.some(file => file.size > ABSOLUTE_MAX_SIZE);
         
         if (exceedsAbsoluteLimit) {
+            const largestFile = oversizedFiles.reduce((max, file) => file.size > max.size ? file : max);
+            const fileSizeFormatted = formatFileSize(largestFile.size);
+            const errorMessage = `Este serviço gratuito aceita arquivos de até 60 MB. O seu arquivo possui ${fileSizeFormatted}. Por favor, envie um arquivo menor.`;
+            
             if (window.alerts) {
-                window.alerts.error('Arquivo muito grande! O tamanho máximo permitido é 60MB.');
+                window.alerts.error(errorMessage);
             } else {
-                showToast('Arquivo muito grande! O tamanho máximo permitido é 60MB.', 'error');
+                showToast(errorMessage, 'error');
             }
         } else {
             if (window.alerts) {
