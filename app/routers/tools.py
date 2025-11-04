@@ -107,7 +107,7 @@ async def tools_index(
     usage_summary = None
     if user:
         quota_usage = quota_service.get_user_quota_usage(db, user)
-        user_plan = str(user.plan) if user.plan else "free"
+        user_plan = str(user.plan) if user.plan is not None else "free"
         plan_limits = quota_service.get_plan_limits(user_plan)
         usage_summary = {
             "plan": user_plan,
