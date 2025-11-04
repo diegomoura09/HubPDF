@@ -12,5 +12,11 @@ def price_brl(value: float) -> str:
     txt = f"{value:,.2f}"
     return "R$ " + txt.replace(",", "X").replace(".", ",").replace("X", ".")
 
-# Register price function globally
+# Dummy translation function - returns key as-is (Portuguese only)
+def t(key: str, default: str = None) -> str:
+    """Dummy translation function - platform is Portuguese-only now"""
+    return default or key
+
+# Register global functions
 templates.env.globals["price_brl"] = price_brl
+templates.env.globals["t"] = t

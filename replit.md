@@ -2,7 +2,7 @@
 
 ## Overview
 
-HubPDF is a 100% free, educational web-based PDF processing platform built with FastAPI as an academic project for CST ADS (Análise e Desenvolvimento de Sistemas) at Cruzeiro do Sul / Braz Cubas university. The platform offers 7 essential PDF manipulation tools completely free: juntar PDFs, dividir PDFs, extrair páginas, comprimir PDFs, converter PDF para DOCX, extrair texto, and convert PDF para imagens. Built with focus on sustainability, LGPD compliance, and digital accessibility, it features a calm color palette (blue, green, gray tones), multilingual support (Portuguese-BR as default, English optional), Google OAuth integration, and admin dashboard for user management. All features are 100% free with unlimited operations and no watermarks. Developer: Diego Moura de Andrade. Contact: diego.andrade@cs.brazcubas.edu.br.
+HubPDF is a 100% free, educational web-based PDF processing platform built with FastAPI as an academic project for CST ADS (Análise e Desenvolvimento de Sistemas) at Cruzeiro do Sul / Braz Cubas university. The platform offers 7 essential PDF manipulation tools completely free: juntar PDFs, dividir PDFs, extrair páginas, comprimir PDFs, converter PDF para DOCX, extrair texto, and convert PDF para imagens. Built with focus on sustainability, LGPD compliance, and digital accessibility, it features a calm color palette (blue, green, gray tones), Portuguese-only interface (no multilingual support), Google OAuth integration, and admin dashboard for user management. All features are 100% free with unlimited operations and no watermarks. Developer: Diego Moura de Andrade. Contact: diego.andrade@cs.brazcubas.edu.br.
 
 ## Recent Changes (November 2024)
 
@@ -18,6 +18,14 @@ HubPDF is a 100% free, educational web-based PDF processing platform built with 
 - Added dynamic error messages with HTML links (e.g., "E-mail não cadastrado. Clique aqui para se cadastrar")
 - Backend supports dual-mode responses (JSON for API, HTML for traditional forms)
 - Demo page available at /demo/alerts
+
+### Internationalization Removal (November 2024)
+- Removed multilingual support system (i18n) completely
+- Removed language selector (BR, PT, US, EN flags) from header
+- Platform now 100% Portuguese-only (português padrão)
+- Deleted locales directory and app/services/i18n.py
+- Simplified templates to use direct Portuguese text
+- Removed translation functions from routers and helpers
 
 ### Platform Updates
 - Transformed platform into 100% free educational tool by removing all paid plan references
@@ -56,7 +64,7 @@ Preferred communication style: Simple, everyday language.
 - **UI Framework**: Tailwind CSS with HTMX for dynamic interactions
 - **Color Scheme**: Calm tones of blue, green, gray, white, and black for professional appearance
 - **Progressive Enhancement**: PWA-ready with manifest.json and service worker
-- **Internationalization**: JSON-based translation system with cookie-based locale switching
+- **Language**: Portuguese-only interface (no multilingual support)
 - **Alert System**: Reusable JavaScript component (window.alerts) with 4 types, HTML support, auto-close, and animations
 - **Form Validation**: Client-side validation with async submission and dynamic error display
 - **Tools Modal**: "Todas as Ferramentas" button in header with 7 essential tools displayed in a clean grid
