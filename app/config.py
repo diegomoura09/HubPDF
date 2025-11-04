@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     MP_PUBLIC_KEY: str = Field(default="")
     
     # File upload limits
-    MAX_FILE_SIZE_FREE: int = Field(default=10 * 1024 * 1024)  # 10MB
+    MAX_FILE_SIZE_FREE: int = Field(default=60 * 1024 * 1024)  # 60MB
     MAX_FILE_SIZE_PRO: int = Field(default=100 * 1024 * 1024)  # 100MB
     MAX_FILE_SIZE_BUSINESS: int = Field(default=250 * 1024 * 1024)  # 250MB
     

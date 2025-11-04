@@ -52,7 +52,7 @@ class QuotaService:
                 "operations_used": 0,
                 "operations_limit": 1,
                 "operations_percentage": 0,
-                "max_file_size_mb": 10,
+                "max_file_size_mb": 60,
                 "watermark_threshold": 0
             }
         
@@ -138,7 +138,7 @@ class QuotaService:
                 "operations_used": 0,
                 "operations_limit": 1,
                 "operations_remaining": 1,
-                "max_file_size_mb": 10,
+                "max_file_size_mb": 60,
                 "watermark_threshold": 0,
                 "date": date.today()
             }
