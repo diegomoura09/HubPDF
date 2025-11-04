@@ -72,6 +72,31 @@
     <!-- HTMX - Updated to latest version without 10MB limit -->
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <script>
+        // FORCE CLEAR OLD SERVICE WORKER CACHE
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister().then(function() {
+                        console.log('Service Worker antigo removido - cache limpo');
+                    });
+                }
+            });
+            
+            // Clear all caches
+            if ('caches' in window) {
+                caches.keys().then(function(cacheNames) {
+                    return Promise.all(
+                        cacheNames.map(function(cacheName) {
+                            if (cacheName.includes('hubpdf') && !cacheName.includes('v2')) {
+                                console.log('Removendo cache antigo:', cacheName);
+                                return caches.delete(cacheName);
+                            }
+                        })
+                    );
+                });
+            }
+        }
+        
         // Configure HTMX with NO file size limits
         document.addEventListener('DOMContentLoaded', function() {
             // HTMX 2.0 configuration

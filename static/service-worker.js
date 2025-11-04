@@ -3,19 +3,19 @@
  * Handles caching, offline functionality, and PWA features
  */
 
-const CACHE_NAME = 'hubpdf-v1.0.2';
-const STATIC_CACHE = 'hubpdf-static-v1';
-const DYNAMIC_CACHE = 'hubpdf-dynamic-v1';
-const API_CACHE = 'hubpdf-api-v1';
+const CACHE_NAME = 'hubpdf-v2.0.0';
+const STATIC_CACHE = 'hubpdf-static-v2';
+const DYNAMIC_CACHE = 'hubpdf-dynamic-v2';
+const API_CACHE = 'hubpdf-api-v2';
 
-// Files to cache for offline functionality
+// Files to cache for offline functionality - UPDATED HTMX TO 2.0.3
 const STATIC_ASSETS = [
   '/',
   '/static/css/custom.css',
   '/static/js/app.js',
   '/static/manifest.json',
   'https://cdn.tailwindcss.com',
-  'https://unpkg.com/htmx.org@1.9.10',
+  'https://unpkg.com/htmx.org@2.0.3',
   'https://unpkg.com/feather-icons',
   'https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js'
 ];
