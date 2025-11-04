@@ -1,0 +1,54 @@
+Objetivo: meu app FastAPI já está publicado, e o domínio hubpdf.pro está "Verified" no painel de Domains do Replit. Preciso que você finalize a configuração para o domínio funcionar com HTTPS (sem erro 400/SSL) e que a URL https://hubpdf.pro/ e https://hubpdf.pro/home abram normalmente.
+
+⚠️ Não altere layout, páginas institucionais, textos do site, banco de dados ou segredos. Mexa apenas no que for necessário para domínio/SSL/hosts e deployment.
+
+TAREFAS:
+
+1) LINKAR DOMÍNIO AO DEPLOYMENT
+- Vá em Deployments → Settings → Domains.
+- Se hubpdf.pro estiver “Verified” mas NÃO vinculado, clique em “Link domain” e vincule hubpdf.pro ao deployment atual.
+- Inclua também www.hubpdf.pro se disponível (opcional). 
+- Aguarde a confirmação de “custom domain linked” e SSL emitido.
+
+2) HEALTHCHECK
+- Garanta um endpoint GET /healthz que responda 200 com JSON {"ok": true}.
+- Se não existir, crie no app (FastAPI).
+
+3) ROTA RAIZ / REDIRECTS
+- Garanta que GET "/" responda 200. Se a home é /home, faça redirect 302 de "/" -> "/home".
+- Adicione redirects:
+  - HTTP → HTTPS (force HTTPS).
+  - www.hubpdf.pro → https://hubpdf.pro (preferência por apex).
+  OBS: implemente da forma mais simples possível (middleware ou configuração do servidor), sem quebrar rotas existentes.
+
+4) TRUSTED HOSTS / CORS
+- Em FastAPI, configure TrustedHostMiddleware para aceitar:
+  ["hubpdf.pro", "www.hubpdf.pro", "hubpdf.replit.app", "localhost"]
+- Se houver CORS, inclua https://hubpdf.pro e https://www.hubpdf.pro como allowed origins.
+- Não abra CORS globalmente; somente para esses domínios (e localhost em dev).
+
+5) RUN COMMAND E PORTA
+- Confirme que o Run/Start do deployment é:
+  uvicorn main:app --host 0.0.0.0 --port 5000
+- Não mude a porta (5000).
+
+6) ESTÁTICOS/TEMPLATES
+- Verifique mounts de estáticos/templates para produção.
+- Corrija caminhos relativos quebrados (ex.: /static/...).
+
+7) RE-DEPLOY
+- Após o domínio estar “Linked” e SSL emitido, faça re-deploy (Promote/Publish) e aguarde sucesso.
+- Teste internamente acessos para:
+  - https://hubpdf.pro/healthz  → deve retornar {"ok": true}
+  - https://hubpdf.pro/        → deve carregar (ou redirecionar para /home)
+  - https://hubpdf.pro/home   → deve carregar a Home
+
+8) SAÍDA ESPERADA
+- Mostre o status final do domínio (Linked + SSL ativo).
+- Mostre o resultado (status code) das três URLs de teste acima.
+- Exiba um resumo (diff) dos arquivos alterados (middleware de hosts/redirects/healthz).
+- Não altere conteúdo do app fora desses pontos.
+
+IMPORTANTE:
+- Não alterar variáveis de ambiente, segredos, banco de dados ou lógica de autenticação.
+- Não modificar páginas /about /privacy /terms /contact.
