@@ -24,8 +24,10 @@ HubPDF is a 100% free, educational web-based PDF processing platform built with 
 - Removed language selector (BR, PT, US, EN flags) from header
 - Platform now 100% Portuguese-only (português padrão)
 - Deleted locales directory and app/services/i18n.py
-- Simplified templates to use direct Portuguese text
-- Removed translation functions from routers and helpers
+- Created embedded PT_TRANSLATIONS dictionary in template_helpers.py with 380+ Portuguese strings
+- Removed all get_user_locale() and get_translations() calls from routers
+- All error messages and UI text now in Portuguese directly
+- Templates continue using t() function but with Portuguese-only dictionary
 
 ### Platform Updates
 - Transformed platform into 100% free educational tool by removing all paid plan references

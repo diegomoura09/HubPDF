@@ -41,8 +41,6 @@ async def admin_dashboard(
     admin: User = Depends(require_admin)
 ):
     """Admin dashboard with KPIs"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     # Calculate KPIs
     total_users = db.query(User).count()
@@ -83,8 +81,6 @@ async def admin_dashboard(
         {
             "request": request,
             "user": admin,
-            "locale": locale,
-            "translations": translations,
             "kpis": kpis,
             "recent_logs": recent_logs
         }
@@ -99,8 +95,6 @@ async def admin_users(
     admin: User = Depends(require_admin)
 ):
     """User management page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     # Build query
     query = db.query(User)
@@ -124,8 +118,6 @@ async def admin_users(
         {
             "request": request,
             "user": admin,
-            "locale": locale,
-            "translations": translations,
             "users": users,
             "search": search or "",
             "page": page,
@@ -248,8 +240,6 @@ async def admin_subscriptions(
     admin: User = Depends(require_admin)
 ):
     """Subscription management page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     # Build query
     query = db.query(Subscription).join(User)
@@ -270,8 +260,6 @@ async def admin_subscriptions(
         {
             "request": request,
             "user": admin,
-            "locale": locale,
-            "translations": translations,
             "subscriptions": subscriptions,
             "status_filter": status_filter or "",
             "page": page,
@@ -334,8 +322,6 @@ async def admin_coupons(
     admin: User = Depends(require_admin)
 ):
     """Coupon management page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     coupons = db.query(Coupon).order_by(desc(Coupon.created_at)).all()
     
@@ -344,8 +330,6 @@ async def admin_coupons(
         {
             "request": request,
             "user": admin,
-            "locale": locale,
-            "translations": translations,
             "coupons": coupons
         }
     )
@@ -440,8 +424,6 @@ async def admin_invoices(
     admin: User = Depends(require_admin)
 ):
     """Invoice management page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     # Build query
     query = db.query(Invoice).join(Subscription).join(User)
@@ -462,8 +444,6 @@ async def admin_invoices(
         {
             "request": request,
             "user": admin,
-            "locale": locale,
-            "translations": translations,
             "invoices": invoices,
             "status_filter": status_filter or "",
             "page": page,
@@ -480,8 +460,6 @@ async def admin_audit_logs(
     admin: User = Depends(require_admin)
 ):
     """Audit logs page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     # Pagination
     per_page = 50
@@ -496,8 +474,6 @@ async def admin_audit_logs(
         {
             "request": request,
             "user": admin,
-            "locale": locale,
-            "translations": translations,
             "logs": logs,
             "page": page,
             "total_pages": total_pages,

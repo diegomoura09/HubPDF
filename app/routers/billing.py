@@ -23,8 +23,6 @@ async def pricing(
     user: User = Depends(get_optional_user)
 ):
     """Pricing page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     plans = [
         {
@@ -76,8 +74,6 @@ async def pricing(
         {
             "request": request,
             "user": user,
-            "locale": locale,
-            "translations": translations,
             "plans": plans
         }
     )
@@ -157,15 +153,12 @@ async def payment_success(
     user: User = Depends(require_auth)
 ):
     """Payment success page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     return templates.TemplateResponse(
         "billing/success.html",
         {
             "request": request,
             "user": user,
-            "locale": locale,
             "translations": translations
         }
     )
@@ -176,15 +169,12 @@ async def payment_failure(
     user: User = Depends(require_auth)
 ):
     """Payment failure page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     return templates.TemplateResponse(
         "billing/failure.html",
         {
             "request": request,
             "user": user,
-            "locale": locale,
             "translations": translations
         }
     )
@@ -195,15 +185,12 @@ async def payment_pending(
     user: User = Depends(require_auth)
 ):
     """Payment pending page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     return templates.TemplateResponse(
         "billing/pending.html",
         {
             "request": request,
             "user": user,
-            "locale": locale,
             "translations": translations
         }
     )

@@ -102,8 +102,6 @@ async def tools_index(
     db: Session = Depends(get_db)
 ):
     """Tools index page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     # Get usage summary if user is logged in
     usage_summary = None
@@ -120,7 +118,6 @@ async def tools_index(
     
     return templates.TemplateResponse("tools/index.html", {
         "request": request,
-        "locale": locale,
         "user": user,
         "usage_summary": usage_summary,
         "operations": CONVERSION_OPERATIONS

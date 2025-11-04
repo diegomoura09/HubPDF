@@ -43,8 +43,6 @@ async def login_page(
     if user:
         return RedirectResponse(url="/dashboard", status_code=302)
     
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     # Generate CSRF token
     csrf_token = generate_csrf_token()
@@ -53,8 +51,6 @@ async def login_page(
         "auth/login.html",
         {
             "request": request,
-            "locale": locale,
-            "translations": translations,
             "google_client_id": settings.GOOGLE_CLIENT_ID,
             "csrf_token": csrf_token
         }
@@ -72,8 +68,6 @@ async def login(
     db: Session = Depends(get_db)
 ):
     """Process login form"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     # Check if request expects JSON (from fetch API)
     accept_header = request.headers.get("accept", "")
@@ -101,7 +95,7 @@ async def login(
         
         user = auth_svc.authenticate_user(db, email_lower, password)
         if not user:
-            error_message = translations.get("error_invalid_credentials", "Senha incorreta. Verifique sua senha e tente novamente.")
+            error_message = "Senha incorreta. Verifique sua senha e tente novamente."
             
             if is_json_request:
                 return JSONResponse(
@@ -151,8 +145,6 @@ async def login(
             )
         
         # Senão, renderizar template com erro
-        locale = get_user_locale(request)
-        translations = get_translations(locale)
         
         # Generate new CSRF token for retry
         csrf_token = generate_csrf_token()
@@ -161,8 +153,6 @@ async def login(
             "auth/login.html",
             {
                 "request": request,
-                "locale": locale,
-                "translations": translations,
                 "error": e.detail,
                 "email": email,
                 "google_client_id": settings.GOOGLE_CLIENT_ID,
@@ -183,8 +173,6 @@ async def register_page(
     if user:
         return RedirectResponse(url="/dashboard", status_code=302)
     
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     # Generate CSRF token
     csrf_token = generate_csrf_token()
@@ -193,8 +181,6 @@ async def register_page(
         "auth/register.html",
         {
             "request": request,
-            "locale": locale,
-            "translations": translations,
             "google_client_id": settings.GOOGLE_CLIENT_ID,
             "csrf_token": csrf_token
         }
@@ -215,8 +201,6 @@ async def register_post(
     db: Session = Depends(get_db)
 ):
     """Process registration form"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
     
     # Clean and validate form data
     name = name.strip()
@@ -246,21 +230,21 @@ async def register_post(
         if not email or "@" not in email:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=translations.get("error_invalid_email", "Invalid email format")
+                detail="Formato de e-mail inválido"
             )
         
         # Validate password length
         if len(password) < 8:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=translations.get("error_password_length", "Password must be at least 8 characters")
+                detail="A senha deve ter pelo menos 8 caracteres"
             )
         
         # Validate password confirmation
         if password != confirm_password:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=translations.get("error_password_mismatch", "Passwords do not match")
+                detail="As senhas não coincidem"
             )
         
         # Check if user already exists with proper error handling (case-insensitive)
@@ -269,7 +253,7 @@ async def register_post(
             if existing_user:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=translations.get("error_email_exists", "Já existe uma conta com este e-mail")
+                    detail="Já existe uma conta com este e-mail"
                 )
         except Exception as db_error:
             print(f"DEBUG REGISTRATION: Database error during user lookup: {db_error}")
@@ -280,7 +264,7 @@ async def register_post(
                 if existing_user:
                     raise HTTPException(
                         status_code=status.HTTP_400_BAD_REQUEST,
-                        detail=translations.get("error_email_exists", "Já existe uma conta com este e-mail")
+                        detail="Já existe uma conta com este e-mail"
                     )
             except Exception as retry_error:
                 print(f"DEBUG REGISTRATION: Retry failed: {retry_error}")
@@ -330,8 +314,6 @@ async def register_post(
         return response
     
     except HTTPException as e:
-        locale = get_user_locale(request)
-        translations = get_translations(locale)
         
         # Generate new CSRF token for retry
         csrf_token = generate_csrf_token()
@@ -340,8 +322,6 @@ async def register_post(
             "auth/register.html",
             {
                 "request": request,
-                "locale": locale,
-                "translations": translations,
                 "error": e.detail,
                 "email": email,
                 "name": name,
