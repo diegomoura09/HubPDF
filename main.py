@@ -9,7 +9,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.exceptions import HTTPException, RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 import uvicorn
 
 from app.database import init_db
@@ -106,6 +108,24 @@ async def _patched_form(self, *args, **kwargs):
     return await _orig_form(self, *args, **kwargs)
 
 _starlette_requests.Request.form = _patched_form
+
+# Exception handler for file size limit (HTTP 413)
+@app.exception_handler(413)
+@app.exception_handler(StarletteHTTPException)
+async def file_too_large_handler(request: Request, exc):
+    """Handle HTTP 413 Request Entity Too Large errors with friendly Portuguese message"""
+    if isinstance(exc, StarletteHTTPException) and exc.status_code == 413:
+        return JSONResponse(
+            status_code=413,
+            content={"error": "Limite de 60 MB por arquivo. Tente um arquivo menor."}
+        )
+    # Re-raise if not a 413 error
+    if hasattr(exc, 'status_code') and exc.status_code != 413:
+        raise exc
+    return JSONResponse(
+        status_code=413,
+        content={"error": "Limite de 60 MB por arquivo. Tente um arquivo menor."}
+    )
 
 # Redirect middleware for HTTPS and apex domain
 @app.middleware("http")
