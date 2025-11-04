@@ -2,7 +2,16 @@
 
 ## Overview
 
-HubPDF is a streamlined web-based PDF processing platform built with FastAPI that offers 7 essential PDF manipulation tools completely free during the beta period. The application provides core PDF operations: juntar PDFs, dividir PDFs, extrair páginas, comprimir PDFs, converter PDF para DOCX, extrair texto, and convert PDF para imagens. Built with security and simplicity in mind, it features a calm color palette (blue, green, gray tones), multilingual support (Portuguese-BR as default, English optional), Google OAuth integration, and admin dashboard for user management. All features are 100% free with unlimited operations and no watermarks during beta.
+HubPDF is a 100% free, educational web-based PDF processing platform built with FastAPI as an academic project for CST ADS (Análise e Desenvolvimento de Sistemas) at Cruzeiro do Sul / Braz Cubas university. The platform offers 7 essential PDF manipulation tools completely free: juntar PDFs, dividir PDFs, extrair páginas, comprimir PDFs, converter PDF para DOCX, extrair texto, and convert PDF para imagens. Built with focus on sustainability, LGPD compliance, and digital accessibility, it features a calm color palette (blue, green, gray tones), multilingual support (Portuguese-BR as default, English optional), Google OAuth integration, and admin dashboard for user management. All features are 100% free with unlimited operations and no watermarks. Developer: Diego Moura de Andrade. Contact: diego.andrade@cs.brazcubas.edu.br.
+
+## Recent Changes (November 2024)
+
+- Transformed platform into 100% free educational tool by removing all paid plan references
+- Contact form updated with 3 subjects: Feedback, Reportar Erro, Sugestões
+- Simplified dashboard to show only welcome message and quick access to tools
+- Removed all pricing pages, upgrade prompts, and subscription management UI
+- Cleaned locales/pt.json to remove all paid-tier strings and messaging
+- Added institutional messaging emphasizing free, educational, and non-commercial nature
 
 ## User Preferences
 
@@ -22,11 +31,12 @@ Preferred communication style: Simple, everyday language.
 - **Data Protection**: No PII in logs, secure token handling, webhook signature verification
 
 ### Business Logic
-- **Quota System**: Beta mode with unlimited operations (999999 ops/day) for all registered users
-- **Watermark Logic**: No watermarks applied during beta period
+- **Quota System**: 100% free with unlimited operations (999999 ops/day) for all registered users
+- **Watermark Logic**: No watermarks applied - completely free platform
 - **File Processing**: PDF operations using native Python libraries (python-docx, pdfplumber, reportlab, PyPDF2, pikepdf)
 - **Filename Preservation**: All conversions maintain original filename with descriptive suffixes (_merge, _compress, _split, _to_docx, etc)
 - **7 Core Functions Only**: Juntar PDFs, Dividir PDFs, Extrair Páginas, Comprimir PDFs, PDF para DOCX, Extrair Texto, PDF para Imagens
+- **Educational Focus**: Platform developed for academic purposes, no commercial aspects, LGPD compliant
 
 ### Frontend Architecture
 - **UI Framework**: Tailwind CSS with HTMX for dynamic interactions
@@ -35,11 +45,14 @@ Preferred communication style: Simple, everyday language.
 - **Internationalization**: JSON-based translation system with cookie-based locale switching
 - **Tools Modal**: "Todas as Ferramentas" button in header with 7 essential tools displayed in a clean grid
 - **Credits**: Footer displays developer attribution (Diego Moura de Andrade - Cruzeiro do Sul / Braz Cubas)
+- **Contact Form**: 3 subject options only - Feedback, Reportar Erro, Sugestões
+- **Dashboard**: Simplified to show welcome message and quick tool access (no usage metrics or plan cards)
 
 ### Admin Panel
 - **Dashboard**: KPIs tracking (users, operations, storage)
-- **User Management**: Search, edit plans, reset quotas with audit logging
+- **User Management**: Search, reset quotas with audit logging
 - **Access**: Available in user profile dropdown menu for admin users
+- **Note**: Plan management UI removed (all users are on free unlimited plan)
 
 ## External Dependencies
 
