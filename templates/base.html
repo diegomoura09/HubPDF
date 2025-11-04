@@ -129,15 +129,6 @@
                 </div>
                 
                 <div class="flex items-center space-x-4">
-                    <!-- Language Switcher -->
-                    <form method="post" action="/set-language" class="inline">
-                        <input type="hidden" name="redirect_url" value="{{ request.url }}">
-                        <select name="language" onchange="this.form.submit()" class="modern-select">
-                            <option value="pt" {% if locale == 'pt' %}selected{% endif %}>🇧🇷 PT</option>
-                            <option value="en" {% if locale == 'en' %}selected{% endif %}>🇺🇸 EN</option>
-                        </select>
-                    </form>
-                    
                     {% if user %}
                         <!-- User Menu -->
                         <div class="relative" x-data="{ open: false }">
