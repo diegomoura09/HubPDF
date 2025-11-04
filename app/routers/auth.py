@@ -76,7 +76,9 @@ async def login(
     locale = get_user_locale(request)
     translations = get_translations(locale)
     
-    # CSRF validation removed - using SameSite cookies for security
+    # Check if request expects JSON (from fetch API)
+    accept_header = request.headers.get("accept", "")
+    is_json_request = "application/json" in accept_header
     
     try:
         # Normalize email (case-insensitive)
@@ -85,17 +87,33 @@ async def login(
         # Check if user exists first (case-insensitive)
         existing_user = db.query(User).filter(func.lower(User.email) == email_lower).first()
         if not existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='E-mail não cadastrado. <a href="/auth/register" class="text-red-600 hover:text-red-500 font-medium underline">Clique aqui para se cadastrar</a>'
-            )
+            error_message = 'E-mail não cadastrado. <a href="/auth/register" class="text-red-600 hover:text-red-500 font-medium underline">Clique aqui para se cadastrar</a>'
+            
+            if is_json_request:
+                return JSONResponse(
+                    status_code=400,
+                    content={"error": True, "message": error_message}
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=error_message
+                )
         
         user = auth_svc.authenticate_user(db, email_lower, password)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=translations.get("error_invalid_credentials", "Senha incorreta. Verifique sua senha e tente novamente.")
-            )
+            error_message = translations.get("error_invalid_credentials", "Senha incorreta. Verifique sua senha e tente novamente.")
+            
+            if is_json_request:
+                return JSONResponse(
+                    status_code=401,
+                    content={"error": True, "message": error_message}
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=error_message
+                )
         
         # Create JWT tokens
         access_token = auth_service.create_access_token({"sub": str(user.id)})
@@ -126,6 +144,14 @@ async def login(
         return response
     
     except HTTPException as e:
+        # Se for requisição JSON, retornar JSON
+        if is_json_request:
+            return JSONResponse(
+                status_code=e.status_code,
+                content={"error": True, "message": e.detail}
+            )
+        
+        # Senão, renderizar template com erro
         locale = get_user_locale(request)
         translations = get_translations(locale)
         

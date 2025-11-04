@@ -139,9 +139,100 @@ function togglePasswordLogin(fieldId) {
     lucide.createIcons();
 }
 
-// Initialize lucide icons when page loads
+// Login form validation and submission
 document.addEventListener('DOMContentLoaded', function() {
     lucide.createIcons();
+    
+    const loginForm = document.getElementById('login-form');
+    
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        
+        // Validações de campos vazios
+        if (!email) {
+            window.alerts.warning('Por favor, insira seu e-mail antes de continuar.');
+            document.getElementById('email').focus();
+            return;
+        }
+        
+        if (!password) {
+            window.alerts.warning('Por favor, informe sua senha para continuar.');
+            document.getElementById('password').focus();
+            return;
+        }
+        
+        // Validação básica de e-mail
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            window.alerts.error('Por favor, insira um e-mail válido.');
+            document.getElementById('email').focus();
+            return;
+        }
+        
+        // Desabilitar botão de submit durante o processamento
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i data-lucide="loader-2" class="h-5 w-5 mr-2 animate-spin"></i> Entrando...';
+        lucide.createIcons();
+        
+        try {
+            // Enviar formulário
+            const formData = new FormData(loginForm);
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                body: formData,
+                redirect: 'manual'  // Não seguir redirects automaticamente
+            });
+            
+            // Se redirecionou (sucesso), seguir o redirect
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+            
+            // Se retornou JSON com erro
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                
+                if (data.error) {
+                    window.alerts.error(data.message, 0); // 0 = não fecha automaticamente
+                } else {
+                    // Sucesso
+                    window.location.href = data.redirect || '/dashboard';
+                }
+            } else {
+                // Resposta HTML (provavelmente erro do servidor)
+                const text = await response.text();
+                
+                // Tentar extrair mensagem de erro do HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const errorEl = doc.querySelector('.flash-error');
+                
+                if (errorEl) {
+                    window.alerts.error(errorEl.textContent.trim());
+                } else {
+                    window.alerts.error('Erro ao fazer login. Tente novamente.');
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao fazer login:', error);
+            window.alerts.error('Erro de conexão. Por favor, verifique sua internet e tente novamente.');
+        } finally {
+            // Reabilitar botão
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+            lucide.createIcons();
+        }
+    });
 });
 </script>
 
