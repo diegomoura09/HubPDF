@@ -47,24 +47,6 @@ async def home(
         locale
     )
 
-@router.post("/set-language")
-async def set_language(
-    request: Request,
-    language: str = Form(...),
-    redirect_url: str = Form(default="/home")
-):
-    """Set user language preference"""
-    if language not in ["pt", "en"]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid language"
-        )
-    
-    response = RedirectResponse(url=redirect_url, status_code=302)
-    set_user_locale(response, language)
-    
-    return response
-
 @router.get("/about", response_class=HTMLResponse)
 async def about(
     request: Request,
