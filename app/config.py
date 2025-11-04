@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     # App settings
     DEBUG: bool = Field(default=False)
     SECRET_KEY: str = Field(default="your-secret-key-change-in-production")
-    DOMAIN: str = Field(default="localhost:5000")
+    DOMAIN: str = Field(default="hubpdf.pro")
     
     # Database
     DATABASE_URL: str = Field(default="sqlite:///./hubpdf.db")
@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     # Google OAuth
     GOOGLE_CLIENT_ID: str = Field(default="")
     GOOGLE_CLIENT_SECRET: str = Field(default="")
-    GOOGLE_REDIRECT_URI: str = Field(default="http://localhost:5000/auth/google/callback")
+    GOOGLE_REDIRECT_URI: str = Field(default="https://hubpdf.pro/auth/google/callback")
     
     # Mercado Pago
     MP_ACCESS_TOKEN: str = Field(default="")

@@ -124,6 +124,8 @@ if not settings.DEBUG:
     app.add_middleware(
         TrustedHostMiddleware,
         allowed_hosts=[
+            "hubpdf.pro",  # Custom domain
+            "www.hubpdf.pro",  # Custom domain with www
             settings.DOMAIN, 
             f"*.{settings.DOMAIN}",
             "*.replit.app",  # Replit deployment domains
