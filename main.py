@@ -93,6 +93,20 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Patch Starlette Request.form() to enforce max upload size globally
+# This ensures all multipart/form-data uploads respect the 60MB limit
+from starlette import requests as _starlette_requests
+_orig_form = _starlette_requests.Request.form
+
+async def _patched_form(self, *args, **kwargs):
+    """Patched form method that enforces global upload limits"""
+    kwargs.setdefault("max_part_size", settings.MAX_PART_SIZE)  # 60 MB by default
+    kwargs.setdefault("max_files", 100)
+    kwargs.setdefault("max_fields", 1000)
+    return await _orig_form(self, *args, **kwargs)
+
+_starlette_requests.Request.form = _patched_form
+
 # Redirect middleware for HTTPS and apex domain
 @app.middleware("http")
 async def redirect_middleware(request: Request, call_next):

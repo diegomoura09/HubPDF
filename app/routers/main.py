@@ -90,8 +90,12 @@ async def terms(
 
 @router.get("/healthz")
 async def healthz():
-    """Health check endpoint for deployment"""
-    return {"ok": True}
+    """Health check endpoint for deployment with configuration info"""
+    from app.config import settings
+    return {
+        "ok": True,
+        "maxUploadMb": settings.MAX_UPLOAD_MB
+    }
 
 @router.get("/contact", response_class=HTMLResponse)
 async def contact(
