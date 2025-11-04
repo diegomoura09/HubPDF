@@ -168,7 +168,7 @@ function formatFileSize(bytes) {
  */
 function validateFileSize(input) {
     const ABSOLUTE_MAX_SIZE = 60 * 1024 * 1024; // 60MB hard limit
-    const maxSize = parseInt(input.dataset.maxSize) || (10 * 1024 * 1024); // Default 10MB
+    const maxSize = parseInt(input.dataset.maxSize) || (60 * 1024 * 1024); // Default 60MB
     const effectiveMaxSize = Math.min(maxSize, ABSOLUTE_MAX_SIZE); // Never exceed 60MB
     const files = Array.from(input.files);
     const oversizedFiles = files.filter(file => file.size > effectiveMaxSize);
@@ -635,11 +635,11 @@ function throttle(func, limit) {
  * HTMX Event Handlers
  */
 document.addEventListener('htmx:responseError', function(e) {
-    showToast('An error occurred while processing your request', 'error');
+    showToast('Ocorreu um erro ao processar sua solicitação', 'error');
 });
 
 document.addEventListener('htmx:timeout', function(e) {
-    showToast('Request timed out. Please try again.', 'error');
+    showToast('Tempo limite esgotado. Por favor, tente novamente.', 'error');
 });
 
 document.addEventListener('htmx:beforeRequest', function(e) {
@@ -648,7 +648,7 @@ document.addEventListener('htmx:beforeRequest', function(e) {
     submitButtons.forEach(btn => {
         btn.disabled = true;
         btn.dataset.originalText = btn.textContent;
-        btn.innerHTML = '<i class="animate-spin h-4 w-4 mr-2" data-feather="loader"></i>Processing...';
+        btn.innerHTML = '<i class="animate-spin h-4 w-4 mr-2" data-feather="loader"></i>Processando...';
     });
 });
 
