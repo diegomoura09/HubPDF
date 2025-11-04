@@ -191,9 +191,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 redirect: 'manual'  // Não seguir redirects automaticamente
             });
             
-            // Se redirecionou (sucesso), seguir o redirect
-            if (response.redirected) {
-                window.location.href = response.url;
+            // Se redirecionou (status 302 = sucesso)
+            if (response.type === 'opaqueredirect' || response.status === 302) {
+                // Login bem-sucedido, redirecionar para home
+                window.location.href = '/home';
                 return;
             }
             
@@ -206,10 +207,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.alerts.error(data.message, 0); // 0 = não fecha automaticamente
                 } else {
                     // Sucesso
-                    window.location.href = data.redirect || '/dashboard';
+                    window.location.href = data.redirect || '/home';
                 }
-            } else {
-                // Resposta HTML (provavelmente erro do servidor)
+            } else if (response.status >= 400) {
+                // Erro do servidor sem JSON
                 const text = await response.text();
                 
                 // Tentar extrair mensagem de erro do HTML
