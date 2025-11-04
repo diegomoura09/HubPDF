@@ -14,7 +14,9 @@ HubPDF is a 100% free, educational web-based PDF processing platform built with 
 - ✅ Simplified Terms of Use to be more concise and direct
 - ✅ Updated Contact page with simplified layout (removed extra info boxes)
 - ✅ Updated footer with academic attribution: "Sistema gratuito desenvolvido por Diego Moura de Andrade – CST ADS, Cruzeiro do Sul / Braz Cubas"
-- ✅ Implemented 50MB hard limit for file uploads in JavaScript (static/js/app.js)
+- ✅ Changed "Ferramentas PDF Profissionais" to "Ferramentas gratuitas para conversão de arquivos em PDF"
+- ✅ Simplified footer description: "Plataforma gratuita para processar seus arquivos PDF com segurança e privacidade. Desenvolvida como projeto acadêmico."
+- ✅ Implemented 60MB hard limit for file uploads in JavaScript (static/js/app.js)
 - ✅ Added Portuguese error messages for file size validation
 
 ### Deployment Configuration (November 2024)

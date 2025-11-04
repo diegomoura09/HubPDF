@@ -167,9 +167,9 @@ function formatFileSize(bytes) {
  * Validate file sizes based on user plan
  */
 function validateFileSize(input) {
-    const ABSOLUTE_MAX_SIZE = 50 * 1024 * 1024; // 50MB hard limit
+    const ABSOLUTE_MAX_SIZE = 60 * 1024 * 1024; // 60MB hard limit
     const maxSize = parseInt(input.dataset.maxSize) || (10 * 1024 * 1024); // Default 10MB
-    const effectiveMaxSize = Math.min(maxSize, ABSOLUTE_MAX_SIZE); // Never exceed 50MB
+    const effectiveMaxSize = Math.min(maxSize, ABSOLUTE_MAX_SIZE); // Never exceed 60MB
     const files = Array.from(input.files);
     const oversizedFiles = files.filter(file => file.size > effectiveMaxSize);
     
@@ -181,9 +181,9 @@ function validateFileSize(input) {
         
         if (exceedsAbsoluteLimit) {
             if (window.alerts) {
-                window.alerts.error('Arquivo muito grande! O tamanho máximo permitido é 50MB.');
+                window.alerts.error('Arquivo muito grande! O tamanho máximo permitido é 60MB.');
             } else {
-                showToast('Arquivo muito grande! O tamanho máximo permitido é 50MB.', 'error');
+                showToast('Arquivo muito grande! O tamanho máximo permitido é 60MB.', 'error');
             }
         } else {
             if (window.alerts) {
