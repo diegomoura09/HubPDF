@@ -43,7 +43,7 @@
                     <!-- Selected Files -->
                     <div id="selected-files" class="hidden space-y-2"></div>
                     
-                    <!-- Operation Selection - 7 Funções Essenciais -->
+                    <!-- Operation Selection - 6 Funções Essenciais -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="operation-selection" style="display: none;">
                         <h4 class="col-span-full text-lg font-bold text-slate-900 text-center mb-4">Escolha a operação:</h4>
                         
@@ -57,12 +57,6 @@
                             <i data-lucide="scissors" class="h-8 w-8 text-blue-600 mb-2"></i>
                             <span class="font-semibold">Dividir PDF</span>
                             <span class="text-sm text-slate-500">Separar páginas</span>
-                        </button>
-                        
-                        <button type="button" class="operation-btn" data-operation="extract_pages">
-                            <i data-lucide="file-output" class="h-8 w-8 text-purple-600 mb-2"></i>
-                            <span class="font-semibold">Extrair Páginas</span>
-                            <span class="text-sm text-slate-500">Selecione páginas específicas</span>
                         </button>
                         
                         <button type="button" class="operation-btn" data-operation="compress_pdf">
@@ -117,7 +111,6 @@
                             <select name="compression_level" class="form-input">
                                 <option value="light">Leve - Mantém alta qualidade (reduz ~20-30%)</option>
                                 <option value="medium" selected>Média - Equilibrado (reduz ~40-50%, 2x mais que leve)</option>
-                                <option value="high">Alta - Máxima compressão (reduz ~60-75%, 5x mais que leve)</option>
                             </select>
                             <p class="text-sm text-slate-500 mt-2">
                                 💡 Quanto maior a compressão, menor o arquivo, mas menor a qualidade visual

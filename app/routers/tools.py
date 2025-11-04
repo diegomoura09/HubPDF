@@ -41,11 +41,10 @@ def sanitize_filename(filename: str) -> str:
     safe_name = re.sub(r'\s+', '_', safe_name)
     return safe_name[:255]  # Limit length
 
-# Supported conversion operations - 7 funções essenciais
+# Supported conversion operations - 6 funções essenciais
 CONVERSION_OPERATIONS = {
     "merge_pdf": {"input": "pdf", "output": "pdf", "name": "Juntar PDFs"},
     "split_pdf": {"input": "pdf", "output": "pdf", "name": "Dividir PDF"},
-    "extract_pages": {"input": "pdf", "output": "pdf", "name": "Extrair Páginas"},
     "compress_pdf": {"input": "pdf", "output": "pdf", "name": "Comprimir PDF"},
     "pdf_to_docx": {"input": "pdf", "output": "docx", "name": "PDF para DOCX"},
     "extract_text": {"input": "pdf", "output": "txt", "name": "Extrair Texto"},
