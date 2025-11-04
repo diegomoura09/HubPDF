@@ -1,0 +1,156 @@
+Quero atualizar o conteúdo institucional e a interface do sistema HubPDF, além de incluir uma limitação de upload (50MB) com alerta ao usuário.  
+⚠️ Não alterar lógica principal, rotas, banco de dados, autenticação ou layout. Apenas textos e pequenas melhorias de usabilidade.
+
+---
+
+### 🎨 1. Ajustes visuais e textuais
+Objetivo: deixar a interface mais acadêmica e discreta, sem frases exageradas ou de marketing (“Ferramentas Profissionais”, etc).
+
+- Onde aparecer frases como “Ferramentas Profissionais”, “Plataforma completa”, “Desbloqueie o poder completo”, etc — **substituir** por linguagem simples e institucional.
+  Exemplo:
+  - “Ferramentas Profissionais” → “Ferramentas Digitais”
+  - “Desbloqueie o poder completo” → “Aproveite as ferramentas gratuitas disponíveis”
+
+---
+
+### 🏠 2. Página inicial (home)
+Atualizar o parágrafo principal para:
+
+> Plataforma gratuita para processar seus arquivos PDF com segurança e privacidade. Desenvolvida em cumprimento de projeto acadêmico, sistema sem fins lucrativos.
+
+Adicionar uma breve nota de rodapé (acima do copyright) com o texto:
+> *Sistema gratuito desenvolvido por Diego Moura de Andrade – CST ADS, Cruzeiro do Sul / Braz Cubas.*
+
+---
+
+### ℹ️ 3. Página “Sobre” (about)
+Substituir todo o texto por:
+
+#### Sobre o HubPDF  
+**Ferramentas Digitais Sustentáveis**
+
+O HubPDF é um sistema web desenvolvido com foco em segurança, privacidade e eficiência no processamento de documentos digitais.  
+A plataforma foi criada como **projeto acadêmico extensionista** do curso **CST em Análise e Desenvolvimento de Sistemas** da **Cruzeiro do Sul / Braz Cubas**, com objetivo de oferecer soluções tecnológicas acessíveis e sustentáveis para a sociedade.
+
+**Missão**  
+Facilitar o acesso à tecnologia e incentivar o uso consciente de ferramentas digitais que reduzam o desperdício de recursos físicos e promovam a sustentabilidade documental.
+
+**Objetivo**  
+- Oferecer ferramentas confiáveis e gratuitas para manipulação simples de PDFs.  
+- Evitar dependência de softwares pagos ou complexos.  
+- Garantir exclusão automática de arquivos após o uso.  
+- Atender às diretrizes da **Lei nº 13.709/2018 (LGPD)**, respeitando a privacidade do usuário.
+
+**Segurança e Privacidade**  
+Todos os arquivos são processados de forma local e excluídos automaticamente, sem qualquer registro permanente.
+
+**Contato**  
+Dúvidas ou sugestões? Acesse a página [Fale Conosco](/contact).
+
+---
+
+### 🧾 4. Página “Política de Privacidade” (privacy)
+Reduzir redundâncias e manter texto direto e técnico:
+
+#### Política de Privacidade – HubPDF
+**Base Legal:** Lei nº 13.709/2018 (LGPD)
+
+O HubPDF não coleta, armazena nem compartilha arquivos enviados para processamento.  
+Os documentos são tratados de forma local e **excluídos automaticamente** após o uso.
+
+**Cookies**  
+São utilizados apenas cookies técnicos, necessários para funcionamento básico do site.  
+Não usamos cookies de rastreamento, publicidade ou perfilamento.
+
+**Segurança**  
+Os arquivos são processados com criptografia local e exclusão imediata.  
+Nenhum dado é armazenado em servidores ou acessado por pessoas.
+
+**Contato sobre Privacidade**  
+E-mail: diego.andrade@cs.brazcubas.edu.br  
+Página: [Fale Conosco](/contact)
+
+---
+
+### ⚖️ 5. Página “Termos de Uso” (terms)
+Simplificar e deixar com tom institucional e acadêmico:
+
+#### Termos de Uso – HubPDF  
+**Desenvolvido por:** Diego Moura de Andrade – CST ADS, Cruzeiro do Sul / Braz Cubas  
+
+**Natureza do Serviço**  
+O HubPDF é uma ferramenta **gratuita e educacional** para processamento de PDFs (mesclar, dividir, converter, etc.), sem fins comerciais.
+
+**Uso Responsável**  
+O usuário compromete-se a utilizar a plataforma apenas para fins legais e éticos, não enviando arquivos ilícitos, confidenciais de terceiros ou protegidos por direitos autorais.
+
+**Limitação de Responsabilidade**  
+Os arquivos são processados automaticamente e excluídos após o uso.  
+O sistema é fornecido “como está”, sem garantias de funcionamento contínuo ou suporte técnico.
+
+**Atualizações**  
+Os termos podem ser alterados a qualquer momento, sem aviso prévio.  
+A versão mais recente estará sempre disponível nesta página.
+
+---
+
+### 📮 6. Página “Contato” (contact)
+Simplificar e padronizar os assuntos de contato:
+
+**Entre em Contato**
+Use o formulário abaixo para enviar sua mensagem.
+
+**Assunto**  
+1. Feedback  
+2. Reportar Erro  
+3. Sugestões  
+
+E-mail direto: **diego.andrade@cs.brazcubas.edu.br**
+
+---
+
+### 📦 7. Limitação de Upload – 50MB
+Implementar uma verificação de tamanho no upload de arquivos.
+
+- Antes do envio, verificar se `file.size > 50 * 1024 * 1024` (50MB).  
+- Se ultrapassar, **bloquear o envio** e exibir alerta amigável:
+
+> “⚠️ Arquivo excede o limite de 50MB.  
+> O HubPDF é um sistema gratuito e possui pequenas limitações técnicas para manter o serviço disponível a todos os usuários.”
+
+- Opcional: exibir no rodapé ou tooltip da área de upload:
+  > “Limite máximo de 50MB por arquivo.”
+
+- Essa checagem deve ser feita **no frontend (JavaScript)** e, preferencialmente, também no **backend** para segurança (retornar erro 413 – Payload Too Large).
+
+---
+
+### 📚 8. Rodapé (footer)
+Atualizar rodapé para:
+© 2025 HubPDF – Sistema gratuito desenvolvido por Diego Moura de Andrade (CST ADS – Cruzeiro do Sul / Braz Cubas)
+
+yaml
+Copiar código
+
+---
+
+### 🚫 9. Manter (não alterar)
+- Estrutura de rotas e navegação (`/home`, `/about`, `/contact`, `/privacy`, `/terms`)
+- Funções de processamento PDF
+- Design principal, CSS base e identidade visual já existente
+
+---
+
+### ✅ 10. Após aplicar:
+- Exibir resumo do diff (arquivos modificados).
+- Garantir que todas as páginas carregam sem erro.
+- Testar upload com arquivo >50MB → deve exibir alerta.
+- Confirmar que /about, /privacy, /terms e /contact estão padronizados e sem redundâncias.
+💡 Resultado esperado
+O site ficará mais institucional e coerente com projeto acadêmico.
+
+Todos os textos estarão coerentes entre si, sem repetições desnecessárias.
+
+O sistema exibirá alerta de limite de 50MB com mensagem educativa.
+
+A identidade visual e o funcionamento permanecem intactos.

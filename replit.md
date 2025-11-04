@@ -1,85 +1,10 @@
-# HubPDF - PDF Tools Hub
+# HubPDF
 
 ## Overview
 
-HubPDF is a 100% free, educational web-based PDF processing platform built with FastAPI as an academic project for CST ADS (Análise e Desenvolvimento de Sistemas) at Cruzeiro do Sul / Braz Cubas university. The platform offers 7 essential PDF manipulation tools completely free: juntar PDFs, dividir PDFs, extrair páginas, comprimir PDFs, converter PDF para DOCX, extrair texto, and convert PDF para imagens. Built with focus on sustainability, LGPD compliance, and digital accessibility, it features a calm color palette (blue, green, gray tones), Portuguese-only interface (no multilingual support), Google OAuth integration, and admin dashboard for user management. All features are 100% free with unlimited operations and no watermarks. Developer: Diego Moura de Andrade. Contact: diego.andrade@cs.brazcubas.edu.br.
+HubPDF is a web-based PDF manipulation platform developed as an academic project for the CST in Systems Analysis and Development course (Cruzeiro do Sul / BrazCubas). The system provides free, secure PDF processing tools with automatic file cleanup and privacy-first architecture. All conversions happen server-side with temporary storage that auto-expires after 30 minutes.
 
-## Recent Changes (November 2024)
-
-### CRITICAL FIX: Removed 10MB Client-Side Validation (November 4, 2024)
-- ✅ **UPGRADED HTMX from 1.9.10 to 2.0.3** - Removed built-in 10MB file size validation
-- ✅ **DISABLED all client-side file size validation** in static/js/app.js
-- ✅ Removed validateFileSize() function calls from file upload and drag-drop handlers
-- ✅ Added HTMX 2.0 configuration with 120 second timeout for large file uploads
-- ✅ Confirmed: Only backend enforces 60MB limit, zero client-side restrictions
-
-### Technical Improvements for 60MB Upload (November 4, 2024)
-- ✅ Implemented global Starlette request.form() patch to enforce 60MB limit across all routes
-- ✅ Added MAX_UPLOAD_MB environment variable (default: 60MB) with MAX_PART_SIZE property
-- ✅ Updated /healthz endpoint to return maxUploadMb in JSON response
-- ✅ Enhanced frontend validation with detailed Portuguese error messages
-- ✅ Added HTTP 413 exception handler with friendly Portuguese error response
-- ✅ Documented upload limits and Replit deployment considerations in README.md
-
-### Content Updates (November 4, 2024)
-- ✅ Updated all institutional text to more academic/formal language throughout the platform
-- ✅ Simplified hero section on homepage: "Todas as ferramentas PDF que você precisa"
-- ✅ Updated About page to emphasize educational and non-commercial nature
-- ✅ Simplified Privacy Policy with only essential LGPD compliance information
-- ✅ Simplified Terms of Use to be more concise and direct
-- ✅ Updated Contact page with simplified layout (removed extra info boxes)
-- ✅ Updated footer with academic attribution: "Sistema gratuito desenvolvido por Diego Moura de Andrade – CST ADS, Cruzeiro do Sul / Braz Cubas"
-- ✅ Changed "Ferramentas PDF Profissionais" to "Ferramentas gratuitas para conversão de arquivos em PDF"
-- ✅ Simplified footer description: "Plataforma gratuita para processar seus arquivos PDF com segurança e privacidade. Desenvolvida como projeto acadêmico."
-- ✅ Removed all references to "processamento local" throughout the platform
-- ✅ Implemented 60MB hard limit for file uploads across the entire platform
-- ✅ Updated backend configuration (app/config.py): MAX_FILE_SIZE_FREE = 60MB
-- ✅ Updated quota service (app/services/quota_service.py) to reflect 60MB limit
-- ✅ Updated JavaScript validation (static/js/app.js) for client-side validation
-- ✅ Added Portuguese error messages for file size validation
-
-### Deployment Configuration (November 2024)
-- ✅ Fixed deployment health checks with `/healthz` endpoint returning `{"ok": true}`
-- ✅ Updated deployment command to use uvicorn: `uvicorn main:app --host 0.0.0.0 --port 5000`
-- ✅ Configured autoscale deployment target for automatic scaling
-- ✅ Smart root endpoint: returns JSON for health checks, redirects browsers to /home
-- ✅ CORS configured to allow all origins in Replit deployment mode
-- ✅ Trusted hosts configured for *.replit.app and *.replit.dev domains
-- ✅ Startup logs added for debugging (environment mode, database status)
-- ✅ All health check endpoints operational: /, /api/health, /api/health/db, /healthz
-
-## Changes Summary (November 2024)
-
-### Authentication & Database Improvements
-- Fixed PostgreSQL (Neon) connection with mandatory SSL configuration
-- Implemented case-insensitive email authentication with unique index on LOWER(email)
-- Corrected authentication error messages to proper Portuguese-BR
-- Created health check endpoints (/api/health, /api/health/db)
-
-### Alert System Implementation
-- Created reusable alert system (success, error, warning, info) with smooth animations
-- Enhanced login page with client-side validation and async form submission
-- Added dynamic error messages with HTML links (e.g., "E-mail não cadastrado. Clique aqui para se cadastrar")
-- Backend supports dual-mode responses (JSON for API, HTML for traditional forms)
-- Demo page available at /demo/alerts
-
-### Internationalization Removal (November 2024)
-- Removed multilingual support system (i18n) completely
-- Removed language selector (BR, PT, US, EN flags) from header
-- Platform now 100% Portuguese-only (português padrão)
-- Deleted locales directory and app/services/i18n.py
-- Created embedded PT_TRANSLATIONS dictionary in template_helpers.py with 380+ Portuguese strings
-- Removed all get_user_locale() and get_translations() calls from routers
-- All error messages and UI text now in Portuguese directly
-- Templates continue using t() function but with Portuguese-only dictionary
-
-### Platform Updates
-- Transformed platform into 100% free educational tool by removing all paid plan references
-- Contact form updated with 3 subjects: Feedback, Reportar Erro, Sugestões
-- Simplified dashboard to show only welcome message and quick access to tools
-- Removed all pricing pages, upgrade prompts, and subscription management UI
-- Cleaned locales/pt.json to remove all paid-tier strings and messaging
-- Added institutional messaging emphasizing free, educational, and non-commercial nature
+**Core Value Proposition:** Free, secure, privacy-focused PDF tools accessible via web browser without permanent data storage.
 
 ## User Preferences
 
@@ -87,64 +12,141 @@ Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### Backend Architecture
-- **Web Framework**: FastAPI with Jinja2 templating for server-side rendering
-- **Database**: SQLite for MVP with SQLAlchemy ORM (structured for easy PostgreSQL migration)
-- **Authentication**: JWT-based auth with HttpOnly cookies, Argon2 password hashing, and Google OAuth integration
-- **Authorization**: Role-based access control (RBAC) with user/admin roles
-
-### Security Framework
-- **Middleware Stack**: Custom security middleware for headers, rate limiting, and CSRF protection
-- **File Security**: MIME type validation, file size limits, automatic cleanup after 30 minutes
-- **Data Protection**: No PII in logs, secure token handling, webhook signature verification
-
-### Business Logic
-- **Quota System**: 100% free with unlimited operations (999999 ops/day) for all registered users
-- **Watermark Logic**: No watermarks applied - completely free platform
-- **File Processing**: PDF operations using native Python libraries (python-docx, pdfplumber, reportlab, PyPDF2, pikepdf)
-- **Filename Preservation**: All conversions maintain original filename with descriptive suffixes (_merge, _compress, _split, _to_docx, etc)
-- **7 Core Functions Only**: Juntar PDFs, Dividir PDFs, Extrair Páginas, Comprimir PDFs, PDF para DOCX, Extrair Texto, PDF para Imagens
-- **Educational Focus**: Platform developed for academic purposes, no commercial aspects, LGPD compliant
-
 ### Frontend Architecture
-- **UI Framework**: Tailwind CSS with HTMX for dynamic interactions
-- **Color Scheme**: Calm tones of blue, green, gray, white, and black for professional appearance
-- **Progressive Enhancement**: PWA-ready with manifest.json and service worker
-- **Language**: Portuguese-only interface (no multilingual support)
-- **Alert System**: Reusable JavaScript component (window.alerts) with 4 types, HTML support, auto-close, and animations
-- **Form Validation**: Client-side validation with async submission and dynamic error display
-- **Tools Modal**: "Todas as Ferramentas" button in header with 7 essential tools displayed in a clean grid
-- **Credits**: Footer displays developer attribution (Diego Moura de Andrade - Cruzeiro do Sul / Braz Cubas)
-- **Contact Form**: 3 subject options only - Feedback, Reportar Erro, Sugestões
-- **Dashboard**: Simplified to show welcome message and quick tool access (no usage metrics or plan cards)
 
-### Admin Panel
-- **Dashboard**: KPIs tracking (users, operations, storage)
-- **User Management**: Search, reset quotas with audit logging
-- **Access**: Available in user profile dropdown menu for admin users
-- **Note**: Plan management UI removed (all users are on free unlimited plan)
+**Technology Stack:**
+- **Templating:** Jinja2 templates with server-side rendering
+- **Styling:** Tailwind CSS (via CDN)
+- **Interactivity:** HTMX 2.0.3 for dynamic content, Alpine.js for component state
+- **Icons:** Lucide icons (migrating away from Feather icons)
+- **PWA Support:** Service worker for offline capabilities and caching (static assets cached)
 
-## External Dependencies
+**Design Patterns:**
+- Component-based templates extending `base.html`
+- Internationalization helper `t()` for Portuguese (default) and optional English support
+- CSRF tokens embedded in forms via meta tags
+- Responsive design with mobile-first approach
 
-### Authentication Services
-- **Google OAuth**: Social login integration using Authlib
-- **JWT Management**: Access and refresh token rotation with secure cookie storage
+### Backend Architecture
 
-### PDF Processing Libraries
-- **PyPDF2**: Core PDF manipulation (merge, split, metadata, compression fallback)
-- **pikepdf**: Advanced PDF compression with recompress_flate for size reduction
-- **pdfplumber**: Text extraction from PDFs
-- **python-docx**: PDF to DOCX conversions
-- **reportlab**: PDF generation from text and document creation
-- **PIL/Pillow**: Image processing for PDF conversion
-- **pdf2image**: PDF to image conversion (PNG/JPG)
+**Framework:** FastAPI with async request handling
 
-### Infrastructure Services
-- **File Storage**: Temporary filesystem storage with automatic cleanup
-- **Background Tasks**: FastAPI BackgroundTasks for file cleanup (structured for queue upgrade)
-- **Rate Limiting**: In-memory rate limiting with IP-based tracking
+**Core Components:**
+1. **Authentication Layer:**
+   - JWT-based authentication with access/refresh tokens
+   - Google OAuth integration via Authlib
+   - Argon2 password hashing for security
+   - Anonymous user support with signed cookies (`anon_id`)
+   - Case-insensitive email queries using `func.lower()`
 
-### Development Tools
-- **Validation**: Custom validators for file types, sizes, and user input
-- **Security Utilities**: Argon2 password hashing, secure token generation, filename sanitization
-- **Monitoring**: Audit logging for admin actions and user operations
+2. **Authorization & Security:**
+   - Role-based access control (user, admin)
+   - Custom middleware stack:
+     - `SecurityMiddleware`: Adds security headers (X-Frame-Options, CSP, etc.)
+     - `RateLimitMiddleware`: Per-IP rate limiting (60 calls/min default)
+     - `CSRFMiddleware`: CSRF protection using itsdangerous signed tokens
+   - TrustedHostMiddleware for domain validation in production
+
+3. **File Processing:**
+   - Job-based conversion system with in-memory registry
+   - Temporary file storage in `/tmp/{user_id}/{job_id}/`
+   - Background cleanup task runs every 10 minutes (configurable via `TEMP_FILE_RETENTION_MINUTES`)
+   - Watermarking service for free tier operations (currently disabled in beta)
+
+4. **PDF Operations (Core Services):**
+   - Merge PDFs
+   - Split PDFs (by page ranges)
+   - Compress/optimize PDFs
+   - Convert PDF ↔ DOCX/XLSX/PPTX
+   - Convert PDF ↔ images (PNG/JPG/ICO)
+   - Extract text with OCR fallback
+   - Generate text-only PDFs
+
+5. **Quota Management:**
+   - Plan-based limits (Free, Pro, Custom, Anonymous)
+   - Daily operation tracking per user/anonymous session
+   - File size limits configurable via `MAX_UPLOAD_MB` environment variable (default: 60MB)
+   - Anonymous users: 1 operation/day with watermark (beta: unlimited without watermark)
+
+6. **Billing Integration (Placeholder):**
+   - Mercado Pago integration stubs for future paid plans
+   - Subscription and invoice models defined but not actively enforced
+   - Current deployment: All features free and unlimited (beta/academic phase)
+
+**Router Structure:**
+- `/auth/*`: Authentication (login, register, OAuth callbacks)
+- `/tools/*`: PDF conversion endpoints
+- `/admin/*`: Admin dashboard (user management, audit logs)
+- `/billing/*`: Pricing page and payment webhooks
+- `/health`: Health check endpoints for database and service status
+- `/`: Root redirects to `/home`
+
+### Data Storage
+
+**Primary Database:**
+- **Development:** SQLite with WAL mode (`data/app.db`)
+- **Production:** PostgreSQL (Neon) with SSL required
+- **Connection pooling:** SQLAlchemy with StaticPool for SQLite
+- **Schema migration:** Manual SQL scripts (e.g., `scripts/add_email_index.sql`)
+
+**Database Models:**
+- `User`: Email (unique, lowercase), password hash, OAuth IDs, plan, role
+- `Subscription`: Plan status, Mercado Pago IDs, billing periods
+- `Invoice`: Payment records
+- `QuotaUsage`: Daily operation tracking
+- `AnonQuota`: Anonymous user quota tracking by hashed session ID
+- `Coupon`: Discount codes (placeholder)
+- `AuditLog`: Admin action tracking
+
+**Key Design Decisions:**
+- Unique email index: Case-insensitive (`users_email_lower_idx` on `LOWER(email)`)
+- Anonymous tracking: Cookie-based sessions with UUID4, hashed before DB storage
+- No permanent file storage: All uploads auto-delete after 30 minutes
+
+### External Dependencies
+
+**Third-Party Services:**
+- **Neon PostgreSQL:** Cloud database with SSL enforcement
+- **Google OAuth:** Authentication via `GOOGLE_CLIENT_ID/SECRET`
+- **Mercado Pago:** Payment processing (not active in current deployment)
+- **Replit:** Cloud deployment platform (mentions being removed)
+
+**Python Libraries (Critical):**
+- `fastapi`: Web framework
+- `uvicorn`: ASGI server
+- `sqlalchemy`: ORM and database abstraction
+- `jinja2`: Template engine
+- `PyPDF2`, `pikepdf`: PDF manipulation
+- `PyMuPDF` (fitz): PDF rendering
+- `python-docx`: DOCX conversion
+- `Pillow`: Image processing
+- `pdfminer.six`: Text extraction
+- `pytesseract`: OCR fallback
+- `argon2-cffi`: Password hashing
+- `python-jose[cryptography]`: JWT handling
+- `itsdangerous`: CSRF token signing
+- `authlib`: OAuth client
+
+**CDN Dependencies:**
+- Tailwind CSS
+- HTMX 2.0.3
+- Alpine.js 3.x
+- Lucide icons
+
+**Environment Variables (Required):**
+```
+DATABASE_URL          # Postgres connection string with ?sslmode=require
+SECRET_KEY            # App-wide secret
+JWT_SECRET            # JWT signing key
+CSRF_SECRET           # CSRF token signing
+ANON_COOKIE_SECRET    # Anonymous session signing
+GOOGLE_CLIENT_ID      # OAuth (optional)
+GOOGLE_CLIENT_SECRET  # OAuth (optional)
+MAX_UPLOAD_MB         # File size limit (default: 60)
+```
+
+**Deployment Constraints:**
+- Replit Autoscale plan: May impose proxy-level upload limits beyond `MAX_UPLOAD_MB`
+- Recommendation for larger files: Reserved VM or direct S3 presigned URLs
+- Health check endpoint: `/healthz` returns `{"ok": true}`
+- HTTPS enforcement: TrustedHostMiddleware validates allowed domains

@@ -1,0 +1,75 @@
+(aplicar sem quebrar nada e manter tudo em PT-BR):
+
+“Revise o projeto HubPDF para permitir upload de até 60 MB para todos os usuários, inclusive não autenticados. Não altere rotas nem o design, apenas:
+
+A. Frontend (templates/JS)
+
+Procure por qualquer referência a 10MB, 10 MB, 10*1024*1024, 10485760 e substitua por 60MB e 60*1024*1024 conforme o contexto.
+
+No(s) formulário(s) de upload, antes de enviar, valide o tamanho do arquivo no navegador:
+
+Se file.size > 60*1024*1024, bloqueie o submit e mostre alerta:
+Este serviço gratuito aceita arquivos de até 60 MB. O seu arquivo possui ${tamanhoConvertido}. Por favor, envie um arquivo menor.
+
+Atualize qualquer texto de ajuda/rodapé que mostre limite para indicar “até 60 MB”.
+
+B. Backend (FastAPI/Starlette)
+
+Nas rotas que fazem await request.form(...), chame com:
+await request.form(max_part_size=60*1024*1024, max_files=100, max_fields=1000)
+(Conferir todas as rotas de upload; se houver dependências usando UploadFile sem request.form, aplique um monkey patch global para garantir o limite):
+
+# em main.py, logo após criar o app:
+from starlette import requests as _starlette_requests
+_orig_form = _starlette_requests.Request.form
+async def _patched_form(self, *args, **kwargs):
+    kwargs.setdefault("max_part_size", 60 * 1024 * 1024)   # 60 MB
+    kwargs.setdefault("max_files", 100)
+    kwargs.setdefault("max_fields", 1000)
+    return await _orig_form(self, *args, **kwargs)
+_starlette_requests.Request.form = _patched_form
+
+
+Obs.: esse patch garante o limite em qualquer endpoint que leia multipart/form-data.
+
+Garanta que nenhum lugar do backend ainda compare com 10*1024*1024 ou 10485760.
+
+Se houver middleware próprio para limitar uploads, ajuste a constante para 60 MB.
+
+C. Mensagens ao usuário
+
+Quando o backend detectar arquivo acima de 60 MB, responda HTTP 413 com JSON simples:
+{ "error": "Limite de 60 MB por arquivo. Tente um arquivo menor." }
+
+No frontend, capture 413 e mostre a mensagem amigável em português.
+
+D. Configuração
+
+Adicione suporte a variável de ambiente opcional MAX_UPLOAD_MB (default 60).
+
+import os
+MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "60"))
+MAX_PART_SIZE = MAX_UPLOAD_MB * 1024 * 1024
+# use MAX_PART_SIZE onde está o 60*1024*1024
+
+
+Não troque comandos de execução, nem dependências além do necessário.
+
+E. Verificações
+
+Inclua um /healthz que retorne { "ok": true, "maxUploadMb": <valor> }.
+
+Teste localmente com arquivos de 5 MB, 20 MB e 65 MB (o último deve falhar com 413).
+
+F. Observação sobre o Replit
+
+Confirme o tipo de Deployment. Se ainda houver erro ao enviar >10 MB após essas mudanças, documente em README.md que o plano Autoscale do Replit pode impor limite de upload via proxy e recomende usar Reserved VM ou upload direto a um storage (S3 com presigned URL).
+
+Faça um PR interno com o diff mínimo e cite os arquivos modificados. Não mude rotas, nem layout, nem o texto institucional. Apenas as alterações acima.”
+
+(Referência técnica: Starlette permite configurar max_part_size no request.form(); isso evita o bloqueio padrão em partes grandes.)
+
+Referências: Starlette request.form(max_part_size=...) e limites de parte do formulário. 
+starlette.dev
+
+Nota Replit: relatos de limite de upload em Autoscale resolvidos migrando para Reserved VM.

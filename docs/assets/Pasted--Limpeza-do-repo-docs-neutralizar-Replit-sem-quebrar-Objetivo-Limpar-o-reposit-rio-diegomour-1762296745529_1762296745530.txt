@@ -1,0 +1,115 @@
+“Limpeza do repo + docs + neutralizar Replit (sem quebrar)”
+Objetivo: Limpar o repositório diegomoura09/HubPDF para reduzir menções ao Replit e organizar documentação, SEM alterar o funcionamento do sistema em produção. 
+⚠️ Não mudar rotas, layout, lógica de negócio, dependências críticas nem segredos. Se algo for arriscado, explique no PR e pule.
+
+TAREFAS (seguir na ordem):
+
+0) Verificações básicas
+- Liste onde existem menções a “replit” (case-insensitive) no repo:
+  - grep -Rin "replit" .
+- Liste onde os arquivos abaixo são referenciados em runtime (para não apagá-los se forem usados):
+  - cookies.txt, tmp/, test.pdf, test_sample.pdf, test_sample.xlsx, test.csv, test.txt, attached_assets/
+- Só remova/mova se NÃO houver uso em runtime.
+
+1) Remoções seguras (se não houver referência em runtime)
+- Apagar: 
+  - `.replit`
+  - `replit.md`
+  - `cookies.txt`
+- Apagar a pasta `tmp/` somente se NADA do código lê/usa `tmp/` em produção.
+- Arquivos de teste soltos na raiz que NÃO são usados em runtime:
+  - `test.pdf`, `test_sample.pdf`, `test_sample.xlsx`, `test.csv`, `test.txt`
+  → mover para `docs/examples/` (não apagar) para manter como exemplos. Se a UI referenciar algum, ajustar o README (não mexer em código).
+
+2) Organização de documentação
+- Criar `docs/` se não existir.
+- Mover para `docs/`:
+  - `AUTHENTICATION_FIXES.md`
+  - `SISTEMA_ALERTAS.md`
+- Se existir `attached_assets/` com imagens para docs, renomear para `docs/assets/` e ajustar caminhos no README se necessário.
+- Criar `docs/examples/` e mover os arquivos de amostra (test.*) para lá, caso não sejam usados em runtime.
+
+3) .gitignore e .env.example
+- Garantir que `.gitignore` contenha (sem remover regras já úteis):
+
+
+pycache/
+.env
+*.env
+secrets/
+*.db
+.DS_Store
+
+- Criar `.env.example` (sem segredos reais) com:
+
+
+DATABASE_URL=postgresql://USER:PASS@HOST:5432/DB?sslmode=require
+SESSION_SECRET=change-me
+JWT_SECRET=change-me
+CSRF_SECRET=change-me
+ANON_COOKIE_SECRET=change-me
+
+- Confirmar que nenhum segredo real está versionado.
+
+4) README.md (neutralizar menções ao Replit sem quebrar contexto)
+- Reescrever a seção “🛠️ Tecnologias Utilizadas” para remover “Replit Cloud Deployment”. 
+- Trocar por “Implantação em nuvem (domínio próprio)” ou “Cloud deployment”.
+- Manter o link de produção **https://hubpdf.pro** como URL oficial.
+- Incluir instruções de execução local neutras (sem citar Replit):
+- Opção A (uv):
+  ```
+  pip install uv
+  uv sync
+  uv run uvicorn main:app --host 0.0.0.0 --port 8000
+  ```
+- Opção B (pip):
+  ```
+  pip install -r requirements.txt
+  uvicorn main:app --host 0.0.0.0 --port 8000
+  ```
+- Adicionar referência às pastas de docs: `docs/`, `docs/assets/`, `docs/examples/`.
+
+5) Requirements.txt (compatibilidade — apenas se NÃO introduzir divergência)
+- Se for possível gerar `requirements.txt` a partir do ambiente atual ou pyproject/uv.lock, gerar sem mudar versões (somente refletir as já usadas). 
+- Se houver risco de divergência de dependências, não gerar e explique no PR.
+
+6) Código — hosts confiáveis (somente se for 100% seguro)
+- Localize o uso de TrustedHostMiddleware (FastAPI). 
+- Se **hubpdf.replit.app** ainda estiver na lista, manter por compatibilidade APENAS se for realmente necessário. 
+- Caso o domínio de produção seja exclusivamente **hubpdf.pro**, deixe:
+`["hubpdf.pro", "www.hubpdf.pro", "localhost"]`
+- ⚠️ Se isso puder quebrar acessos internos, ABRA UM PR SEPARADO OU EXPLIQUE que manteve a entrada por segurança.
+
+7) Conferências finais
+- Rodar um “boot local” (uvicorn) e garantir que `/`, `/home`, `/healthz`, `/about`, `/privacy`, `/terms`, `/contact` funcionam.
+- Garantir que limites de upload (60MB) permanecem inalterados.
+- Não tocar em banco, secrets, autenticação ou rotas de conversão.
+
+8) Git & PR
+- Criar branch: `chore/cleanup-neutralize-replit`
+- Commits com mensagens claras:
+- `chore(docs): move internal docs to /docs`
+- `chore: remove replit artifacts (.replit, replit.md, cookies.txt)`
+- `docs: add .env.example and update README`
+- `chore(examples): move test files to docs/examples`
+- (opcional) `build: add requirements.txt for pip compatibility`
+- Abrir PR para `main` com título:
+**"chore: limpeza de repositório e organização de docs (sem alterações de runtime)"**
+- Descrever no PR:
+- O que foi removido/movido/criado
+- Confirmação de que não há mudanças de runtime
+- Confirmação de que app sobe localmente
+- Observação sobre hosts confiáveis (se mantido replit por compatibilidade)
+
+9) Saída esperada
+- Link do PR aberto
+- Lista/diff de arquivos alterados
+- Confirmação de que o app continua rodando igual (produção e local).
+
+Resultado esperado
+
+Nenhuma quebra no app ✔️
+
+Repo limpo e organizado: sem arquivos da IDE, docs em docs/, exemplos em docs/examples/, segredos fora do Git ✔️
+
+README e tecnologias neutros (sem “Replit” gritando) ✔️
