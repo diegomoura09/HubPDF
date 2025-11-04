@@ -6,6 +6,14 @@ HubPDF is a 100% free, educational web-based PDF processing platform built with 
 
 ## Recent Changes (November 2024)
 
+### Technical Improvements for 60MB Upload (November 4, 2024)
+- ✅ Implemented global Starlette request.form() patch to enforce 60MB limit across all routes
+- ✅ Added MAX_UPLOAD_MB environment variable (default: 60MB) with MAX_PART_SIZE property
+- ✅ Updated /healthz endpoint to return maxUploadMb in JSON response
+- ✅ Enhanced frontend validation with detailed Portuguese error messages
+- ✅ Added HTTP 413 exception handler with friendly Portuguese error response
+- ✅ Documented upload limits and Replit deployment considerations in README.md
+
 ### Content Updates (November 4, 2024)
 - ✅ Updated all institutional text to more academic/formal language throughout the platform
 - ✅ Simplified hero section on homepage: "Todas as ferramentas PDF que você precisa"
