@@ -1,0 +1,67 @@
+Quero publicar este projeto no GitHub, na minha conta vinculada (diegomoura09), com repositório público chamado "hubpdf".
+
+Tarefas:
+
+1) Criar o repositório público no GitHub com:
+   - Nome: hubpdf
+   - Descrição: "Sistema HubPDF – Trabalho CST ADS Cruzeiro do Sul BrazCubas"
+   - Visibilidade: Public
+   - Licença: MIT
+
+2) Criar um arquivo README.md com este conteúdo:
+
+# 🧩 HubPDF  
+Sistema desenvolvido como parte do curso **CST em Análise e Desenvolvimento de Sistemas** (Cruzeiro do Sul / BrazCubas).  
+O HubPDF oferece ferramentas simples e seguras para manipulação de arquivos PDF — totalmente gratuito, acessível via web e sem armazenamento permanente de dados.
+
+## 🚀 Funcionalidades
+- Converter imagens em PDF  
+- Mesclar múltiplos PDFs  
+- Dividir arquivos PDF  
+- Comprimir e reduzir tamanho  
+- Extrair texto  
+- Garantia de privacidade (arquivos excluídos automaticamente)
+
+## 🛠️ Tecnologias Utilizadas
+- Python + FastAPI  
+- HTML, CSS e JavaScript  
+- Uvicorn  
+- Replit Cloud Deployment  
+- Banco de dados Neon (PostgreSQL remoto)  
+
+## 👨‍💻 Autor
+**Diego Moura de Andrade**  
+- GitHub: [diegomoura09](https://github.com/diegomoura09)  
+- E-mail: diego.andrade@cs.brazcubas.edu.br  
+- Sistema desenvolvido em atendimento a requisitos acadêmicos.  
+
+## 🌐 Acesso Online
+Acesse gratuitamente: [https://hubpdf.pro](https://hubpdf.pro)
+
+## ⚖️ Licença
+Distribuído sob a licença MIT.
+
+3) Adicionar um .gitignore contendo:
+__pycache__/
+.env
+secrets/
+*.db
+
+4) Fazer o push de todos os arquivos do projeto (main.py, templates, static, requirements.txt, etc.) para o repositório "hubpdf" da conta GitHub diegomoura09.
+
+5) Confirmar o link público do repositório ao final.
+✅ 3️⃣ Resultado esperado
+Depois que o Replit executar:
+
+Seu repositório ficará público em
+👉 https://github.com/diegomoura09/hubpdf
+
+Contendo:
+
+Código completo
+
+README.md bonito e padronizado
+
+Histórico de commits
+
+Proteção de segredos (.env, chaves, senhas)
