@@ -132,6 +132,23 @@ app.include_router(health.router, prefix="/api", tags=["health"])
 async def root():
     return RedirectResponse(url="/home", status_code=302)
 
+# Demo page for alerts system
+@app.get("/demo/alerts")
+async def alerts_demo(request: Request):
+    from app.services.i18n import get_user_locale, get_translations
+    locale = get_user_locale(request)
+    translations = get_translations(locale)
+    
+    return templates.TemplateResponse(
+        "demo/alerts.html",
+        {
+            "request": request,
+            "locale": locale,
+            "translations": translations,
+            "t": lambda key: translations.get(key, key)
+        }
+    )
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",

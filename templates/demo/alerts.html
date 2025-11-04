@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Demonstração de Alertas - {{ t('title') }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-green-600 rounded-2xl mb-6 shadow-xl">
+                <i data-lucide="bell" class="h-8 w-8 text-white"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-slate-900 mb-3">
+                Sistema de Alertas HubPDF
+            </h1>
+            <p class="text-slate-600 text-lg">
+                Demonstração do sistema de notificações visuais
+            </p>
+        </div>
+
+        <!-- Demo Card -->
+        <div class="modern-card mb-8">
+            <div class="card-body">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6">
+                    <i data-lucide="zap" class="h-6 w-6 inline mr-2 text-emerald-600"></i>
+                    Tipos de Alertas
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Success -->
+                    <button onclick="showSuccessDemo()" class="btn bg-emerald-600 hover:bg-emerald-700 text-white w-full">
+                        <i data-lucide="check-circle" class="h-5 w-5 mr-2"></i>
+                        Alerta de Sucesso
+                    </button>
+
+                    <!-- Error -->
+                    <button onclick="showErrorDemo()" class="btn bg-red-600 hover:bg-red-700 text-white w-full">
+                        <i data-lucide="alert-circle" class="h-5 w-5 mr-2"></i>
+                        Alerta de Erro
+                    </button>
+
+                    <!-- Warning -->
+                    <button onclick="showWarningDemo()" class="btn bg-yellow-600 hover:bg-yellow-700 text-white w-full">
+                        <i data-lucide="alert-triangle" class="h-5 w-5 mr-2"></i>
+                        Alerta de Aviso
+                    </button>
+
+                    <!-- Info -->
+                    <button onclick="showInfoDemo()" class="btn bg-blue-600 hover:bg-blue-700 text-white w-full">
+                        <i data-lucide="info" class="h-5 w-5 mr-2"></i>
+                        Alerta de Informação
+                    </button>
+
+                    <!-- With HTML Link -->
+                    <button onclick="showLinkDemo()" class="btn bg-purple-600 hover:bg-purple-700 text-white w-full">
+                        <i data-lucide="link" class="h-5 w-5 mr-2"></i>
+                        Alerta com Link
+                    </button>
+
+                    <!-- Permanent -->
+                    <button onclick="showPermanentDemo()" class="btn bg-slate-600 hover:bg-slate-700 text-white w-full">
+                        <i data-lucide="clock" class="h-5 w-5 mr-2"></i>
+                        Alerta Permanente
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Examples -->
+        <div class="modern-card">
+            <div class="card-body">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6">
+                    <i data-lucide="code" class="h-6 w-6 inline mr-2 text-blue-600"></i>
+                    Exemplos de Código
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- Success -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-emerald-600 mb-2">Alerta de Sucesso</h3>
+                        <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto text-sm"><code>window.alerts.success('Operação concluída com sucesso!');</code></pre>
+                    </div>
+
+                    <!-- Error -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-red-600 mb-2">Alerta de Erro</h3>
+                        <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto text-sm"><code>window.alerts.error('Erro ao processar sua solicitação.');</code></pre>
+                    </div>
+
+                    <!-- With Link -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-purple-600 mb-2">Alerta com Link HTML</h3>
+                        <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto text-sm"><code>window.alerts.error(
+  'E-mail não encontrado. &lt;a href="/register"&gt;Cadastre-se aqui&lt;/a&gt;',
+  0  // 0 = não fecha automaticamente
+);</code></pre>
+                    </div>
+
+                    <!-- Advanced -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-blue-600 mb-2">Uso Avançado</h3>
+                        <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto text-sm"><code>window.alerts.show({
+  message: 'Sua mensagem aqui',
+  type: 'success',      // success, error, warning, info
+  duration: 5000,       // em ms (0 = permanente)
+  dismissible: true     // true = pode fechar
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Link -->
+        <div class="text-center mt-8">
+            <a href="/home" class="text-emerald-600 hover:text-emerald-700 font-semibold">
+                <i data-lucide="arrow-left" class="h-4 w-4 inline mr-2"></i>
+                Voltar para Home
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function showSuccessDemo() {
+    window.alerts.success('✅ Operação concluída com sucesso! Seu arquivo foi processado.');
+    lucide.createIcons();
+}
+
+function showErrorDemo() {
+    window.alerts.error('❌ Erro ao processar sua solicitação. Tente novamente mais tarde.');
+    lucide.createIcons();
+}
+
+function showWarningDemo() {
+    window.alerts.warning('⚠️ Por favor, revise suas informações antes de continuar.');
+    lucide.createIcons();
+}
+
+function showInfoDemo() {
+    window.alerts.info('ℹ️ Bem-vindo ao HubPDF! Explore nossas ferramentas gratuitas.');
+    lucide.createIcons();
+}
+
+function showLinkDemo() {
+    window.alerts.error(
+        'E-mail não cadastrado. <a href="/auth/register" class="text-red-600 hover:text-red-500 font-medium underline">Clique aqui para se cadastrar</a>',
+        0
+    );
+    lucide.createIcons();
+}
+
+function showPermanentDemo() {
+    window.alerts.warning(
+        'Este alerta não fecha automaticamente. Use o botão X para fechar.',
+        0
+    );
+    lucide.createIcons();
+}
+
+// Initialize icons when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+});
+</script>
+{% endblock %}

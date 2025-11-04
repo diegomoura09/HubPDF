@@ -6,6 +6,20 @@ HubPDF is a 100% free, educational web-based PDF processing platform built with 
 
 ## Recent Changes (November 2024)
 
+### Authentication & Database Improvements
+- Fixed PostgreSQL (Neon) connection with mandatory SSL configuration
+- Implemented case-insensitive email authentication with unique index on LOWER(email)
+- Corrected authentication error messages to proper Portuguese-BR
+- Created health check endpoints (/api/health, /api/health/db)
+
+### Alert System Implementation
+- Created reusable alert system (success, error, warning, info) with smooth animations
+- Enhanced login page with client-side validation and async form submission
+- Added dynamic error messages with HTML links (e.g., "E-mail não cadastrado. Clique aqui para se cadastrar")
+- Backend supports dual-mode responses (JSON for API, HTML for traditional forms)
+- Demo page available at /demo/alerts
+
+### Platform Updates
 - Transformed platform into 100% free educational tool by removing all paid plan references
 - Contact form updated with 3 subjects: Feedback, Reportar Erro, Sugestões
 - Simplified dashboard to show only welcome message and quick access to tools
@@ -43,6 +57,8 @@ Preferred communication style: Simple, everyday language.
 - **Color Scheme**: Calm tones of blue, green, gray, white, and black for professional appearance
 - **Progressive Enhancement**: PWA-ready with manifest.json and service worker
 - **Internationalization**: JSON-based translation system with cookie-based locale switching
+- **Alert System**: Reusable JavaScript component (window.alerts) with 4 types, HTML support, auto-close, and animations
+- **Form Validation**: Client-side validation with async submission and dynamic error display
 - **Tools Modal**: "Todas as Ferramentas" button in header with 7 essential tools displayed in a clean grid
 - **Credits**: Footer displays developer attribution (Diego Moura de Andrade - Cruzeiro do Sul / Braz Cubas)
 - **Contact Form**: 3 subject options only - Feedback, Reportar Erro, Sugestões
