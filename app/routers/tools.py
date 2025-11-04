@@ -20,7 +20,6 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.template_helpers import templates
-from app.services.i18n import get_translations, get_user_locale
 from app.auth import require_auth, get_current_user, get_optional_user
 from app.services.job_service import job_service
 from app.services.conversion import ConversionError

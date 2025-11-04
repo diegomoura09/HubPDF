@@ -8,9 +8,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.auth import get_optional_user, get_current_user
 from app.models import User
-from app.services.i18n import get_user_locale, set_user_locale, get_translations
 from app.services.quota_service import QuotaService
-from app.template_helpers import get_template_response, templates
+from app.template_helpers import templates
 
 router = APIRouter()
 quota_service = QuotaService()
@@ -27,24 +26,18 @@ async def home(
     user: User = Depends(get_optional_user)
 ):
     """Home page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
     # Get usage summary if user is logged in
     usage_summary = None
     if user:
         usage_summary = quota_service.get_usage_summary(db, user)
     
-    return get_template_response(
+    return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
             "user": user,
-            "locale": locale,
-            "translations": translations,
             "usage_summary": usage_summary
-        },
-        locale
+        }
     )
 
 @router.get("/about", response_class=HTMLResponse)
@@ -53,16 +46,11 @@ async def about(
     user: User = Depends(get_optional_user)
 ):
     """About page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
     return templates.TemplateResponse(
         "about.html",
         {
             "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
+            "user": user
         }
     )
 
@@ -72,16 +60,11 @@ async def privacy(
     user: User = Depends(get_optional_user)
 ):
     """Privacy policy page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
     return templates.TemplateResponse(
         "privacy.html",
         {
             "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
+            "user": user
         }
     )
 
@@ -91,16 +74,11 @@ async def terms(
     user: User = Depends(get_optional_user)
 ):
     """Terms of service page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
     return templates.TemplateResponse(
         "terms.html",
         {
             "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
+            "user": user
         }
     )
 
@@ -115,16 +93,11 @@ async def contact(
     user: User = Depends(get_optional_user)
 ):
     """Contact page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
     return templates.TemplateResponse(
         "contact.html",
         {
             "request": request,
-            "user": user,
-            "locale": locale,
-            "translations": translations
+            "user": user
         }
     )
 
@@ -135,9 +108,6 @@ async def dashboard(
     user: User = Depends(get_current_user)
 ):
     """User dashboard"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
     # Get user statistics
     usage_summary = quota_service.get_usage_summary(db, user)
     
@@ -146,8 +116,6 @@ async def dashboard(
         {
             "request": request,
             "user": user,
-            "locale": locale,
-            "translations": translations,
             "usage_summary": usage_summary
         }
     )
@@ -159,9 +127,6 @@ async def account_plan(
     user: User = Depends(get_current_user)
 ):
     """User account plan page"""
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
     # Get user statistics
     usage_summary = quota_service.get_usage_summary(db, user)
     
@@ -170,8 +135,6 @@ async def account_plan(
         {
             "request": request,
             "user": user,
-            "locale": locale,
-            "translations": translations,
             "usage_summary": usage_summary
         }
     )

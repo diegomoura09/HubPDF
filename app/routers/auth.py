@@ -14,7 +14,6 @@ from app.database import get_db
 from app.auth import auth_service, get_current_user, get_optional_user
 from app.models import User
 from app.services.auth_service import AuthService
-from app.services.i18n import get_user_locale, get_translations
 from app.utils.csrf import generate_csrf_token, validate_csrf_token
 import uuid
 from app.template_helpers import templates

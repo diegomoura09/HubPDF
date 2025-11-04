@@ -15,7 +15,6 @@ import uvicorn
 from app.database import init_db
 from app.middleware import SecurityMiddleware, RateLimitMiddleware, CSRFMiddleware
 from app.routers import auth, tools, billing, admin, health, main as main_router
-from app.services.i18n import get_translations, get_user_locale
 from app.config import settings
 
 # Cleanup task for temporary files
@@ -135,17 +134,10 @@ async def root():
 # Demo page for alerts system
 @app.get("/demo/alerts")
 async def alerts_demo(request: Request):
-    from app.services.i18n import get_user_locale, get_translations
-    locale = get_user_locale(request)
-    translations = get_translations(locale)
-    
     return templates.TemplateResponse(
         "demo/alerts.html",
         {
-            "request": request,
-            "locale": locale,
-            "translations": translations,
-            "t": lambda key: translations.get(key, key)
+            "request": request
         }
     )
 

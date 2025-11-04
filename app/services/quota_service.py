@@ -102,7 +102,6 @@ class QuotaService:
         
         # Check daily limit
         if quota_usage.operations_count >= limits["daily_operations"]:
-            from app.services.i18n import translate
             return False, translate("quota_exceeded", "pt"), False
         
         # Check if watermark is required
@@ -119,7 +118,6 @@ class QuotaService:
         max_size = limits["max_file_size"]
         
         if file_size > max_size:
-            from app.services.i18n import translate
             max_mb = max_size // (1024 * 1024)
             return False, translate("file_too_large", "pt", max_size=max_mb)
         

@@ -11,7 +11,6 @@ from sqlalchemy import func, desc, and_
 from app.database import get_db
 from app.auth import require_admin
 from app.models import User, Subscription, Invoice, Coupon, AuditLog, QuotaUsage
-from app.services.i18n import get_user_locale, get_translations
 from app.services.auth_service import AuthService
 from app.services.billing_service import BillingService
 from app.services.quota_service import QuotaService

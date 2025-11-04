@@ -11,7 +11,6 @@ from app.database import get_db
 from app.auth import require_auth, get_optional_user
 from app.models import User, Subscription
 from app.services.billing_service import BillingService
-from app.services.i18n import get_user_locale, get_translations
 from app.template_helpers import templates
 from app.config import settings
 

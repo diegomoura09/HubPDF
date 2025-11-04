@@ -10,7 +10,6 @@ from reportlab.lib.units import inch
 from PyPDF2 import PdfReader, PdfWriter
 import math
 
-from app.services.i18n import get_translations
 
 
 class WatermarkService:
