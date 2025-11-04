@@ -1,0 +1,108 @@
+Quero que você **substitua apenas os textos descritivos** das páginas institucionais do site **HubPDF**, mantendo todo o código HTML, CSS, estrutura de navegação, links, rodapé e identidade visual existentes.
+
+⚠️ NÃO altere:
+- classes, ids, estilos, cores, fontes ou layout das páginas;
+- scripts, menus, rodapé ou cabeçalho;
+- links internos (/home, /tools, /about etc.).
+
+Apenas **substitua o conteúdo textual dentro das seções principais** (“Empresa”, “Sobre”, “Contato”, “Privacidade” e “Termos de Uso”), conforme os textos abaixo.
+
+---
+
+## 🏢 EMPRESA
+
+**HubPDF – Ferramentas Digitais Sustentáveis**
+
+O **HubPDF** é uma plataforma digital desenvolvida por **Diego Moura de Andrade**, como parte do curso de **Análise e Desenvolvimento de Sistemas (CST)** da **Cruzeiro do Sul / Braz Cubas**.  
+O sistema tem por finalidade oferecer **ferramentas gratuitas e seguras para o tratamento de arquivos PDF**, contribuindo para a democratização do acesso à tecnologia e para a sustentabilidade digital.
+
+Inspirado em princípios de **inovação, acessibilidade e economia sustentável**, o HubPDF permite que usuários realizem tarefas como unir, dividir, converter e compactar arquivos, sem necessidade de instalação ou pagamento, utilizando tecnologia 100% baseada em navegador.
+
+O projeto é de caráter **educacional e extensionista**, sem fins lucrativos, e busca demonstrar como o uso ético da tecnologia pode gerar impacto social positivo, promovendo inclusão digital e redução do consumo de papel.
+
+---
+
+## ℹ️ SOBRE
+
+**Sobre o HubPDF**
+
+O **HubPDF** é um sistema web desenvolvido com foco em **segurança, privacidade e eficiência** no processamento de documentos digitais.  
+A plataforma foi criada como projeto acadêmico, dentro das atividades extensionistas do curso CST em **Análise e Desenvolvimento de Sistemas da Cruzeiro do Sul / Braz Cubas**, visando atender à sociedade com soluções tecnológicas acessíveis e sustentáveis.
+
+Nosso objetivo é oferecer **ferramentas confiáveis e gratuitas** para usuários que necessitam manipular arquivos PDF de maneira simples, sem depender de softwares pagos ou complexos.  
+Todos os arquivos processados são excluídos automaticamente após o uso, respeitando as diretrizes da **Lei nº 13.709/2018 (Lei Geral de Proteção de Dados – LGPD)**.
+
+**Missão:**  
+Facilitar o acesso à tecnologia e incentivar o uso consciente de ferramentas digitais que reduzam o desperdício de recursos físicos e promovam a sustentabilidade documental.
+
+---
+
+## ✉️ CONTATO
+
+**Entre em Contato**
+
+Tem dúvidas, sugestões ou encontrou algum problema durante o uso do HubPDF?  
+Entre em contato conosco. Seu feedback é fundamental para o aprimoramento contínuo da plataforma.
+
+📧 **E-mail para contato:** [diego.andrade@cs.brazcubas.edu.br](mailto:diego.andrade@cs.brazcubas.edu.br)
+
+Responderemos às mensagens no menor prazo possível.  
+O HubPDF não solicita dados pessoais sensíveis, senhas ou informações financeiras em hipótese alguma.
+
+**Horário de atendimento:** segunda a sexta-feira, das 9h às 18h (horário de Brasília).  
+**Responsável técnico:** Diego Moura de Andrade – Desenvolvedor e aluno CST ADS / Cruzeiro do Sul – Braz Cubas.
+
+---
+
+## 🔒 POLÍTICA DE PRIVACIDADE
+
+**Política de Privacidade – HubPDF**
+
+O HubPDF respeita a sua privacidade e está comprometido com a proteção dos seus dados pessoais, conforme previsto na **Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais – LGPD)**.
+
+### 1. Coleta e uso de dados
+O HubPDF **não coleta, armazena ou compartilha arquivos enviados para processamento**.  
+Todos os documentos são tratados de forma local e **excluídos automaticamente após 30 minutos**, sem qualquer acesso humano ou registro permanente.
+
+### 2. Cookies e estatísticas
+A plataforma pode utilizar cookies técnicos apenas para garantir o funcionamento do site e otimizar a experiência do usuário.  
+Não utilizamos cookies para rastreamento, publicidade ou perfilamento.
+
+### 3. Segurança e confidencialidade
+O HubPDF adota boas práticas de segurança da informação, incluindo **criptografia local e exclusão automática de arquivos**, garantindo a confidencialidade e integridade dos dados processados.
+
+### 4. Direitos do usuário
+Em conformidade com a LGPD, o usuário tem o direito de solicitar esclarecimentos ou exclusão de qualquer dado eventualmente tratado.  
+Entre em contato pelo e-mail: [diego.andrade@cs.brazcubas.edu.br](mailto:diego.andrade@cs.brazcubas.edu.br)
+
+---
+
+## ⚖️ TERMOS DE USO
+
+**Termos de Uso – HubPDF**
+
+Ao utilizar o HubPDF, o usuário concorda com os termos descritos a seguir.  
+Estes Termos regulam o uso da plataforma, desenvolvida por **Diego Moura de Andrade**, no âmbito do curso CST em **Análise e Desenvolvimento de Sistemas (Cruzeiro do Sul / Braz Cubas)**.
+
+### 1. Natureza do serviço
+O HubPDF é uma ferramenta **gratuita e educacional**, destinada ao processamento de arquivos PDF (divisão, junção, compressão, conversão etc.), sem fins comerciais.
+
+### 2. Uso responsável
+O usuário compromete-se a utilizar a plataforma apenas para fins legais, éticos e pessoais, não devendo enviar ou processar arquivos que contenham conteúdo ilícito, confidencial de terceiros ou que violem direitos autorais.
+
+### 3. Limitação de responsabilidade
+O HubPDF não se responsabiliza por perdas, danos ou falhas resultantes do uso indevido do sistema.  
+Os arquivos são processados automaticamente e excluídos após o uso, sem retenção de cópias.
+
+### 4. Alterações e atualizações
+Estes Termos poderão ser modificados a qualquer momento, sem aviso prévio, para adequação às atualizações técnicas ou legais.  
+A versão mais recente estará sempre disponível nesta página.
+
+### 5. Contato
+Dúvidas e solicitações podem ser encaminhadas para:  
+📧 [diego.andrade@cs.brazcubas.edu.br](mailto:diego.andrade@cs.brazcubas.edu.br)
+
+---
+
+Após substituir os textos acima, **não adicione, remova ou reestilize elementos**.  
+Apenas insira as descrições dentro das seções correspondentes, mantendo o mesmo formato visual do site atual.
