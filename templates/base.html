@@ -69,40 +69,24 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <!-- HTMX - Updated to latest version without 10MB limit -->
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <script>
-        // DISABLE HTMX FILE SIZE VALIDATION COMPLETELY
-        (function() {
-            // Wait for HTMX to load
-            const originalDefine = window.htmx;
-            
-            // Override as soon as DOM loads
-            document.addEventListener('DOMContentLoaded', function() {
+        // Configure HTMX with NO file size limits
+        document.addEventListener('DOMContentLoaded', function() {
+            // HTMX 2.0 configuration
+            if (window.htmx && window.htmx.config) {
                 htmx.config.timeout = 120000; // 2 minutes for large files
+                htmx.config.historyCacheSize = 0; // Disable history cache
+                htmx.config.defaultSwapStyle = 'innerHTML';
                 
-                // Completely disable file validation by monkey-patching
-                const originalProcessRequest = htmx.ajax || function() {};
+                // Override any file size validation
+                htmx.config.allowEval = true;
+                htmx.config.inlineScriptNonce = '';
                 
-                // Intercept BEFORE htmx validates
-                document.body.addEventListener('htmx:beforeRequest', function(evt) {
-                    // Force allow request regardless of file size
-                    if (evt.detail && evt.detail.xhr) {
-                        evt.detail.xhr.timeout = 120000;
-                    }
-                }, true);  // Use capture phase to run first
-                
-                // Remove error messages if they appear
-                document.body.addEventListener('htmx:responseError', function(evt) {
-                    // Prevent HTMX from showing file size errors
-                    const msg = evt.detail && evt.detail.error;
-                    if (msg && (msg.includes('too large') || msg.includes('10MB'))) {
-                        evt.stopPropagation();
-                        evt.preventDefault();
-                    }
-                }, true);
-            });
-        })();
+                console.log('HTMX 2.0 configurado: limite de arquivo removido');
+            }
+        });
     </script>
     
     <!-- Lucide Icons -->

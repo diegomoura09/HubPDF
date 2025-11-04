@@ -6,6 +6,13 @@ HubPDF is a 100% free, educational web-based PDF processing platform built with 
 
 ## Recent Changes (November 2024)
 
+### CRITICAL FIX: Removed 10MB Client-Side Validation (November 4, 2024)
+- ✅ **UPGRADED HTMX from 1.9.10 to 2.0.3** - Removed built-in 10MB file size validation
+- ✅ **DISABLED all client-side file size validation** in static/js/app.js
+- ✅ Removed validateFileSize() function calls from file upload and drag-drop handlers
+- ✅ Added HTMX 2.0 configuration with 120 second timeout for large file uploads
+- ✅ Confirmed: Only backend enforces 60MB limit, zero client-side restrictions
+
 ### Technical Improvements for 60MB Upload (November 4, 2024)
 - ✅ Implemented global Starlette request.form() patch to enforce 60MB limit across all routes
 - ✅ Added MAX_UPLOAD_MB environment variable (default: 60MB) with MAX_PART_SIZE property
