@@ -6,6 +6,17 @@ HubPDF is a 100% free, educational web-based PDF processing platform built with 
 
 ## Recent Changes (November 2024)
 
+### Content Updates (November 4, 2024)
+- ✅ Updated all institutional text to more academic/formal language throughout the platform
+- ✅ Simplified hero section on homepage: "Todas as ferramentas PDF que você precisa"
+- ✅ Updated About page to emphasize educational and non-commercial nature
+- ✅ Simplified Privacy Policy with only essential LGPD compliance information
+- ✅ Simplified Terms of Use to be more concise and direct
+- ✅ Updated Contact page with simplified layout (removed extra info boxes)
+- ✅ Updated footer with academic attribution: "Sistema gratuito desenvolvido por Diego Moura de Andrade – CST ADS, Cruzeiro do Sul / Braz Cubas"
+- ✅ Implemented 50MB hard limit for file uploads in JavaScript (static/js/app.js)
+- ✅ Added Portuguese error messages for file size validation
+
 ### Deployment Configuration (November 2024)
 - ✅ Fixed deployment health checks with `/healthz` endpoint returning `{"ok": true}`
 - ✅ Updated deployment command to use uvicorn: `uvicorn main:app --host 0.0.0.0 --port 5000`
