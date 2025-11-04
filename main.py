@@ -172,7 +172,7 @@ else:
     ]
     cors_credentials = True
     
-    # Add specific Replit URLs if available
+    # Add cloud deployment URLs if available (legacy support)
     repl_slug = os.getenv("REPL_SLUG")
     if repl_slug:
         cors_origins.append(f"https://{repl_slug}.replit.app")
@@ -185,18 +185,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Trusted host middleware - Enable for webhook support and Replit deployments
+# Trusted host middleware - Enable for webhook support and cloud deployments
 if not settings.DEBUG:
     app.add_middleware(
         TrustedHostMiddleware,
         allowed_hosts=[
-            "hubpdf.pro",  # Custom domain
-            "www.hubpdf.pro",  # Custom domain with www
+            "hubpdf.pro",  # Production domain
+            "www.hubpdf.pro",  # Production domain with www
             settings.DOMAIN, 
             f"*.{settings.DOMAIN}",
-            "*.replit.app",  # Replit deployment domains
-            "*.replit.dev",  # Replit development domains
-            "*.spock.replit.dev",  # For Mercado Pago webhooks
+            "*.replit.app",  # Cloud deployment (legacy compatibility)
+            "*.replit.dev",  # Cloud deployment dev
+            "*.spock.replit.dev",  # For payment webhooks
             "localhost", 
             "127.0.0.1"
         ]
