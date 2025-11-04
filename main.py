@@ -93,31 +93,63 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Redirect middleware for HTTPS and apex domain
+@app.middleware("http")
+async def redirect_middleware(request: Request, call_next):
+    """Redirect HTTP to HTTPS and www to apex domain"""
+    # Get host and scheme
+    host = request.headers.get("host", "")
+    scheme = request.headers.get("x-forwarded-proto", request.url.scheme)
+    
+    # Force HTTPS in production (non-localhost)
+    if scheme == "http" and "localhost" not in host and "127.0.0.1" not in host:
+        url = request.url.replace(scheme="https")
+        return RedirectResponse(url=str(url), status_code=301)
+    
+    # Redirect www to apex domain
+    if host.startswith("www."):
+        new_host = host[4:]  # Remove "www."
+        url = request.url.replace(netloc=new_host)
+        return RedirectResponse(url=str(url), status_code=301)
+    
+    response = await call_next(request)
+    return response
+
 # Security middleware
 app.add_middleware(SecurityMiddleware)
 app.add_middleware(RateLimitMiddleware, calls_per_minute=300, burst=50)
 app.add_middleware(CSRFMiddleware)
 
-# CORS middleware - Allow Replit deployment domains
-# Note: Using allow_origins=["*"] for deployment as CORS doesn't support wildcards properly
-if settings.DEBUG or os.getenv("REPL_DEPLOYMENT"):
-    # In development or Replit deployment, allow all origins
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=False,  # Must be False when using allow_origins=["*"]
-        allow_methods=["GET", "POST", "PUT", "DELETE"],
-        allow_headers=["*"],
-    )
+# CORS middleware - Specific origins for production security
+# Allow only hubpdf.pro, localhost, and all replit domains
+if settings.DEBUG:
+    # Development: allow localhost only
+    cors_origins = [
+        "http://localhost:5000",
+        "http://127.0.0.1:5000",
+    ]
+    cors_credentials = True
 else:
-    # In production (custom domain), restrict to specific domain
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[settings.DOMAIN],
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE"],
-        allow_headers=["*"],
-    )
+    # Production: allow custom domain and replit domains
+    # Note: CORS doesn't support wildcards in allow_origins, so we use regex in origin validation
+    cors_origins = [
+        "https://hubpdf.pro",
+        "https://www.hubpdf.pro",
+    ]
+    cors_credentials = True
+    
+    # Add specific Replit URLs if available
+    repl_slug = os.getenv("REPL_SLUG")
+    if repl_slug:
+        cors_origins.append(f"https://{repl_slug}.replit.app")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=cors_credentials,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
 
 # Trusted host middleware - Enable for webhook support and Replit deployments
 if not settings.DEBUG:
