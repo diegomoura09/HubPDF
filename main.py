@@ -41,7 +41,12 @@ async def cleanup_temp_files():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    env = os.getenv("REPL_DEPLOYMENT", "development")
+    print(f"🚀 HubPDF starting in {env} mode")
+    print(f"📍 Environment: {os.getenv('REPL_SLUG', 'local')}")
+    
     await init_db()
+    print("✅ Database initialized")
     
     # Start cleanup task
     cleanup_task = asyncio.create_task(periodic_cleanup())
@@ -50,9 +55,12 @@ async def lifespan(app: FastAPI):
     from app.services.job_service import job_registry
     cleanup_job_task = asyncio.create_task(periodic_job_cleanup())
     
+    print("✅ HubPDF app started successfully")
+    
     yield
     
     # Shutdown
+    print("🛑 Shutting down HubPDF...")
     cleanup_task.cancel()
     cleanup_job_task.cancel()
     try:
@@ -90,22 +98,36 @@ app.add_middleware(SecurityMiddleware)
 app.add_middleware(RateLimitMiddleware, calls_per_minute=300, burst=50)
 app.add_middleware(CSRFMiddleware)
 
-# CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"] if settings.DEBUG else [settings.DOMAIN],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["*"],
-)
+# CORS middleware - Allow Replit deployment domains
+# Note: Using allow_origins=["*"] for deployment as CORS doesn't support wildcards properly
+if settings.DEBUG or os.getenv("REPL_DEPLOYMENT"):
+    # In development or Replit deployment, allow all origins
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,  # Must be False when using allow_origins=["*"]
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["*"],
+    )
+else:
+    # In production (custom domain), restrict to specific domain
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[settings.DOMAIN],
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["*"],
+    )
 
-# Trusted host middleware - Enable for webhook support
+# Trusted host middleware - Enable for webhook support and Replit deployments
 if not settings.DEBUG:
     app.add_middleware(
         TrustedHostMiddleware,
         allowed_hosts=[
             settings.DOMAIN, 
             f"*.{settings.DOMAIN}",
+            "*.replit.app",  # Replit deployment domains
+            "*.replit.dev",  # Replit development domains
             "*.spock.replit.dev",  # For Mercado Pago webhooks
             "localhost", 
             "127.0.0.1"

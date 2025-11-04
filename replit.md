@@ -7,11 +7,14 @@ HubPDF is a 100% free, educational web-based PDF processing platform built with 
 ## Recent Changes (November 2024)
 
 ### Deployment Configuration (November 2024)
-- Fixed deployment health checks with fast JSON response at root endpoint (/)
-- Updated deployment command to use uvicorn: `uvicorn main:app --host 0.0.0.0 --port 5000`
-- Configured autoscale deployment target for automatic scaling
-- Smart root endpoint: returns JSON for health checks, redirects browsers to /home
-- All health check endpoints operational: /, /api/health, /api/health/db, /healthz
+- ✅ Fixed deployment health checks with `/healthz` endpoint returning `{"ok": true}`
+- ✅ Updated deployment command to use uvicorn: `uvicorn main:app --host 0.0.0.0 --port 5000`
+- ✅ Configured autoscale deployment target for automatic scaling
+- ✅ Smart root endpoint: returns JSON for health checks, redirects browsers to /home
+- ✅ CORS configured to allow all origins in Replit deployment mode
+- ✅ Trusted hosts configured for *.replit.app and *.replit.dev domains
+- ✅ Startup logs added for debugging (environment mode, database status)
+- ✅ All health check endpoints operational: /, /api/health, /api/health/db, /healthz
 
 ## Changes Summary (November 2024)
 
