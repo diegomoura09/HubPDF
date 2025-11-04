@@ -5,6 +5,7 @@ import secrets
 from datetime import datetime, timedelta, date
 from typing import Optional, Dict, Any
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from authlib.integrations.starlette_client import OAuth
 from fastapi import HTTPException, status
 
@@ -60,17 +61,18 @@ class AuthService:
                     detail=f"Password validation failed: {', '.join(password_errors)}"
                 )
         
-        # Check if user already exists
-        existing_user = db.query(User).filter(User.email == email).first()
+        # Check if user already exists (case-insensitive)
+        email_lower = email.lower().strip()
+        existing_user = db.query(User).filter(func.lower(User.email) == email_lower).first()
         if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User with this email already exists"
             )
         
-        # Create user
+        # Create user (store email in lowercase for consistency)
         user = User(
-            email=email,
+            email=email_lower,
             password_hash=self.hash_password(password) if password else None,
             name=name,
             google_id=google_id,
@@ -84,9 +86,10 @@ class AuthService:
         return user
     
     def authenticate_user(self, db: Session, email: str, password: str) -> Optional[User]:
-        """Authenticate user with email and password"""
+        """Authenticate user with email and password (case-insensitive)"""
+        email_lower = email.lower().strip()
         user = db.query(User).filter(
-            User.email == email,
+            func.lower(User.email) == email_lower,
             User.is_active == True
         ).first()
         
@@ -115,8 +118,9 @@ class AuthService:
         if user:
             return user
         
-        # Try to find existing user by email
-        user = db.query(User).filter(User.email == email).first()
+        # Try to find existing user by email (case-insensitive)
+        email_lower = email.lower().strip()
+        user = db.query(User).filter(func.lower(User.email) == email_lower).first()
         if user:
             # Link Google account to existing user
             user.google_id = google_id

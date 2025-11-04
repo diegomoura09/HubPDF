@@ -14,7 +14,7 @@ import uvicorn
 
 from app.database import init_db
 from app.middleware import SecurityMiddleware, RateLimitMiddleware, CSRFMiddleware
-from app.routers import auth, tools, billing, admin, main as main_router
+from app.routers import auth, tools, billing, admin, health, main as main_router
 from app.services.i18n import get_translations, get_user_locale
 from app.config import settings
 
@@ -125,6 +125,7 @@ app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(tools.router, prefix="/tools", tags=["tools"])
 app.include_router(billing.router, prefix="/billing", tags=["billing"])
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
+app.include_router(health.router, prefix="/api", tags=["health"])
 
 # Root redirect
 @app.get("/")

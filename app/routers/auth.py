@@ -7,6 +7,7 @@ from fastapi import APIRouter, Request, Depends, Form, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from authlib.integrations.starlette_client import OAuthError
 
 from app.database import get_db
@@ -78,15 +79,18 @@ async def login(
     # CSRF validation removed - using SameSite cookies for security
     
     try:
-        # Check if user exists first
-        existing_user = db.query(User).filter(User.email == email.lower()).first()
+        # Normalize email (case-insensitive)
+        email_lower = email.lower().strip()
+        
+        # Check if user exists first (case-insensitive)
+        existing_user = db.query(User).filter(func.lower(User.email) == email_lower).first()
         if not existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Email não cadastrado. <a href="/auth/register" class="text-red-600 hover:text-red-500 font-medium underline">Clique aqui para se cadastrar</a>'
+                detail='E-mail não cadastrado. <a href="/auth/register" class="text-red-600 hover:text-red-500 font-medium underline">Clique aqui para se cadastrar</a>'
             )
         
-        user = auth_svc.authenticate_user(db, email.lower(), password)
+        user = auth_svc.authenticate_user(db, email_lower, password)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -234,30 +238,30 @@ async def register_post(
                 detail=translations.get("error_password_mismatch", "Passwords do not match")
             )
         
-        # Check if user already exists with proper error handling
+        # Check if user already exists with proper error handling (case-insensitive)
         try:
-            existing_user = db.query(User).filter(User.email == email).first()
+            existing_user = db.query(User).filter(func.lower(User.email) == email).first()
             if existing_user:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=translations.get("error_email_exists", "An account with this email already exists")
+                    detail=translations.get("error_email_exists", "Já existe uma conta com este e-mail")
                 )
         except Exception as db_error:
             print(f"DEBUG REGISTRATION: Database error during user lookup: {db_error}")
             # Try to reconnect and retry once
             try:
                 db.rollback()
-                existing_user = db.query(User).filter(User.email == email).first()
+                existing_user = db.query(User).filter(func.lower(User.email) == email).first()
                 if existing_user:
                     raise HTTPException(
                         status_code=status.HTTP_400_BAD_REQUEST,
-                        detail=translations.get("error_email_exists", "An account with this email already exists")
+                        detail=translations.get("error_email_exists", "Já existe uma conta com este e-mail")
                     )
             except Exception as retry_error:
                 print(f"DEBUG REGISTRATION: Retry failed: {retry_error}")
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Database connection error. Please try again."
+                    detail="Erro de conexão com o banco de dados. Tente novamente."
                 )
         
         # Create user with error handling

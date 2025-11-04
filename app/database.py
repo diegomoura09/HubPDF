@@ -39,14 +39,27 @@ if settings.DATABASE_URL.startswith("sqlite"):
             cursor.execute("PRAGMA cache_size=1000")
             cursor.execute("PRAGMA foreign_keys=ON")
 else:
-    # PostgreSQL configuration with better connection handling
+    # PostgreSQL (Neon) configuration with SSL and better connection handling
+    database_url = settings.DATABASE_URL
+    
+    # Ensure SSL is configured for Neon (required)
+    if "sslmode" not in database_url:
+        if "?" in database_url:
+            database_url += "&sslmode=require"
+        else:
+            database_url += "?sslmode=require"
+    
     engine = create_engine(
-        settings.DATABASE_URL,
+        database_url,
         pool_pre_ping=True,  # Validate connections before use
         pool_recycle=300,    # Recycle connections every 5 minutes
         pool_size=5,         # Connection pool size
         max_overflow=10,     # Max overflow connections
-        echo=False           # Set to True for SQL debugging
+        echo=False,          # Set to True for SQL debugging
+        connect_args={
+            "sslmode": "require",
+            "connect_timeout": 10
+        }
     )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
