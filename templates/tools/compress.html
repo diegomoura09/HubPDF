@@ -45,19 +45,16 @@
             
             <!-- Compression Options -->
             <div class="mb-6 space-y-4">
-                <div>
-                    <label for="compression_level" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nível de Compressão
-                    </label>
-                    <select id="compression_level" name="compression_level" 
-                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
-                        <option value="light">Leve - Alta qualidade (~20-30% redução)</option>
-                        <option value="balanced" selected>Equilibrado - Melhor custo/benefício (~40-60% redução)</option>
-                        <option value="strong">Forte - Redução máxima (~60-80% redução)</option>
-                    </select>
-                    <p class="mt-1 text-xs text-gray-500">
-                        PDFs nativos com texto têm menor ganho. Para escaneados, use "Forte" ou ative tons de cinza.
-                    </p>
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i data-feather="info" class="h-5 w-5 text-green-600 mr-2 mt-0.5"></i>
+                        <div>
+                            <h3 class="text-sm font-medium text-green-900">Compressão Otimizada</h3>
+                            <p class="text-sm text-green-700 mt-1">
+                                O sistema analisa automaticamente seu PDF e aplica a melhor estratégia de compressão para máxima redução de tamanho.
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="flex items-start">

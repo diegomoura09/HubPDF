@@ -786,14 +786,11 @@ class ConversionService:
             self._cleanup_work_dir(work_dir)
             raise ConversionError(f"PDF split failed: {str(e)}")
     
-    async def compress_pdf(self, pdf_path: str, level: str = "balanced", job_id: str = None, 
+    async def compress_pdf(self, pdf_path: str, job_id: str = None, 
                           grayscale: bool = False, rasterize: bool = False) -> Dict[str, Any]:
         """Compress PDF file using Ghostscript with advanced compression
         
-        Compression levels:
-        - light: Alta qualidade, ganho moderado (~20-30%)
-        - balanced: Melhor custo/benefício (~40-60%)
-        - strong: Redução máxima, pode perder qualidade (~60-80%)
+        Configuração otimizada para máxima redução de tamanho.
         
         Options:
         - grayscale: Converte para tons de cinza
@@ -807,20 +804,10 @@ class ConversionService:
         output_path = work_dir / output_filename
         
         try:
-            # Mapear níveis antigos para novos
-            level_map = {
-                "normal": "balanced",
-                "medium": "balanced",
-                "high": "strong",
-                "maximum": "strong"
-            }
-            level = level_map.get(level, level)
-            
             def _compress_pdf():
                 return compress_pdf_advanced(
                     input_path=pdf_path,
                     output_path=str(output_path),
-                    level=level,
                     grayscale=grayscale,
                     rasterize=rasterize
                 )

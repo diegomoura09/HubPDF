@@ -12,17 +12,16 @@ from app.pdf_analyze import analyze_pdf, recommend_compression_strategy
 def compress_pdf(
     input_path: str,
     output_path: str,
-    level: str = "balanced",
     grayscale: bool = False,
     rasterize: bool = False
 ) -> Dict[str, Any]:
     """
     Comprime um PDF usando a melhor estratégia baseada em análise automática.
+    Configuração otimizada para máxima redução de tamanho.
     
     Args:
         input_path: Caminho do PDF de entrada
         output_path: Caminho do PDF de saída
-        level: "light"|"balanced"|"strong" (nível de compressão)
         grayscale: Se True, converte para tons de cinza
         rasterize: Se True, rasteriza páginas (modo extremo)
         
@@ -32,7 +31,6 @@ def compress_pdf(
         - output_bytes: int
         - ratio: float (% de redução)
         - engine_used: str
-        - level: str
         - grayscale: bool
         - rasterize: bool
         - success: bool
@@ -42,12 +40,14 @@ def compress_pdf(
     analysis = analyze_pdf(input_path)
     input_size = analysis["file_size"]
     
+    # Usar sempre configuração "strong" otimizada
+    level = "strong"
+    
     result = {
         "input_bytes": input_size,
         "output_bytes": input_size,
         "ratio": 0.0,
         "engine_used": "none",
-        "level": level,
         "grayscale": grayscale,
         "rasterize": rasterize,
         "success": False,

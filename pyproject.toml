@@ -32,4 +32,7 @@ dependencies = [
     "python-pptx>=1.0.2",
     "pytesseract>=0.3.13",
     "python-magic>=0.4.27",
+    "img2pdf>=0.6.3",
+    "pillow-heif>=1.1.1",
+    "starlette>=0.47.3",
 ]

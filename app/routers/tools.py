@@ -362,3 +362,135 @@ async def legacy_compress_pdf(request: Request):
 async def legacy_extract_text(request: Request):
     """Legacy extract text endpoint - redirect to new API"""
     return RedirectResponse(url="/tools/api/convert", status_code=307)
+
+@router.post("/images-to-pdf")
+async def process_images_to_pdf(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    page_size: str = Form("a4"),
+    orientation: str = Form("auto"),
+    margin_mm: int = Form(0),
+    fit_mode: str = Form("fit"),
+    grayscale: bool = Form(False),
+    jpeg_quality: int = Form(75),
+    files: List[UploadFile] = File(...),
+    user: User = Depends(get_optional_user),
+    db: Session = Depends(get_db)
+):
+    """Convert multiple images to a single PDF"""
+    from app.images_to_pdf import images_to_pdf, get_compression_info
+    
+    try:
+        # Validate parameters (whitelist)
+        valid_page_sizes = ["a3", "a4", "a5", "letter", "auto"]
+        valid_orientations = ["auto", "portrait", "landscape"]
+        valid_fit_modes = ["fit", "fill"]
+        
+        if page_size not in valid_page_sizes:
+            raise HTTPException(status_code=400, detail=f"page_size inválido: {page_size}")
+        
+        if orientation not in valid_orientations:
+            raise HTTPException(status_code=400, detail=f"orientation inválida: {orientation}")
+        
+        if fit_mode not in valid_fit_modes:
+            raise HTTPException(status_code=400, detail=f"fit_mode inválido: {fit_mode}")
+        
+        # Clamp numeric parameters to safe ranges
+        margin_mm = max(0, min(margin_mm, 50))  # 0-50mm
+        jpeg_quality = max(40, min(jpeg_quality, 100))  # 40-100
+        
+        # Check quotas and limits
+        if user:
+            allowed, message, requires_watermark = quota_service.check_operation_allowed(db, user)
+            if not allowed:
+                raise HTTPException(status_code=429, detail=message)
+        
+        # Validate files
+        if not files or len(files) == 0:
+            raise HTTPException(status_code=400, detail="Nenhum arquivo enviado")
+        
+        # Calcular tamanho total
+        total_size = 0
+        max_file_size = get_max_file_size(user)
+        
+        for file in files:
+            await file.seek(0)
+            content = await file.read()
+            await file.seek(0)
+            
+            file_size = len(content)
+            total_size += file_size
+            
+            # Validar tipo de arquivo (imagens apenas)
+            if not file.content_type or not file.content_type.startswith("image/"):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Arquivo {file.filename} não é uma imagem válida"
+                )
+        
+        # Verificar limite total
+        if total_size > max_file_size:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Tamanho total dos arquivos ({total_size / 1024 / 1024:.1f} MB) excede o limite de {max_file_size / 1024 / 1024:.0f} MB"
+            )
+        
+        logger.info(f"Converting {len(files)} images to PDF (total size: {total_size / 1024 / 1024:.1f} MB)")
+        
+        # Reset file pointers before processing
+        for file in files:
+            await file.seek(0)
+        
+        # Converter imagens para PDF
+        pdf_bytes = images_to_pdf(
+            image_files=[file.file for file in files],
+            page_size=page_size,
+            orientation=orientation,
+            margin_mm=margin_mm,
+            fit_mode=fit_mode,
+            grayscale=grayscale,
+            jpeg_quality=jpeg_quality
+        )
+        
+        # Registrar uso de quota (se usuário logado)
+        if user:
+            quota_service.record_operation(db, user)
+        
+        # Criar job ID para rastreamento
+        job_id = str(uuid.uuid4())
+        output_filename = f"images_combined_{job_id[:8]}.pdf"
+        
+        # Salvar arquivo temporário
+        work_dir = Path(tempfile.gettempdir()) / "hubpdf_jobs" / job_id
+        work_dir.mkdir(parents=True, exist_ok=True)
+        output_path = work_dir / output_filename
+        
+        with open(output_path, "wb") as f:
+            f.write(pdf_bytes)
+        
+        # Reset file pointers again before getting compression info
+        for file in files:
+            await file.seek(0)
+        
+        # Obter informações de compressão
+        info = get_compression_info([file.file for file in files], pdf_bytes)
+        
+        logger.info(f"Images to PDF conversion completed: {len(files)} pages, {len(pdf_bytes) / 1024:.1f} KB")
+        
+        # Retornar arquivo para download
+        return FileResponse(
+            path=str(output_path),
+            filename=output_filename,
+            media_type="application/pdf",
+            headers={
+                "X-Pages": str(info["num_pages"]),
+                "X-Input-Size": str(info["input_bytes_sum"]),
+                "X-Output-Size": str(info["output_bytes"]),
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Images to PDF conversion failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro ao converter imagens: {str(e)}")

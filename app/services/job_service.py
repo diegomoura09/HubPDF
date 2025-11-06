@@ -251,12 +251,11 @@ class ConversionJobService:
                 return results
                 
             elif operation == "compress_pdf":
-                level = options.get("level", "balanced")
                 grayscale = options.get("grayscale", False)
                 rasterize = options.get("rasterize", False)
                 self.registry.update_job(job_id, progress=50, message="Compressing PDF...")
                 compression_result = await conversion_service.compress_pdf(
-                    input_file, level, job_id, grayscale, rasterize
+                    input_file, job_id, grayscale, rasterize
                 )
                 # Store compression metrics in job metadata
                 if compression_result.get("success"):

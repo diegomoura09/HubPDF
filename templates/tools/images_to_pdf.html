@@ -1,116 +1,350 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t('tool_images_to_pdf') }} - {{ t('title') }}{% endblock %}
+{% block title %}Imagens para PDF - {{ t('title') }}{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
     <div class="text-center mb-8">
-        <div class="flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-lg mx-auto mb-4">
-            <i data-feather="file-plus" class="h-8 w-8 text-yellow-600"></i>
+        <div class="flex items-center justify-center w-16 h-16 bg-purple-100 rounded-lg mx-auto mb-4">
+            <i data-feather="image" class="h-8 w-8 text-purple-600"></i>
         </div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ t('tool_images_to_pdf') }}</h1>
-        <p class="text-lg text-gray-600">{{ t('tool_images_to_pdf_description') }}</p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">Imagens para PDF</h1>
+        <p class="text-lg text-gray-600">Combine múltiplas imagens em um único arquivo PDF</p>
     </div>
     
     <!-- Upload Form -->
     <div class="bg-white rounded-lg shadow-md p-8">
-        <form id="images-to-pdf-form" method="post" action="/tools/images-to-pdf" enctype="multipart/form-data"
-              hx-post="/tools/images-to-pdf" 
-              hx-encoding="multipart/form-data"
-              hx-target="#result"
-              hx-indicator="#loading"
-              hx-ext="disable-element"
-              data-hx-disable-validation="true">
+        <form id="images-form" method="post" action="/tools/images-to-pdf" enctype="multipart/form-data">
             
             <div class="mb-6">
                 <label for="files" class="block text-sm font-medium text-gray-700 mb-2">
-                    {{ t('select_image_files') }}
+                    Selecione as imagens (JPG, PNG, WEBP, HEIC)
                 </label>
-                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-yellow-400 transition-colors">
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-purple-400 transition-colors">
                     <div class="space-y-1 text-center">
                         <i data-feather="upload" class="mx-auto h-12 w-12 text-gray-400"></i>
                         <div class="flex text-sm text-gray-600">
-                            <label for="files" class="relative cursor-pointer bg-white rounded-md font-medium text-yellow-600 hover:text-yellow-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-yellow-500">
-                                <span>{{ t('upload_files') }}</span>
-                                <input id="files" name="files" type="file" multiple accept="image/*" required class="sr-only" onchange="updateFileList(this)">
+                            <label for="files" class="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500">
+                                <span>Selecione múltiplas imagens</span>
+                                <input id="files" name="files" type="file" accept="image/*" multiple required class="sr-only" onchange="handleFileSelect(event)">
                             </label>
-                            <p class="pl-1">{{ t('or_drag_and_drop') }}</p>
+                            <p class="pl-1">ou arraste e solte</p>
                         </div>
-                        <p class="text-xs text-gray-500">{{ t('image_files_only') }}</p>
+                        <p class="text-xs text-gray-500">JPG, PNG, WEBP, HEIC até 60 MB total</p>
                     </div>
                 </div>
             </div>
             
-            <!-- File List -->
-            <div id="file-list" class="mb-6 hidden">
-                <h3 class="text-sm font-medium text-gray-700 mb-2">{{ t('selected_files') }}:</h3>
-                <ul id="file-items" class="space-y-2"></ul>
-                <p class="text-xs text-gray-500 mt-2">{{ t('drag_to_reorder') }}</p>
+            <!-- Image Preview and Reorder -->
+            <div id="preview-container" class="mb-6 hidden">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-medium text-gray-700">
+                        <span id="image-count">0</span> imagens selecionadas
+                        <span class="text-xs text-gray-500">(<span id="total-size">0</span> MB)</span>
+                    </h3>
+                    <button type="button" onclick="clearImages()" class="text-sm text-red-600 hover:text-red-700">
+                        <i data-feather="x" class="h-4 w-4 inline"></i> Limpar tudo
+                    </button>
+                </div>
+                <div id="images-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4">
+                    <!-- Images will be added here dynamically -->
+                </div>
+                <p class="text-xs text-gray-500">
+                    <i data-feather="move" class="h-3 w-3 inline"></i> Arraste as imagens para reordenar
+                </p>
+            </div>
+            
+            <!-- Options -->
+            <div class="mb-6 space-y-4 border-t pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Opções de Conversão</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="page_size" class="block text-sm font-medium text-gray-700 mb-2">
+                            Tamanho da Página
+                        </label>
+                        <select id="page_size" name="page_size" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                            <option value="auto">Automático (ajustar à imagem)</option>
+                            <option value="a4" selected>A4</option>
+                            <option value="letter">Carta</option>
+                            <option value="a3">A3</option>
+                            <option value="a5">A5</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="orientation" class="block text-sm font-medium text-gray-700 mb-2">
+                            Orientação
+                        </label>
+                        <select id="orientation" name="orientation" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                            <option value="auto" selected>Automática</option>
+                            <option value="portrait">Retrato</option>
+                            <option value="landscape">Paisagem</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="margin_mm" class="block text-sm font-medium text-gray-700 mb-2">
+                            Margens (mm)
+                        </label>
+                        <select id="margin_mm" name="margin_mm" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                            <option value="0" selected>Sem margem</option>
+                            <option value="5">5 mm</option>
+                            <option value="10">10 mm</option>
+                            <option value="15">15 mm</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="fit_mode" class="block text-sm font-medium text-gray-700 mb-2">
+                            Modo de Ajuste
+                        </label>
+                        <select id="fit_mode" name="fit_mode" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                            <option value="fit" selected>Conter (manter proporção)</option>
+                            <option value="fill">Preencher (cortar se necessário)</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="jpeg_quality" class="block text-sm font-medium text-gray-700 mb-2">
+                            Qualidade JPEG
+                        </label>
+                        <select id="jpeg_quality" name="jpeg_quality" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                            <option value="85">Alta (85)</option>
+                            <option value="75" selected>Padrão (75)</option>
+                            <option value="65">Econômica (65)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input id="grayscale" name="grayscale" type="checkbox" value="true" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded">
+                        <label for="grayscale" class="ml-2 block text-sm text-gray-700">
+                            Converter para tons de cinza
+                        </label>
+                    </div>
+                </div>
             </div>
             
             <!-- Submit Button -->
             <div class="flex justify-center">
-                <button type="submit" 
-                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50">
+                <button type="submit" id="submit-btn" disabled
+                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <i data-feather="file-plus" class="h-5 w-5 mr-2"></i>
-                    {{ t('btn_create_pdf') }}
+                    Gerar PDF
                 </button>
             </div>
         </form>
         
         <!-- Loading Indicator -->
-        <div id="loading" class="htmx-indicator text-center py-4">
+        <div id="loading" class="hidden text-center py-4 mt-4">
             <div class="inline-flex items-center">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {{ t('processing') }}...
+                Processando imagens...
             </div>
         </div>
-        
-        <!-- Result Area -->
-        <div id="result" class="mt-6"></div>
     </div>
     
     <!-- Instructions -->
-    <div class="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-yellow-900 mb-4">{{ t('instructions') }}</h3>
-        <ul class="list-disc list-inside text-yellow-800 space-y-2">
-            <li>{{ t('images_to_pdf_instruction_1') }}</li>
-            <li>{{ t('images_to_pdf_instruction_2') }}</li>
-            <li>{{ t('images_to_pdf_instruction_3') }}</li>
-            <li>{{ t('images_to_pdf_instruction_4') }}</li>
+    <div class="mt-8 bg-purple-50 border border-purple-200 rounded-lg p-6">
+        <h3 class="text-lg font-semibold text-purple-900 mb-4">Instruções</h3>
+        <ul class="list-disc list-inside text-purple-800 space-y-2">
+            <li>Selecione múltiplas imagens para combinar em um único PDF</li>
+            <li>Arraste as imagens para reordenar antes de gerar o PDF</li>
+            <li>Escolha o tamanho de página adequado ou deixe em "Automático"</li>
+            <li>Margens e modo de ajuste controlam como as imagens se encaixam nas páginas</li>
+            <li>Metadados EXIF são removidos automaticamente para privacidade</li>
         </ul>
     </div>
 </div>
 
 <script>
-function updateFileList(input) {
-    const fileList = document.getElementById('file-list');
-    const fileItems = document.getElementById('file-items');
-    
-    if (input.files.length > 0) {
-        fileList.classList.remove('hidden');
-        fileItems.innerHTML = '';
-        
-        Array.from(input.files).forEach((file, index) => {
-            const li = document.createElement('li');
-            li.className = 'flex items-center text-sm text-gray-600 bg-gray-50 p-2 rounded border';
-            li.innerHTML = `
-                <span class="text-xs text-gray-400 mr-2">${index + 1}.</span>
-                <i data-feather="image" class="h-4 w-4 mr-2"></i>
-                <span>${file.name}</span>
-                <span class="ml-auto text-gray-400">${(file.size / 1024 / 1024).toFixed(1)} MB</span>
-            `;
-            fileItems.appendChild(li);
-        });
-        
-        feather.replace();
-    } else {
-        fileList.classList.add('hidden');
-    }
+let selectedFiles = [];
+const maxSize = 60 * 1024 * 1024; // 60 MB
+
+function handleFileSelect(event) {
+    const files = Array.from(event.target.files);
+    selectedFiles = files;
+    updatePreview();
 }
+
+function updatePreview() {
+    const container = document.getElementById('preview-container');
+    const grid = document.getElementById('images-grid');
+    const countEl = document.getElementById('image-count');
+    const sizeEl = document.getElementById('total-size');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (selectedFiles.length === 0) {
+        container.classList.add('hidden');
+        submitBtn.disabled = true;
+        return;
+    }
+    
+    container.classList.remove('hidden');
+    
+    // Calculate total size
+    let totalSize = 0;
+    selectedFiles.forEach(file => totalSize += file.size);
+    
+    countEl.textContent = selectedFiles.length;
+    sizeEl.textContent = (totalSize / 1024 / 1024).toFixed(1);
+    
+    // Check if exceeds limit
+    if (totalSize > maxSize) {
+        sizeEl.classList.add('text-red-600', 'font-bold');
+        submitBtn.disabled = true;
+    } else {
+        sizeEl.classList.remove('text-red-600', 'font-bold');
+        submitBtn.disabled = false;
+    }
+    
+    // Clear grid
+    grid.innerHTML = '';
+    
+    // Add image previews
+    selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const div = document.createElement('div');
+            div.className = 'relative group cursor-move border-2 border-gray-200 rounded-lg overflow-hidden hover:border-purple-400 transition-colors';
+            div.draggable = true;
+            div.dataset.index = index;
+            
+            div.innerHTML = `
+                <img src="${e.target.result}" class="w-full h-32 object-cover" />
+                <div class="absolute top-0 left-0 bg-purple-600 text-white text-xs px-2 py-1 rounded-br">
+                    ${index + 1}
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate">
+                    ${file.name}
+                </div>
+                <button type="button" onclick="removeImage(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i data-feather="x" class="h-3 w-3"></i>
+                </button>
+            `;
+            
+            // Drag and drop handlers
+            div.addEventListener('dragstart', handleDragStart);
+            div.addEventListener('dragover', handleDragOver);
+            div.addEventListener('drop', handleDrop);
+            div.addEventListener('dragend', handleDragEnd);
+            
+            grid.appendChild(div);
+            feather.replace();
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function removeImage(index) {
+    selectedFiles.splice(index, 1);
+    
+    // Update file input
+    const dataTransfer = new DataTransfer();
+    selectedFiles.forEach(file => dataTransfer.items.add(file));
+    document.getElementById('files').files = dataTransfer.files;
+    
+    updatePreview();
+}
+
+function clearImages() {
+    selectedFiles = [];
+    document.getElementById('files').value = '';
+    updatePreview();
+}
+
+let draggedElement = null;
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.style.opacity = '0.4';
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    return false;
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    if (draggedElement !== this) {
+        const fromIndex = parseInt(draggedElement.dataset.index);
+        const toIndex = parseInt(this.dataset.index);
+        
+        // Swap files
+        const temp = selectedFiles[fromIndex];
+        selectedFiles[fromIndex] = selectedFiles[toIndex];
+        selectedFiles[toIndex] = temp;
+        
+        // Update file input
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => dataTransfer.items.add(file));
+        document.getElementById('files').files = dataTransfer.files;
+        
+        updatePreview();
+    }
+    
+    return false;
+}
+
+function handleDragEnd(e) {
+    this.style.opacity = '1';
+}
+
+// Form submission
+document.getElementById('images-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const loading = document.getElementById('loading');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    loading.classList.remove('hidden');
+    submitBtn.disabled = true;
+    
+    const formData = new FormData(this);
+    
+    fetch('/tools/images-to-pdf', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.detail || 'Erro ao converter imagens');
+            });
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        // Download file
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'images_combined.pdf';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        loading.classList.add('hidden');
+        submitBtn.disabled = false;
+        
+        alert(`PDF gerado com sucesso! ${selectedFiles.length} páginas.`);
+    })
+    .catch(error => {
+        loading.classList.add('hidden');
+        submitBtn.disabled = false;
+        alert('Erro: ' + error.message);
+    });
+});
 </script>
 {% endblock %}
