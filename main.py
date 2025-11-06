@@ -15,9 +15,15 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 import uvicorn
 
 from app.database import init_db
-from app.middleware import SecurityMiddleware, RateLimitMiddleware, CSRFMiddleware
+from app.middleware import SecurityMiddleware, RateLimitMiddleware, CSRFMiddleware, RequestLoggingMiddleware
 from app.routers import auth, tools, billing, admin, health, main as main_router
 from app.config import settings
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 # Cleanup task for temporary files
 async def cleanup_temp_files():
@@ -109,22 +115,46 @@ async def _patched_form(self, *args, **kwargs):
 
 _starlette_requests.Request.form = _patched_form
 
-# Exception handler for file size limit (HTTP 413)
+# Global exception handlers
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handle request validation errors with clear JSON response"""
+    errors = exc.errors()
+    error_messages = [f"{err['loc'][-1]}: {err['msg']}" for err in errors]
+    return JSONResponse(
+        status_code=422,
+        content={
+            "error": "Dados inválidos",
+            "details": error_messages
+        }
+    )
+
 @app.exception_handler(413)
 @app.exception_handler(StarletteHTTPException)
 async def file_too_large_handler(request: Request, exc):
-    """Handle HTTP 413 Request Entity Too Large errors with friendly Portuguese message"""
+    """Handle HTTP 413 Request Entity Too Large errors"""
     if isinstance(exc, StarletteHTTPException) and exc.status_code == 413:
         return JSONResponse(
             status_code=413,
-            content={"error": "Limite de 60 MB por arquivo. Tente um arquivo menor."}
+            content={"error": "Arquivo maior que o permitido. Limite: 60 MB."}
         )
-    # Re-raise if not a 413 error
     if hasattr(exc, 'status_code') and exc.status_code != 413:
         raise exc
     return JSONResponse(
         status_code=413,
-        content={"error": "Limite de 60 MB por arquivo. Tente um arquivo menor."}
+        content={"error": "Arquivo maior que o permitido. Limite: 60 MB."}
+    )
+
+@app.exception_handler(500)
+async def internal_server_error_handler(request: Request, exc: Exception):
+    """Handle 500 internal server errors"""
+    logging.error(
+        f"Internal server error on {request.method} {request.url.path}",
+        exc_info=exc
+    )
+    return JSONResponse(
+        status_code=500,
+        content={"error": "Erro interno. Tente novamente."}
     )
 
 # Redirect middleware for HTTPS and apex domain
@@ -149,13 +179,32 @@ async def redirect_middleware(request: Request, call_next):
     response = await call_next(request)
     return response
 
-# Security middleware
-app.add_middleware(SecurityMiddleware)
-app.add_middleware(RateLimitMiddleware, calls_per_minute=300, burst=50)
-app.add_middleware(CSRFMiddleware)
+# Middleware order (CRITICAL - order matters!):
+# 1. TrustedHost (validate host header first)
+# 2. CORS (handle CORS before custom middleware)
+# 3. RequestLogging (log all requests)
+# 4. Security (add security headers)
+# 5. RateLimit (rate limiting)
+# 6. CSRF (CSRF protection - currently disabled)
 
-# CORS middleware - Specific origins for production security
-# Allow only hubpdf.pro, localhost, and all replit domains
+# 1. Trusted host middleware - Enable for webhook support and cloud deployments
+if not settings.DEBUG:
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=[
+            "hubpdf.pro",  # Production domain
+            "www.hubpdf.pro",  # Production domain with www
+            settings.DOMAIN, 
+            f"*.{settings.DOMAIN}",
+            "*.replit.app",  # Cloud deployment (legacy compatibility)
+            "*.replit.dev",  # Cloud deployment dev
+            "*.spock.replit.dev",  # For payment webhooks
+            "localhost", 
+            "127.0.0.1"
+        ]
+    )
+
+# 2. CORS middleware - Specific origins for production security
 if settings.DEBUG:
     # Development: allow localhost only
     cors_origins = [
@@ -164,8 +213,7 @@ if settings.DEBUG:
     ]
     cors_credentials = True
 else:
-    # Production: allow custom domain and replit domains
-    # Note: CORS doesn't support wildcards in allow_origins, so we use regex in origin validation
+    # Production: allow custom domain
     cors_origins = [
         "https://hubpdf.pro",
         "https://www.hubpdf.pro",
@@ -182,25 +230,20 @@ app.add_middleware(
     allow_origins=cors_origins,
     allow_credentials=cors_credentials,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["*"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
 
-# Trusted host middleware - Enable for webhook support and cloud deployments
-if not settings.DEBUG:
-    app.add_middleware(
-        TrustedHostMiddleware,
-        allowed_hosts=[
-            "hubpdf.pro",  # Production domain
-            "www.hubpdf.pro",  # Production domain with www
-            settings.DOMAIN, 
-            f"*.{settings.DOMAIN}",
-            "*.replit.app",  # Cloud deployment (legacy compatibility)
-            "*.replit.dev",  # Cloud deployment dev
-            "*.spock.replit.dev",  # For payment webhooks
-            "localhost", 
-            "127.0.0.1"
-        ]
-    )
+# 3. Request logging middleware (Pure ASGI - doesn't consume request body)
+app.add_middleware(RequestLoggingMiddleware)
+
+# 4. Security headers middleware
+app.add_middleware(SecurityMiddleware)
+
+# 5. Rate limiting middleware
+app.add_middleware(RateLimitMiddleware, calls_per_minute=300, burst=50)
+
+# 6. CSRF middleware (currently disabled, relies on SameSite cookies)
+app.add_middleware(CSRFMiddleware)
 
 # Static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -226,6 +269,29 @@ async def alerts_demo(request: Request):
             "request": request
         }
     )
+
+# Debug endpoint for middleware diagnostics (development only)
+@app.get("/debug/middleware-order")
+async def middleware_order():
+    """List all active middlewares in order (DEBUG only)"""
+    if not settings.DEBUG:
+        return JSONResponse(
+            status_code=404,
+            content={"error": "Endpoint disponível apenas em desenvolvimento"}
+        )
+    
+    middleware_list = []
+    for middleware in app.user_middleware:
+        middleware_list.append({
+            "class": middleware.cls.__name__ if hasattr(middleware, 'cls') else str(type(middleware)),
+            "options": str(middleware.options) if hasattr(middleware, 'options') else "N/A"
+        })
+    
+    return JSONResponse({
+        "middleware_count": len(middleware_list),
+        "middleware_order": middleware_list,
+        "note": "Ordem de execução: do primeiro ao último na lista"
+    })
 
 if __name__ == "__main__":
     uvicorn.run(
