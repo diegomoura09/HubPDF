@@ -101,16 +101,16 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Patch Starlette Request.form() to enforce max upload size globally
-# This ensures all multipart/form-data uploads respect the 60MB limit
+# Patch Starlette Request.form() to remove upload size limits
+# Users need to upload large files without restrictions
 from starlette import requests as _starlette_requests
 _orig_form = _starlette_requests.Request.form
 
 async def _patched_form(self, *args, **kwargs):
-    """Patched form method that enforces global upload limits"""
-    kwargs.setdefault("max_part_size", settings.MAX_PART_SIZE)  # 60 MB by default
-    kwargs.setdefault("max_files", 100)
-    kwargs.setdefault("max_fields", 1000)
+    """Patched form method with no file size limits"""
+    # No max_part_size limit - allow large files
+    kwargs.setdefault("max_files", 1000)
+    kwargs.setdefault("max_fields", 10000)
     return await _orig_form(self, *args, **kwargs)
 
 _starlette_requests.Request.form = _patched_form
@@ -136,13 +136,13 @@ async def file_too_large_handler(request: Request, exc):
     if isinstance(exc, StarletteHTTPException) and exc.status_code == 413:
         return JSONResponse(
             status_code=413,
-            content={"error": "Arquivo maior que o permitido. Limite: 60 MB."}
+            content={"error": "Arquivo muito grande. Por favor, tente com um arquivo menor."}
         )
     if hasattr(exc, 'status_code') and exc.status_code != 413:
         raise exc
     return JSONResponse(
         status_code=413,
-        content={"error": "Arquivo maior que o permitido. Limite: 60 MB."}
+        content={"error": "Arquivo muito grande. Por favor, tente com um arquivo menor."}
     )
 
 @app.exception_handler(500)

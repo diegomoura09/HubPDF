@@ -32,10 +32,11 @@ class Settings(BaseSettings):
     MP_PUBLIC_KEY: str = Field(default="")
     
     # File upload limits (configurable via environment variable)
-    MAX_UPLOAD_MB: int = Field(default=60)  # Default 60MB, can be overridden via env
-    MAX_FILE_SIZE_FREE: int = Field(default=60 * 1024 * 1024)  # 60MB
-    MAX_FILE_SIZE_PRO: int = Field(default=100 * 1024 * 1024)  # 100MB
-    MAX_FILE_SIZE_BUSINESS: int = Field(default=250 * 1024 * 1024)  # 250MB
+    # Removed limits - users can upload large files
+    MAX_UPLOAD_MB: int = Field(default=10000)  # 10GB - practically unlimited
+    MAX_FILE_SIZE_FREE: int = Field(default=10 * 1024 * 1024 * 1024)  # 10GB
+    MAX_FILE_SIZE_PRO: int = Field(default=10 * 1024 * 1024 * 1024)  # 10GB
+    MAX_FILE_SIZE_BUSINESS: int = Field(default=10 * 1024 * 1024 * 1024)  # 10GB
     
     @property
     def MAX_PART_SIZE(self) -> int:
