@@ -111,17 +111,11 @@
                 console.log('HTMX 2.0 configurado: limite de arquivo removido');
             }
             
-            // FORCE DISABLE ALL FILE INPUT VALIDATIONS
+            // FORCE DISABLE ALL FILE INPUT VALIDATIONS (but don't block change events)
             document.querySelectorAll('input[type="file"]').forEach(function(input) {
                 input.removeAttribute('data-max-size');
                 input.removeAttribute('data-hx-validate');
                 input.removeAttribute('maxlength');
-                
-                // Override any validation on change
-                input.addEventListener('change', function(e) {
-                    e.stopPropagation();
-                    // Do not prevent default - allow file selection
-                }, true);
             });
             
             // Block any validation errors
