@@ -113,13 +113,14 @@ class QuotaService:
         return True, "", requires_watermark
     
     def check_file_size_allowed(self, user: User, file_size: int) -> Tuple[bool, str]:
-        """Check if file size is within user's plan limits"""
-        limits = self.get_plan_limits(user.plan)
-        max_size = limits["max_file_size"]
-        
-        if file_size > max_size:
-            max_mb = max_size // (1024 * 1024)
-            return False, translate("file_too_large", "pt", max_size=max_mb)
+        """Check if file size is within user's plan limits - size validation removed"""
+        # File size validation removed - users can upload large files
+        # limits = self.get_plan_limits(user.plan)
+        # max_size = limits["max_file_size"]
+        # 
+        # if file_size > max_size:
+        #     max_mb = max_size // (1024 * 1024)
+        #     return False, translate("file_too_large", "pt", max_size=max_mb)
         
         return True, ""
     
@@ -138,7 +139,7 @@ class QuotaService:
                 "operations_used": 0,
                 "operations_limit": 1,
                 "operations_remaining": 1,
-                "max_file_size_mb": 60,
+                "max_file_size_mb": 10000,  # 10GB - no limits
                 "watermark_threshold": 0,
                 "date": date.today()
             }

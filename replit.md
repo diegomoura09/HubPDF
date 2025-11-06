@@ -126,6 +126,6 @@ Required environment variables (stored in Replit Secrets or `.env`):
 - `ANON_COOKIE_SECRET`: Secret for anonymous session cookies
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: OAuth credentials
 - `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`: Mercado Pago integration
-- `MAX_UPLOAD_MB`: Upload size limit (default: 60)
+- `MAX_UPLOAD_MB`: Upload size limit (default: 10000 - 10GB)
 
 **Design Decision**: Secrets management via environment variables follows 12-factor app principles. Fallback secrets for development with warnings to prevent production misconfiguration.

@@ -31,7 +31,7 @@
                             </label>
                             <p class="pl-1">ou arraste e solte</p>
                         </div>
-                        <p class="text-xs text-gray-500">JPG, PNG, WEBP, HEIC até 60 MB total</p>
+                        <p class="text-xs text-gray-500">JPG, PNG, WEBP, HEIC - sem limite de tamanho</p>
                     </div>
                 </div>
             </div>
@@ -166,7 +166,7 @@
 
 <script>
 let selectedFiles = [];
-const maxSize = 60 * 1024 * 1024; // 60 MB
+const maxSize = 10 * 1024 * 1024 * 1024; // 10GB - practically unlimited
 
 function handleFileSelect(event) {
     const files = Array.from(event.target.files);

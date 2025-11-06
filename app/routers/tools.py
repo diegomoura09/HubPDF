@@ -57,19 +57,20 @@ ALLOWED_MIME_TYPES = {
     "images": ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/bmp", "image/tiff"],
 }
 
-def get_max_file_size(user: Optional[User] = None) -> int:
-    """Get maximum file size based on user plan"""
-    if not user:
-        return settings.MAX_FILE_SIZE_FREE
-    
-    # Use user.plan directly instead of subscription
-    user_plan = str(user.plan) if user.plan is not None else "free"
-    if user_plan == "pro":
-        return settings.MAX_FILE_SIZE_PRO
-    elif user_plan == "business" or user_plan == "custom":
-        return settings.MAX_FILE_SIZE_BUSINESS
-    else:
-        return settings.MAX_FILE_SIZE_FREE
+# File size limits removed - users can upload large files
+# def get_max_file_size(user: Optional[User] = None) -> int:
+#     """Get maximum file size based on user plan"""
+#     if not user:
+#         return settings.MAX_FILE_SIZE_FREE
+#     
+#     # Use user.plan directly instead of subscription
+#     user_plan = str(user.plan) if user.plan is not None else "free"
+#     if user_plan == "pro":
+#         return settings.MAX_FILE_SIZE_PRO
+#     elif user_plan == "business" or user_plan == "custom":
+#         return settings.MAX_FILE_SIZE_BUSINESS
+#     else:
+#         return settings.MAX_FILE_SIZE_FREE
 
 async def save_uploaded_file(upload_file: UploadFile, work_dir: Path) -> str:
     """Save uploaded file to work directory"""
