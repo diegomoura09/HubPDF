@@ -62,12 +62,12 @@ Preferred communication style: Simple, everyday language.
 **Design Decision**: Multiple PDF libraries provide fallback options when one fails. Files stored in user-specific temporary directories (`/tmp/{user_id}/{job_id}`) prevent cross-user access. Background cleanup task runs every 10 minutes to remove files older than 30 minutes. Watermarking implemented for quota enforcement on free tier.
 
 ### Quota & Billing System
-- **Free Tier**: 60MB uploads, unlimited operations (beta), no watermarks (beta)
-- **Pro Tier**: 100MB uploads, unlimited operations
-- **Business Tier**: 250MB uploads, unlimited operations
-- **Anonymous Users**: 60MB uploads, 1 operation per day, always watermarked
+- **Free Tier**: Large file uploads (10GB limit), unlimited operations (beta), no watermarks (beta)
+- **Pro Tier**: Large file uploads (10GB limit), unlimited operations
+- **Business Tier**: Large file uploads (10GB limit), unlimited operations
+- **Anonymous Users**: Large file uploads (10GB limit), 1 operation per day, always watermarked
 
-**Design Decision**: Quota tracking in database with daily reset logic. Anonymous users tracked via hashed cookie ID (not stored as PII). Watermarking service applies conditional branding based on user tier. Integration ready for Mercado Pago (Brazilian payment gateway) for future monetization.
+**Design Decision**: Upload size limits removed to allow users to process large files (up to 10GB). File size validation disabled in routers. Quota tracking in database with daily reset logic. Anonymous users tracked via hashed cookie ID (not stored as PII). Watermarking service applies conditional branding based on user tier. Integration ready for Mercado Pago (Brazilian payment gateway) for future monetization.
 
 ### Job Processing
 - **Current**: FastAPI BackgroundTasks for asynchronous operations
