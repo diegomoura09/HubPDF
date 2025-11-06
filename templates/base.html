@@ -124,6 +124,24 @@
                 e.stopPropagation();
                 e.preventDefault();
             }, true);
+            
+            // CRITICAL: Suppress browser file size warnings completely
+            document.body.addEventListener('htmx:validation:validate', function(e) {
+                // Allow ALL files regardless of size
+                e.preventDefault();
+                return false;
+            }, true);
+            
+            // Override browser's built-in file validation
+            const originalValidityCheck = HTMLFormElement.prototype.checkValidity;
+            HTMLFormElement.prototype.checkValidity = function() {
+                return true; // Always valid
+            };
+            
+            const originalReportValidity = HTMLFormElement.prototype.reportValidity;
+            HTMLFormElement.prototype.reportValidity = function() {
+                return true; // Never show validation messages
+            };
         });
     </script>
     

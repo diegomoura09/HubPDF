@@ -3,10 +3,10 @@
  * Handles caching, offline functionality, and PWA features
  */
 
-const CACHE_NAME = 'hubpdf-v3.2.0';
-const STATIC_CACHE = 'hubpdf-static-v3.2';
-const DYNAMIC_CACHE = 'hubpdf-dynamic-v3.2';
-const API_CACHE = 'hubpdf-api-v3.2';
+const CACHE_NAME = 'hubpdf-v3.3.0';
+const STATIC_CACHE = 'hubpdf-static-v3.3';
+const DYNAMIC_CACHE = 'hubpdf-dynamic-v3.3';
+const API_CACHE = 'hubpdf-api-v3.3';
 
 // Files to cache for offline functionality - UPDATED TO LUCIDE ICONS
 const STATIC_ASSETS = [
