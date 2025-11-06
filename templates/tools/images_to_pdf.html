@@ -171,6 +171,13 @@ const maxSize = 60 * 1024 * 1024; // 60 MB
 function handleFileSelect(event) {
     const files = Array.from(event.target.files);
     selectedFiles = files;
+    
+    // Reset result and loading when new files are selected
+    const resultDiv = document.getElementById('result');
+    const loadingDiv = document.getElementById('loading');
+    resultDiv.innerHTML = '';
+    loadingDiv.classList.add('hidden');
+    
     updatePreview();
 }
 

@@ -125,6 +125,13 @@ let pollInterval = null;
 
 function showFileName(input) {
     const fileNameDiv = document.getElementById('file-name');
+    const resultDiv = document.getElementById('result');
+    const loadingDiv = document.getElementById('loading');
+    
+    // Reset result and loading when new file is selected
+    resultDiv.innerHTML = '';
+    loadingDiv.classList.add('hidden');
+    
     if (input.files.length > 0) {
         const file = input.files[0];
         fileNameDiv.innerHTML = `
