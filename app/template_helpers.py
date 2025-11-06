@@ -43,7 +43,7 @@ PT_TRANSLATIONS = {
   "btn_extract_text": "Extrair Texto",
   
   "hero_title": "Todas as ferramentas PDF que você precisa",
-  "hero_description": "Plataforma gratuita para processar seus arquivos PDF com segurança e privacidade. Desenvolvida em cumprimento de projeto acadêmico, sistema sem fins lucrativos.",
+  "hero_description": "Plataforma gratuita para processar seus arquivos PDF com segurança e privacidade. Desenvolvida como projeto acadêmico do CST em Análise e Desenvolvimento de Sistemas.",
   
   "features_title": "Ferramentas Digitais",
   "features_description": "Aproveite as ferramentas gratuitas disponíveis para trabalhar com arquivos PDF",
@@ -86,7 +86,7 @@ PT_TRANSLATIONS = {
   
   "pricing_title": "100% Gratuito e Educacional",
   "pricing_subtitle": "Ferramentas PDF sem custos ou limitações",
-  "pricing_description": "Plataforma educacional desenvolvida para uso público e sem fins lucrativos",
+  "pricing_description": "Plataforma educacional desenvolvida para uso público como projeto acadêmico",
   "pricing_contact_text": "Tem dúvidas sobre o HubPDF?",
   
   "plan_free": "Gratuito",
@@ -100,7 +100,7 @@ PT_TRANSLATIONS = {
   "upgrade_notice_description": "Todas as ferramentas disponíveis gratuitamente para uso ilimitado.",
   "upgrade_for_more": "Ver Ferramentas",
   "watermark_notice_title": "Plataforma Educacional",
-  "watermark_notice_description": "Sistema desenvolvido sem fins lucrativos para uso público.",
+  "watermark_notice_description": "Sistema desenvolvido como projeto acadêmico para uso público.",
   "view_all_tools": "Ver todas as ferramentas",
   "usage_today": "Uso hoje",
   
