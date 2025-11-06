@@ -98,6 +98,21 @@
 let currentJobId = null;
 let pollInterval = null;
 
+// Safe JSON parser - handles HTML error responses
+async function safeJsonParse(response) {
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+        try {
+            return await response.json();
+        } catch (e) {
+            return { detail: 'Erro ao processar resposta do servidor' };
+        }
+    }
+    // If not JSON, return generic error
+    const text = await response.text();
+    return { detail: text || 'Erro desconhecido no servidor' };
+}
+
 function showFileName(input) {
     const fileNameDiv = document.getElementById('file-name');
     const resultDiv = document.getElementById('result');
@@ -175,7 +190,8 @@ function showResult(job) {
 async function pollJobStatus(jobId) {
     try {
         const response = await fetch(`/tools/api/jobs/${jobId}`);
-        const job = await response.json();
+        if (!response.ok) return;
+        const job = await safeJsonParse(response);
         
         if (job.status === 'running') {
             const progress = job.progress || 0;
@@ -213,12 +229,12 @@ document.getElementById('convert-form').addEventListener('submit', async (e) => 
             body: formData
         });
         
+        const data = await safeJsonParse(response);
+        
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Erro ao iniciar conversão');
+            throw new Error(data.detail || 'Erro ao iniciar conversão');
         }
         
-        const data = await response.json();
         currentJobId = data.job_id;
         
         // Start polling

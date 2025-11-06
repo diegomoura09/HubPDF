@@ -215,6 +215,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsArea = document.getElementById('results-area');
     const conversionForm = document.getElementById('conversion-form');
     
+    // Safe JSON parser - handles HTML error responses
+    async function safeJsonParse(response) {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            try {
+                return await response.json();
+            } catch (e) {
+                return { detail: 'Erro ao processar resposta do servidor' };
+            }
+        }
+        // If not JSON, return generic error
+        const text = await response.text();
+        return { detail: text || 'Erro desconhecido no servidor' };
+    }
+    
     let files = [];
     let selectedOperation = null;
     
@@ -374,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            const result = await response.json();
+            const result = await safeJsonParse(response);
             
             if (response.ok) {
                 // Poll for job status
@@ -398,7 +413,11 @@ document.addEventListener('DOMContentLoaded', function() {
     async function pollJobStatus(jobId) {
         try {
             const response = await fetch(`/tools/api/jobs/${jobId}`);
-            const job = await response.json();
+            if (!response.ok) {
+                showError('Erro ao verificar status da conversão');
+                return;
+            }
+            const job = await safeJsonParse(response);
             
             // Update progress
             updateProgress(job.progress, job.message);

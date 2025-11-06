@@ -168,6 +168,21 @@
 let selectedFiles = [];
 const maxSize = 10 * 1024 * 1024 * 1024; // 10GB - practically unlimited
 
+// Safe JSON parser - handles HTML error responses
+async function safeJsonParse(response) {
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+        try {
+            return await response.json();
+        } catch (e) {
+            return { detail: 'Erro ao processar resposta do servidor' };
+        }
+    }
+    // If not JSON, return generic error
+    const text = await response.text();
+    return { detail: text || 'Erro desconhecido no servidor' };
+}
+
 function handleFileSelect(event) {
     const files = Array.from(event.target.files);
     selectedFiles = files;
@@ -330,11 +345,10 @@ document.getElementById('images-form').addEventListener('submit', function(e) {
         method: 'POST',
         body: formData
     })
-    .then(response => {
+    .then(async response => {
         if (!response.ok) {
-            return response.json().then(data => {
-                throw new Error(data.detail || 'Erro ao converter imagens');
-            });
+            const data = await safeJsonParse(response);
+            throw new Error(data.detail || 'Erro ao converter imagens');
         }
         return response.blob();
     })
