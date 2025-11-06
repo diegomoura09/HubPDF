@@ -40,12 +40,13 @@ def sanitize_filename(filename: str) -> str:
     safe_name = re.sub(r'\s+', '_', safe_name)
     return safe_name[:255]  # Limit length
 
-# Supported conversion operations - 6 funções essenciais
+# Supported conversion operations
 CONVERSION_OPERATIONS = {
     "merge_pdf": {"input": "pdf", "output": "pdf", "name": "Juntar PDFs"},
     "split_pdf": {"input": "pdf", "output": "pdf", "name": "Dividir PDF"},
     "compress_pdf": {"input": "pdf", "output": "pdf", "name": "Comprimir PDF"},
     "pdf_to_docx": {"input": "pdf", "output": "docx", "name": "PDF para DOCX"},
+    "pdf_to_xlsx": {"input": "pdf", "output": "xlsx", "name": "PDF para Excel"},
     "extract_text": {"input": "pdf", "output": "txt", "name": "Extrair Texto"},
     "pdf_to_images": {"input": "pdf", "output": "images", "name": "PDF para Imagens"},
 }
@@ -156,6 +157,22 @@ async def pdf_to_images_tool(request: Request, user: User = Depends(get_optional
 async def images_to_pdf_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
     """Images to PDF tool page"""
     return templates.TemplateResponse("tools/images_to_pdf.html", {
+        "request": request,
+        "user": user
+    })
+
+@router.get("/pdf-to-docx")
+async def pdf_to_docx_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
+    """PDF to DOCX tool page"""
+    return templates.TemplateResponse("tools/pdf_to_docx.html", {
+        "request": request,
+        "user": user
+    })
+
+@router.get("/pdf-to-excel")
+async def pdf_to_excel_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
+    """PDF to Excel tool page"""
+    return templates.TemplateResponse("tools/pdf_to_excel.html", {
         "request": request,
         "user": user
     })
