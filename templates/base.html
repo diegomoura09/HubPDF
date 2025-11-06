@@ -72,45 +72,64 @@
     <!-- HTMX - Updated to latest version without 10MB limit -->
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <script>
-        // FORCE CLEAR OLD SERVICE WORKER CACHE
+        // FORCE CLEAR ALL SERVICE WORKERS AND CACHES - v3.0.0
         if ('serviceWorker' in navigator) {
+            // Unregister ALL service workers
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
                 for(let registration of registrations) {
                     registration.unregister().then(function() {
-                        console.log('Service Worker antigo removido - cache limpo');
+                        console.log('Service Worker removido - cache limpo');
                     });
                 }
             });
             
-            // Clear all caches
+            // Clear ALL caches (including v2 and v3)
             if ('caches' in window) {
                 caches.keys().then(function(cacheNames) {
                     return Promise.all(
                         cacheNames.map(function(cacheName) {
-                            if (cacheName.includes('hubpdf') && !cacheName.includes('v2')) {
-                                console.log('Removendo cache antigo:', cacheName);
-                                return caches.delete(cacheName);
-                            }
+                            console.log('Removendo cache:', cacheName);
+                            return caches.delete(cacheName);
                         })
                     );
+                }).then(function() {
+                    console.log('Todos os caches removidos - faça um hard refresh (Ctrl+Shift+R)');
                 });
             }
         }
         
-        // Configure HTMX with NO file size limits
+        // Configure HTMX with NO file size limits and disable ALL validations
         document.addEventListener('DOMContentLoaded', function() {
             // HTMX 2.0 configuration
             if (window.htmx && window.htmx.config) {
                 htmx.config.timeout = 120000; // 2 minutes for large files
                 htmx.config.historyCacheSize = 0; // Disable history cache
                 htmx.config.defaultSwapStyle = 'innerHTML';
-                
-                // Override any file size validation
                 htmx.config.allowEval = true;
                 htmx.config.inlineScriptNonce = '';
                 
                 console.log('HTMX 2.0 configurado: limite de arquivo removido');
             }
+            
+            // FORCE DISABLE ALL FILE INPUT VALIDATIONS
+            document.querySelectorAll('input[type="file"]').forEach(function(input) {
+                input.removeAttribute('data-max-size');
+                input.removeAttribute('data-hx-validate');
+                input.removeAttribute('maxlength');
+                
+                // Override any validation on change
+                input.addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    // Do not prevent default - allow file selection
+                }, true);
+            });
+            
+            // Block any validation errors
+            document.body.addEventListener('htmx:validation:failed', function(e) {
+                console.log('Validação bloqueada:', e);
+                e.stopPropagation();
+                e.preventDefault();
+            }, true);
         });
     </script>
     
