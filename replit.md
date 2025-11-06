@@ -55,7 +55,8 @@ Preferred communication style: Simple, everyday language.
 **Supported Operations**:
 - PDF merge, split, compression
 - PDF to/from images (PNG, JPG, ICO)
-- PDF to/from Office formats (DOCX, XLSX, PPTX)
+- PDF to Office formats (DOCX, XLSX)
+- Images to PDF (JPG, PNG, WEBP, HEIC)
 - Text extraction with watermarking
 
 **Design Decision**: Multiple PDF libraries provide fallback options when one fails. Files stored in user-specific temporary directories (`/tmp/{user_id}/{job_id}`) prevent cross-user access. Background cleanup task runs every 10 minutes to remove files older than 30 minutes. Watermarking implemented for quota enforcement on free tier.
