@@ -73,8 +73,15 @@ Preferred communication style: Simple, everyday language.
 - **Design**: Structured for future queue system (Celery/RQ)
 - **Job Registry**: In-memory job tracking with status updates
 - **Progress Tracking**: JobResult dataclass with status enum (PENDING, RUNNING, COMPLETED, FAILED)
+- **Download System**: Completed jobs provide download links via `/tools/api/jobs/{job_id}/download/{file_index}`
 
-**Design Decision**: BackgroundTasks sufficient for MVP with low concurrency. Job IDs (UUID) allow client polling for status. Architecture prepared for distributed queue by isolating job service interface.
+**Design Decision**: BackgroundTasks sufficient for MVP with low concurrency. Job IDs (UUID) allow client polling for status and provide security through unpredictability (mitigating unauthorized access risk). Architecture prepared for distributed queue by isolating job service interface. Download endpoints use FileResponse for efficient file serving.
+
+**UI Pattern**: Tools using job system (compress, images-to-pdf) follow consistent pattern:
+1. Upload and submit operation
+2. Polling-based progress tracking with visual feedback
+3. Success card with download button on completion
+4. Error card with clear messaging on failure
 
 ### Internationalization (i18n)
 - **Implementation**: Embedded Portuguese translations in `template_helpers.py`
