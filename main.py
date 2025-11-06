@@ -157,27 +157,8 @@ async def internal_server_error_handler(request: Request, exc: Exception):
         content={"error": "Erro interno. Tente novamente."}
     )
 
-# Redirect middleware for HTTPS and apex domain
-@app.middleware("http")
-async def redirect_middleware(request: Request, call_next):
-    """Redirect HTTP to HTTPS and www to apex domain"""
-    # Get host and scheme
-    host = request.headers.get("host", "")
-    scheme = request.headers.get("x-forwarded-proto", request.url.scheme)
-    
-    # Force HTTPS in production (non-localhost)
-    if scheme == "http" and "localhost" not in host and "127.0.0.1" not in host:
-        url = request.url.replace(scheme="https")
-        return RedirectResponse(url=str(url), status_code=301)
-    
-    # Redirect www to apex domain
-    if host.startswith("www."):
-        new_host = host[4:]  # Remove "www."
-        url = request.url.replace(netloc=new_host)
-        return RedirectResponse(url=str(url), status_code=301)
-    
-    response = await call_next(request)
-    return response
+# Note: HTTPS and www redirect logic moved to nginx/proxy level for production
+# For development, redirects are not necessary
 
 # Middleware order (CRITICAL - order matters!):
 # 1. TrustedHost (validate host header first)
