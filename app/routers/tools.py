@@ -207,14 +207,14 @@ async def start_conversion(
             if not allowed:
                 raise HTTPException(status_code=429, detail=message)
         
-        # Validate files
-        max_file_size = get_max_file_size(user)
-        for file in files:
-            if file.size and file.size > max_file_size:
-                raise HTTPException(
-                    status_code=413, 
-                    detail=f"File {file.filename} exceeds maximum size limit"
-                )
+        # File size validation removed - users can upload large files
+        # max_file_size = get_max_file_size(user)
+        # for file in files:
+        #     if file.size and file.size > max_file_size:
+        #         raise HTTPException(
+        #             status_code=413, 
+        #             detail=f"File {file.filename} exceeds maximum size limit"
+        #         )
         
         # Validate files exist and are accessible
         if not files or len(files) == 0:
@@ -432,9 +432,9 @@ async def process_images_to_pdf(
         if not files or len(files) == 0:
             raise HTTPException(status_code=400, detail="Nenhum arquivo enviado")
         
-        # Calcular tamanho total
+        # File size validation removed - users can upload large files
         total_size = 0
-        max_file_size = get_max_file_size(user)
+        # max_file_size = get_max_file_size(user)
         
         for file in files:
             await file.seek(0)
@@ -451,12 +451,12 @@ async def process_images_to_pdf(
                     detail=f"Arquivo {file.filename} não é uma imagem válida"
                 )
         
-        # Verificar limite total
-        if total_size > max_file_size:
-            raise HTTPException(
-                status_code=413,
-                detail=f"Tamanho total dos arquivos ({total_size / 1024 / 1024:.1f} MB) excede o limite de {max_file_size / 1024 / 1024:.0f} MB"
-            )
+        # Size limit check removed - allow large files
+        # if total_size > max_file_size:
+        #     raise HTTPException(
+        #         status_code=413,
+        #         detail=f"Tamanho total dos arquivos ({total_size / 1024 / 1024:.1f} MB) excede o limite de {max_file_size / 1024 / 1024:.0f} MB"
+        #     )
         
         logger.info(f"Converting {len(files)} images to PDF (total size: {total_size / 1024 / 1024:.1f} MB)")
         
