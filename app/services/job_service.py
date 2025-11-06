@@ -251,10 +251,29 @@ class ConversionJobService:
                 return results
                 
             elif operation == "compress_pdf":
-                level = options.get("level", "normal")
+                level = options.get("level", "balanced")
+                grayscale = options.get("grayscale", False)
+                rasterize = options.get("rasterize", False)
                 self.registry.update_job(job_id, progress=50, message="Compressing PDF...")
-                result = await conversion_service.compress_pdf(input_file, level, job_id)
-                return [result]
+                compression_result = await conversion_service.compress_pdf(
+                    input_file, level, job_id, grayscale, rasterize
+                )
+                # Store compression metrics in job metadata
+                if compression_result.get("success"):
+                    output_file = compression_result.get("output_path")
+                    self.registry.update_job(
+                        job_id,
+                        metadata={
+                            "compression_ratio": compression_result.get("ratio", 0),
+                            "engine_used": compression_result.get("engine_used", "unknown"),
+                            "input_bytes": compression_result.get("input_bytes", 0),
+                            "output_bytes": compression_result.get("output_bytes", 0),
+                        }
+                    )
+                    return [output_file]
+                else:
+                    raise ConversionError(f"Compression failed: {compression_result.get('message')}")
+            
                 
             elif operation == "merge_pdf":
                 self.registry.update_job(job_id, progress=50, message="Merging PDF files...")

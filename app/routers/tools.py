@@ -161,11 +161,13 @@ async def start_conversion(
     background_tasks: BackgroundTasks,
     operation: str = Form(...),
     target_format: Optional[str] = Form(None),
-    compression_level: Optional[str] = Form("normal"),
+    compression_level: Optional[str] = Form("balanced"),
     page_ranges: Optional[str] = Form(None),
     image_format: Optional[str] = Form("png"),
     image_dpi: Optional[int] = Form(200),
     use_ocr: Optional[bool] = Form(False),
+    grayscale: Optional[bool] = Form(False),
+    rasterize: Optional[bool] = Form(False),
     files: List[UploadFile] = File(...),
     user: User = Depends(get_optional_user),
     db: Session = Depends(get_db)
@@ -220,6 +222,8 @@ async def start_conversion(
             "level": compression_level,
             "ranges": page_ranges or "1",
             "use_ocr": use_ocr and settings.ENABLE_OCR,
+            "grayscale": grayscale,
+            "rasterize": rasterize,
         }
         
         # Start conversion job

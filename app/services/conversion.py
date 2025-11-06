@@ -67,6 +67,7 @@ except ImportError:
     SimpleDocTemplate = Paragraph = Spacer = getSampleStyleSheet = letter = None
 
 from app.config import settings
+from app.pdf_compress import compress_pdf as compress_pdf_advanced
 
 logger = logging.getLogger(__name__)
 
@@ -785,114 +786,55 @@ class ConversionService:
             self._cleanup_work_dir(work_dir)
             raise ConversionError(f"PDF split failed: {str(e)}")
     
-    async def compress_pdf(self, pdf_path: str, level: str = "normal", job_id: str = None) -> str:
-        """Compress PDF file by reducing image quality and removing unnecessary data
+    async def compress_pdf(self, pdf_path: str, level: str = "balanced", job_id: str = None, 
+                          grayscale: bool = False, rasterize: bool = False) -> Dict[str, Any]:
+        """Compress PDF file using Ghostscript with advanced compression
         
         Compression levels:
-        - light: Minimal compression, maintains high quality (reduces ~20-30%)
-        - normal/medium: Moderate compression (reduces ~40-50%, 2x more than light)
-        - high: Maximum compression, significantly reduced quality (reduces ~60-75%, 5x more than light)
+        - light: Alta qualidade, ganho moderado (~20-30%)
+        - balanced: Melhor custo/benefício (~40-60%)
+        - strong: Redução máxima, pode perder qualidade (~60-80%)
+        
+        Options:
+        - grayscale: Converte para tons de cinza
+        - rasterize: Modo extremo (rasteriza páginas, perde seleção de texto)
         """
-        if pikepdf is None and PyPDF2 is None:
-            raise ConversionError("PDF compression requires either pikepdf or PyPDF2. Please install one of these packages.")
-            
         if job_id is None:
             job_id = str(uuid.uuid4())
             
         work_dir = self._get_work_dir(job_id)
-        output_filename = self._get_original_filename_with_suffix(pdf_path, "compress", "pdf")
+        output_filename = self._get_original_filename_with_suffix(pdf_path, "compressed", "pdf")
         output_path = work_dir / output_filename
         
         try:
+            # Mapear níveis antigos para novos
+            level_map = {
+                "normal": "balanced",
+                "medium": "balanced",
+                "high": "strong",
+                "maximum": "strong"
+            }
+            level = level_map.get(level, level)
+            
             def _compress_pdf():
-                # Primeiro: tenta com pikepdf se disponível
-                if pikepdf is not None:
-                    try:
-                        # Define quality based on level with significant differences
-                        quality_settings = {
-                            "light": (90, pikepdf.StreamDecodeLevel.none, False),
-                            "normal": (70, pikepdf.StreamDecodeLevel.specialized, True),
-                            "medium": (70, pikepdf.StreamDecodeLevel.specialized, True),
-                            "high": (45, pikepdf.StreamDecodeLevel.all, True),
-                            "maximum": (45, pikepdf.StreamDecodeLevel.all, True)
-                        }
-                        
-                        jpeg_quality, decode_level, use_recompress = quality_settings.get(level, quality_settings["normal"])
-                        
-                        # Open PDF with pikepdf
-                        with pikepdf.open(pdf_path) as pdf:
-                            # Remove metadata and unnecessary objects
-                            if "/Metadata" in pdf.Root:
-                                del pdf.Root.Metadata
-                            
-                            # Compress images within PDF pages
-                            for page_num, page in enumerate(pdf.pages):
-                                try:
-                                    # Get images in page
-                                    if "/Resources" in page and "/XObject" in page.Resources:
-                                        for name, obj in page.Resources.XObject.items():
-                                            if obj.Subtype == "/Image":
-                                                # Extract and recompress image
-                                                try:
-                                                    if "/Filter" in obj and obj.Filter == "/DCTDecode":
-                                                        # JPEG image - already compressed, skip
-                                                        continue
-                                                    
-                                                    # For other formats, we can try to optimize
-                                                    raw_image = obj.read_bytes()
-                                                    if len(raw_image) > 10000:  # Only compress larger images
-                                                        # Image is large enough to benefit from compression
-                                                        pass
-                                                except Exception:
-                                                    # Skip problematic images
-                                                    continue
-                                except Exception:
-                                    # Skip problematic pages
-                                    continue
-                            
-                            # Save with compression based on level
-                            save_params = {
-                                "compress_streams": True,
-                                "stream_decode_level": decode_level,
-                                "object_stream_mode": pikepdf.ObjectStreamMode.generate
-                            }
-                            
-                            # Add aggressive compression for normal/high levels
-                            if level in ["normal", "medium", "high", "maximum"]:
-                                save_params["recompress_flate"] = True
-                            
-                            # Extra optimization for high compression
-                            if level in ["high", "maximum"]:
-                                save_params["linearize"] = True
-                            
-                            pdf.save(str(output_path), **save_params)
-                        
-                        return str(output_path)
-                    except Exception:
-                        # Fall back to PyPDF2
-                        pass
-                
-                # Fallback: usar PyPDF2
-                reader = PyPDF2.PdfReader(pdf_path)
-                writer = PyPDF2.PdfWriter()
-                
-                # Copy all pages
-                for page in reader.pages:
-                    page.compress_content_streams()  # Compress content streams
-                    writer.add_page(page)
-                
-                # Remove metadata
-                writer.add_metadata({})
-                
-                # Write compressed PDF
-                with open(output_path, "wb") as output_file:
-                    writer.write(output_file)
-                
-                return str(output_path)
+                return compress_pdf_advanced(
+                    input_path=pdf_path,
+                    output_path=str(output_path),
+                    level=level,
+                    grayscale=grayscale,
+                    rasterize=rasterize
+                )
             
             loop = asyncio.get_event_loop()
-            result_path = await loop.run_in_executor(self.executor, _compress_pdf)
-            return result_path
+            result = await loop.run_in_executor(self.executor, _compress_pdf)
+            
+            if result["success"]:
+                logger.info(f"Compression successful: {result['input_bytes']} -> {result['output_bytes']} bytes ({result['ratio']:.1f}% reduction)")
+                # Add output path to result
+                result["output_path"] = str(output_path)
+                return result
+            else:
+                raise ConversionError(f"Compression failed: {result['message']}")
             
         except Exception as e:
             self._cleanup_work_dir(work_dir)
