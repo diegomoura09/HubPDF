@@ -137,7 +137,10 @@ async def split_tool(request: Request, user: User = Depends(get_optional_user), 
 @router.get("/compress")
 async def compress_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
     """PDF compress tool page"""
-    return await tools_index(request, user, db)
+    return templates.TemplateResponse("tools/compress.html", {
+        "request": request,
+        "user": user
+    })
 
 @router.get("/extract-text")
 async def extract_text_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
@@ -152,7 +155,10 @@ async def pdf_to_images_tool(request: Request, user: User = Depends(get_optional
 @router.get("/images-to-pdf")
 async def images_to_pdf_tool(request: Request, user: User = Depends(get_optional_user), db: Session = Depends(get_db)):
     """Images to PDF tool page"""
-    return await tools_index(request, user, db)
+    return templates.TemplateResponse("tools/images_to_pdf.html", {
+        "request": request,
+        "user": user
+    })
 
 # API Endpoints for conversions
 @router.post("/api/convert")
