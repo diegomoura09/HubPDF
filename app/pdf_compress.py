@@ -135,60 +135,18 @@ def _compress_with_ghostscript(
             "-dQUIET",
             "-dBATCH",
             "-dDetectDuplicateImages=true",
-            "-dUseFlateCompression=true",
             "-dCompressFonts=true",
             "-dSubsetFonts=true",
-            "-dPreserveAnnots=false",
-            "-dAutoRotatePages=/None",
-            "-dDownsampleColorImages=true",
-            "-dDownsampleGrayImages=true",
-            "-dDownsampleMonoImages=true",
+            "-dEmbedAllFonts=true",
         ]
         
-        # Configurações por nível
+        # Configurações por nível (usar presets do GS)
         if level == "light":
-            gs_args.extend([
-                "-dPDFSETTINGS=/printer",
-                "-dColorImageDownsampleType=/Bicubic",
-                "-dColorImageResolution=180",
-                "-dGrayImageDownsampleType=/Bicubic",
-                "-dGrayImageResolution=180",
-                "-dMonoImageDownsampleType=/Subsample",
-                "-dMonoImageResolution=600",
-                "-dAutoFilterColorImages=false",
-                "-sColorImageFilter=/DCTEncode",
-                "-dJPEGQ=70",
-                "-dAutoFilterGrayImages=false",
-                "-sGrayImageFilter=/DCTEncode",
-            ])
+            gs_args.append("-dPDFSETTINGS=/printer")
         elif level == "strong":
-            gs_args.extend([
-                "-dPDFSETTINGS=/screen",
-                "-dColorImageResolution=96",
-                "-dGrayImageResolution=96",
-                "-dMonoImageResolution=600",
-                "-dAutoFilterColorImages=false",
-                "-sColorImageFilter=/DCTEncode",
-                "-dJPEGQ=40",
-                "-dAutoFilterGrayImages=false",
-                "-sGrayImageFilter=/DCTEncode",
-            ])
+            gs_args.append("-dPDFSETTINGS=/screen")
         else:  # balanced (default)
-            gs_args.extend([
-                "-dPDFSETTINGS=/ebook",
-                "-dColorImageResolution=120",
-                "-dGrayImageResolution=120",
-                "-dMonoImageResolution=600",
-                "-dAutoFilterColorImages=false",
-                "-sColorImageFilter=/DCTEncode",
-                "-dJPEGQ=55",
-                "-dAutoFilterGrayImages=false",
-                "-sGrayImageFilter=/DCTEncode",
-            ])
-        
-        # Modo monocromático (se detectado)
-        if analysis.get("color_mode_hint") == "mono":
-            gs_args.append("-sMonoImageFilter=/JBIG2Encode")
+            gs_args.append("-dPDFSETTINGS=/ebook")
         
         # Conversão para grayscale
         if grayscale:
@@ -204,15 +162,22 @@ def _compress_with_ghostscript(
             input_path
         ])
         
-        # Executar Ghostscript
-        subprocess.run(gs_args, check=True, capture_output=True, timeout=120)
+        # Executar Ghostscript  
+        result = subprocess.run(gs_args, capture_output=True, timeout=120)
+        
+        if result.returncode != 0:
+            stderr_msg = result.stderr.decode() if result.stderr else "(no stderr)"
+            stdout_msg = result.stdout.decode() if result.stdout else "(no stdout)"
+            print(f"Error: Ghostscript failed with code {result.returncode}")
+            print(f"  stderr: {stderr_msg}")
+            print(f"  stdout: {stdout_msg}")
+            print(f"  args: {' '.join(gs_args)}")
+            return False
+        
         return True
         
     except subprocess.TimeoutExpired:
         print("Error: Ghostscript timeout")
-        return False
-    except subprocess.CalledProcessError as e:
-        print(f"Error: Ghostscript failed: {e.stderr.decode()}")
         return False
     except Exception as e:
         print(f"Error: Ghostscript exception: {e}")
