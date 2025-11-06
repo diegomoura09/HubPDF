@@ -3,12 +3,12 @@
  * Handles caching, offline functionality, and PWA features
  */
 
-const CACHE_NAME = 'hubpdf-v3.0.0';
-const STATIC_CACHE = 'hubpdf-static-v3';
-const DYNAMIC_CACHE = 'hubpdf-dynamic-v3';
-const API_CACHE = 'hubpdf-api-v3';
+const CACHE_NAME = 'hubpdf-v3.1.0';
+const STATIC_CACHE = 'hubpdf-static-v3.1';
+const DYNAMIC_CACHE = 'hubpdf-dynamic-v3.1';
+const API_CACHE = 'hubpdf-api-v3.1';
 
-// Files to cache for offline functionality - UPDATED HTMX TO 2.0.3
+// Files to cache for offline functionality - UPDATED TO LUCIDE ICONS
 const STATIC_ASSETS = [
   '/',
   '/static/css/custom.css',
@@ -16,7 +16,7 @@ const STATIC_ASSETS = [
   '/static/manifest.json',
   'https://cdn.tailwindcss.com',
   'https://unpkg.com/htmx.org@2.0.3',
-  'https://unpkg.com/feather-icons',
+  'https://unpkg.com/lucide@latest/dist/umd/lucide.js',
   'https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js'
 ];
 
