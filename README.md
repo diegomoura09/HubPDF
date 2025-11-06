@@ -18,17 +18,11 @@ O HubPDF oferece ferramentas simples e seguras para manipulação de arquivos PD
 - **Banco de dados:** PostgreSQL (Neon) / SQLite (desenvolvimento local)
 - **Autenticação:** JWT + Google OAuth (opcional)
 
-## 📦 Limites de Upload
-- **Tamanho máximo por arquivo:** 60 MB (padrão)
-- Configurável via variável de ambiente `MAX_UPLOAD_MB`
-- Validação implementada em frontend (JavaScript) e backend (FastAPI)
+## 📦 Upload de Arquivos
+- **Tamanho de arquivo:** Sem limitações (suporta arquivos grandes até 10GB)
+- Sistema otimizado para processamento de arquivos de qualquer tamanho
+- Validação de tipo de arquivo implementada para segurança
 - Mensagens de erro em português brasileiro
-
-### Configuração do Limite de Upload
-Para alterar o limite padrão, defina a variável de ambiente:
-```bash
-MAX_UPLOAD_MB=100  # Exemplo: aumentar para 100 MB
-```
 
 ## 🏃 Executando Localmente
 

@@ -182,7 +182,7 @@ PT_TRANSLATIONS = {
   
   "msg_error": "Ocorreu um erro",
   "quota_exceeded": "Sistema temporariamente indisponível. Tente novamente em alguns instantes.",
-  "file_too_large": "Arquivo muito grande. Tamanho máximo: {max_size}MB",
+  "file_too_large": "Arquivo muito grande. Por favor, tente com um arquivo menor.",
   
   
   "need_help": "Precisa de ajuda?",

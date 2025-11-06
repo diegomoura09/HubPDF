@@ -13,14 +13,14 @@ class FileValidator:
     ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/bmp"]
     
     @staticmethod
-    def validate_pdf_file(file: UploadFile, max_size: int) -> None:
-        """Validate PDF file upload"""
-        # Check file size
-        if file.size > max_size:
-            raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                detail=f"File too large. Maximum size: {max_size // (1024*1024)}MB"
-            )
+    def validate_pdf_file(file: UploadFile, max_size: int = None) -> None:
+        """Validate PDF file upload - size validation removed"""
+        # File size validation removed - users can upload large files
+        # if file.size > max_size:
+        #     raise HTTPException(
+        #         status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+        #         detail=f"File too large. Maximum size: {max_size // (1024*1024)}MB"
+        #     )
         
         # Check MIME type
         content_type = file.content_type
@@ -42,14 +42,14 @@ class FileValidator:
             )
     
     @staticmethod
-    def validate_image_file(file: UploadFile, max_size: int) -> None:
-        """Validate image file upload"""
-        # Check file size
-        if file.size > max_size:
-            raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                detail=f"File too large. Maximum size: {max_size // (1024*1024)}MB"
-            )
+    def validate_image_file(file: UploadFile, max_size: int = None) -> None:
+        """Validate image file upload - size validation removed"""
+        # File size validation removed - users can upload large files
+        # if file.size > max_size:
+        #     raise HTTPException(
+        #         status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+        #         detail=f"File too large. Maximum size: {max_size // (1024*1024)}MB"
+        #     )
         
         # Check MIME type
         content_type = file.content_type
