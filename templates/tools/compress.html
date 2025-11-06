@@ -43,6 +43,50 @@
                 <div id="file-name" class="mt-2 text-sm text-gray-600 hidden"></div>
             </div>
             
+            <!-- Compression Options -->
+            <div class="mb-6 space-y-4">
+                <div>
+                    <label for="compression_level" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nível de Compressão
+                    </label>
+                    <select id="compression_level" name="compression_level" 
+                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
+                        <option value="light">Leve - Alta qualidade (~20-30% redução)</option>
+                        <option value="balanced" selected>Equilibrado - Melhor custo/benefício (~40-60% redução)</option>
+                        <option value="strong">Forte - Redução máxima (~60-80% redução)</option>
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500">
+                        PDFs nativos com texto têm menor ganho. Para escaneados, use "Forte" ou ative tons de cinza.
+                    </p>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="grayscale" name="grayscale" type="checkbox" value="true"
+                               class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="grayscale" class="font-medium text-gray-700">Converter para tons de cinza</label>
+                        <p class="text-gray-500">Remove cores, reduzindo ainda mais o tamanho (ideal para documentos monocromáticos)</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="rasterize" name="rasterize" type="checkbox" value="true"
+                               class="focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="rasterize" class="font-medium text-red-700">
+                            Modo Extremo (rasterizar páginas)
+                        </label>
+                        <p class="text-red-600">
+                            ⚠️ Redução máxima, mas perde seleção de texto. Use apenas se necessário.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Submit Button -->
             <div class="flex justify-center">
                 <button type="submit" 
