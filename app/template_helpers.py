@@ -386,8 +386,8 @@ PT_TRANSLATIONS = {
   "footer_description": "Ferramentas Digitais Sustentáveis",
   "footer_tools": "Ferramentas",
   "footer_company": "HubPDF – Ferramentas Digitais Sustentáveis",
-  "footer_note": "Sistema gratuito desenvolvido por Diego Moura de Andrade – CST ADS, Cruzeiro do Sul / Braz Cubas.",
-  "footer_copyright": "© 2025 HubPDF – Sistema gratuito desenvolvido por Diego Moura de Andrade (CST ADS – Cruzeiro do Sul / Braz Cubas)"
+  "footer_note": "Sistema gratuito desenvolvido por Diego Moura de Andrade - Estudante na Cruzeiro do Sul / Braz Cubas - CST ADS",
+  "footer_copyright": "© 2025 HubPDF – Desenvolvido por Diego Moura de Andrade - Estudante na Cruzeiro do Sul / Braz Cubas - CST ADS"
 }
 
 def t(key: str, default: str | None = None, **kwargs) -> str:
