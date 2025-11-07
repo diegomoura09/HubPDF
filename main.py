@@ -232,6 +232,18 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Templates - Import centralized templates
 from app.template_helpers import templates
 
+# --- FAQ Router ---
+from fastapi import APIRouter
+from fastapi.responses import HTMLResponse
+from pathlib import Path
+
+info_router = APIRouter()
+TEMPLATES_DIR = Path("templates")
+
+@info_router.get("/faq", response_class=HTMLResponse)
+async def faq_page():
+    return (TEMPLATES_DIR / "faq.html").read_text(encoding="utf-8")
+
 # Include routers
 app.include_router(main_router.router)
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -239,6 +251,7 @@ app.include_router(tools.router, prefix="/tools", tags=["tools"])
 app.include_router(billing.router, prefix="/billing", tags=["billing"])
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
 app.include_router(health.router, prefix="/api", tags=["health"])
+app.include_router(info_router)
 
 
 # Demo page for alerts system

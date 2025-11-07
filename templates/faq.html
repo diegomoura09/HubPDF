@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>FAQ • HubPDF</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.5;margin:0;padding:24px;color:#0f172a;background:#fff}
+    h1{font-size:22px;margin:0 0 12px}
+    .item{border:1px solid #e5e7eb;border-radius:10px;margin:8px 0}
+    .q{background:#f8fafc;padding:12px 14px;cursor:pointer}
+    .a{padding:12px 14px;display:none}
+  </style>
+</head>
+<body>
+  <h1>FAQ</h1>
+
+  <div class="item">
+    <div class="q">Qual é o limite de tamanho dos arquivos?</div>
+    <div class="a">Até 60&nbsp;MB por arquivo.</div>
+  </div>
+
+  <div class="item">
+    <div class="q">Quais funções estão disponíveis?</div>
+    <div class="a">Mesclar, dividir, comprimir PDFs; PDF ↔ imagens; extrair texto; PDF → Word/Excel (quando exibidos na página principal).</div>
+  </div>
+
+  <div class="item">
+    <div class="q">A compressão não reduziu muito. É normal?</div>
+    <div class="a">Sim, depende do conteúdo. PDFs já otimizados tendem a reduzir pouco. Tente outro perfil de compressão ou reexporte o arquivo da origem e recomprima.</div>
+  </div>
+
+  <div class="item">
+    <div class="q">Posso usar no celular?</div>
+    <div class="a">Sim. O HubPDF funciona direto no navegador móvel.</div>
+  </div>
+
+  <div class="item">
+    <div class="q">Quais formatos de imagem são aceitos?</div>
+    <div class="a">JPG e PNG (quando usar as ferramentas de converter PDF ↔ imagens).</div>
+  </div>
+
+  <div class="item">
+    <div class="q">Tive erro ao processar. O que faço?</div>
+    <div class="a">Verifique o tamanho, formato e se o arquivo abre normalmente no seu visualizador. Se persistir, tente novamente com outro arquivo.</div>
+  </div>
+
+  <script>
+    // abre/fecha respostas (sem libs)
+    document.querySelectorAll('.q').forEach(q=>{
+      q.addEventListener('click', ()=>{
+        const box = q.nextElementSibling;
+        box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+      });
+    });
+  </script>
+</body>
+</html>
