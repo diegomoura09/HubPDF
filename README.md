@@ -18,10 +18,10 @@ O HubPDF oferece ferramentas simples e gratuitas para **manipulação de arquivo
 
 ## 🛠️ Tecnologias Utilizadas
 **Backend:** Python + FastAPI  
-**Frontend:** HTML, CSS e JavaScript (Tailwind CSS, HTMX)  
+**Frontend:** HTML, CSS e JavaScript (CSS, HTMX)  
 **Servidor:** Uvicorn  
 **Implantação:** Replit Cloud com domínio próprio  
-**Banco de dados:** PostgreSQL / SQLite (ambiente local)  
+**Banco de dados:** PostgreSQL  
 
 ---
 
