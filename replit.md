@@ -1,10 +1,10 @@
-# HubPDF
+# HubPDF - Sistema de Ferramentas PDF
 
 ## Overview
 
-HubPDF is an academic web application for PDF manipulation and conversion, developed as part of the CST in Systems Analysis and Development course at Cruzeiro do Sul / BrazCubas. The platform provides free, secure, and privacy-focused PDF tools with automatic file cleanup and no permanent storage.
+HubPDF is a comprehensive web-based PDF manipulation platform developed as an academic project for the CST in Systems Analysis and Development program (Cruzeiro do Sul / BrazCubas). The application provides free, secure, and sustainable digital tools for PDF document manipulation, including merging, splitting, compressing, converting, and extracting text from PDF files.
 
-The system emphasizes security, LGPD compliance, and sustainable digital document management through features like PDF merging, splitting, compression, text extraction, and format conversion.
+The platform features a modern, responsive web interface built with FastAPI backend and HTMX-powered frontend, supporting both authenticated users and anonymous visitors with quota management. The system is designed for deployment on cloud platforms with PostgreSQL database support and includes comprehensive security middleware, OAuth authentication, and optional payment integration via Mercado Pago.
 
 ## User Preferences
 
@@ -12,120 +12,146 @@ Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### Application Framework
-- **Backend**: FastAPI (Python) with ASGI server (Uvicorn)
-- **Frontend**: Server-side rendered Jinja2 templates with progressive enhancement
-- **Styling**: Tailwind CSS (CDN-based)
-- **Interactivity**: HTMX for dynamic content, Alpine.js for client-side state, Lucide icons
-- **PWA Support**: Service Worker and Web Manifest for offline capabilities
+### Backend Architecture
 
-### Authentication & Authorization
-- **Authentication Strategy**: JWT-based with optional Google OAuth
-- **Password Security**: Argon2 hashing (via argon2-cffi)
-- **Session Management**: HTTP-only cookies for JWT storage
-- **CSRF Protection**: Signed tokens using itsdangerous with time-based expiration
-- **Anonymous Users**: UUID-based anonymous sessions with signed cookies for unauthenticated usage tracking
+**Framework**: FastAPI (Python)
+- Asynchronous ASGI application with lifespan management
+- Pure ASGI middleware implementation to avoid request body consumption issues
+- Structured logging with JSON format for production monitoring
+- Background task system for temporary file cleanup (30-minute retention)
 
-**Design Decision**: JWT chosen over session-based auth for stateless scalability. Argon2 provides superior password hashing security compared to bcrypt. CSRF uses cryptographic signatures instead of session storage to remain stateless.
+**Application Structure**:
+- Modular router-based organization (`/auth`, `/tools`, `/billing`, `/admin`, `/health`)
+- Service layer pattern for business logic separation
+- Dependency injection for database sessions and user authentication
+- Template rendering via Jinja2 with centralized helper system
+
+**PDF Processing Engine**:
+- Multi-strategy compression system with automatic heuristic analysis
+- Three compression levels (light/balanced/strong) with optional grayscale and rasterization
+- Ghostscript integration for image-heavy PDFs with configurable DPI and JPEG quality
+- qpdf + pikepdf for structural optimization and metadata removal
+- Fallback rasterization for native text/vector PDFs with minimal compression
+- Image-to-PDF conversion supporting JPG, PNG, WEBP, and HEIC/HEIF formats
+- Advanced features: watermarking, page size options, orientation control, margin configuration
+
+**File Processing**:
+- Unlimited file upload size (configurable via MAX_UPLOAD_MB environment variable, default 10GB)
+- Temporary file management with job-based directory structure under `/tmp`
+- Asynchronous job processing with in-memory registry and status tracking
+- Support for batch operations and multi-file uploads
+
+**Security Layers**:
+1. **SecurityMiddleware**: Adds security headers (CSP, X-Frame-Options, HSTS)
+2. **RateLimitMiddleware**: Token bucket algorithm for rate limiting per IP
+3. **CSRFMiddleware**: CSRF protection using itsdangerous signed tokens
+4. **RequestLoggingMiddleware**: Structured request/response logging
+5. **TrustedHostMiddleware**: Domain whitelist enforcement
+6. **CORSMiddleware**: Cross-origin request configuration
+
+**Authentication & Authorization**:
+- JWT-based authentication with access and refresh tokens
+- Argon2 password hashing via dedicated PasswordManager service
+- Google OAuth integration using authlib
+- Role-based access control (user/admin roles)
+- Anonymous user tracking via signed cookies with quota enforcement
+
+**Database Schema**:
+- Users: email (lowercase, unique index), password_hash, name, role, plan, google_id
+- Subscriptions: Mercado Pago integration, plan tracking, billing periods
+- Invoices: Payment history and transaction records
+- Coupons: Promotional codes with validity and usage limits
+- QuotaUsage: Daily operation tracking per user
+- AnonQuota: Anonymous visitor quota management
+- AuditLog: Admin action tracking for compliance
+
+### Frontend Architecture
+
+**Technology Stack**:
+- HTML5 with Jinja2 templating
+- Tailwind CSS via CDN for utility-first styling
+- HTMX for dynamic, SPA-like interactions without JavaScript frameworks
+- Alpine.js for reactive components
+- Lucide icons (replaced Feather icons)
+
+**Design System**:
+- Modern 2025 teal/slate color palette with CSS custom properties
+- Responsive grid layouts with mobile-first approach
+- Custom button system with primary/outline variants
+- Alert system with auto-dismiss and HTML content support
+- Progressive Web App (PWA) support via manifest.json and service worker
+
+**Client-Side Features**:
+- Drag-and-drop file upload with visual feedback
+- Client-side form validation with Portuguese error messages
+- Real-time progress tracking for long-running operations
+- Infinite file size uploads (HTMX validation completely disabled)
+- Toast notifications and alert system
+
+**Service Worker**:
+- Static asset caching for offline functionality
+- Network-first strategy for API endpoints
+- Stale-while-revalidate for pages
+- Version-based cache management (v3.4.0)
 
 ### Database Architecture
-- **Development**: SQLite with WAL mode for concurrent access
-- **Production**: PostgreSQL (Neon) with SSL required
-- **ORM**: SQLAlchemy with declarative models
-- **Schema**: Users, Subscriptions, Invoices, Quotas, Coupons, Audit Logs
 
-**Design Decision**: SQLite for local development simplicity, PostgreSQL for production to handle concurrent writes and better query optimization. Connection pooling configured differently based on database type. Email uniqueness enforced via case-insensitive index (`LOWER(email)`) at database level.
+**Primary Database**: PostgreSQL (Neon) with SSL required
+- Connection pooling with NullPool for Neon compatibility
+- WAL mode and pragma optimizations
+- SSL enforcement via connection string parameters
 
-### Security Middleware Stack
-1. **SecurityMiddleware**: Adds security headers (X-Frame-Options, CSP-like headers, HSTS in production)
-2. **RateLimitMiddleware**: IP-based rate limiting with burst allowance using in-memory tracking
-3. **CSRFMiddleware**: Validates CSRF tokens on state-changing operations
-4. **TrustedHostMiddleware**: Restricts allowed hosts in production
-5. **CORSMiddleware**: Configures cross-origin policies
+**Local Development**: SQLite with WAL journaling
+- File-based storage in `data/app.db`
+- StaticPool for thread safety with check_same_thread=False
+- Pragma optimizations for performance
 
-**Design Decision**: Layered middleware approach allows independent security concerns. Rate limiting in-memory for simplicity (can be upgraded to Redis). CSRF validation happens early to prevent processing of invalid requests.
+**Schema Management**:
+- SQLAlchemy ORM with declarative base
+- Migration scripts in `scripts/` directory
+- Case-insensitive email index: `users_email_lower_idx` on `LOWER(email)`
+- Foreign key constraints enabled
 
-### File Processing & Conversion
-- **PDF Libraries**: PyMuPDF (fitz), pikepdf, PyPDF2, pdfplumber
-- **Image Processing**: Pillow (PIL)
-- **Text Extraction**: pdfminer.six with OCR fallback (pytesseract)
-- **Office Formats**: python-docx for DOCX support
-- **Temporary Storage**: User-scoped directories under `/tmp` with automatic cleanup
+### External Dependencies
 
-**Supported Operations**:
-- PDF merge, split, compression
-- PDF to/from images (PNG, JPG, ICO)
-- PDF to Office formats (DOCX, XLSX)
-- Images to PDF (JPG, PNG, WEBP, HEIC)
-- Text extraction with watermarking
+**Third-Party Services**:
+1. **Google OAuth**: Client ID/secret for social authentication
+2. **Mercado Pago**: Payment gateway integration with webhook support
+3. **Neon PostgreSQL**: Serverless Postgres database with SSL
 
-**Design Decision**: Multiple PDF libraries provide fallback options when one fails. Files stored in user-specific temporary directories (`/tmp/{user_id}/{job_id}`) prevent cross-user access. Background cleanup task runs every 10 minutes to remove files older than 30 minutes. Watermarking implemented for quota enforcement on free tier.
+**Python Libraries (Key Dependencies)**:
+- **FastAPI**: Web framework with async support
+- **SQLAlchemy**: ORM and database toolkit
+- **Uvicorn**: ASGI server
+- **pikepdf**: PDF manipulation and optimization
+- **PyPDF2**: PDF reading and merging
+- **img2pdf**: Image-to-PDF conversion
+- **Pillow + pillow-heif**: Image processing with HEIC support
+- **pdfminer.six**: Text extraction from PDFs
+- **authlib**: OAuth client implementation
+- **argon2-cffi**: Password hashing
+- **itsdangerous**: Signed tokens for CSRF and anonymous cookies
+- **python-magic**: MIME type detection
 
-### Quota & Billing System
-- **Free Tier**: Large file uploads (10GB limit), unlimited operations (beta), no watermarks (beta)
-- **Pro Tier**: Large file uploads (10GB limit), unlimited operations
-- **Business Tier**: Large file uploads (10GB limit), unlimited operations
-- **Anonymous Users**: Large file uploads (10GB limit), 1 operation per day, always watermarked
+**System Dependencies**:
+- **Ghostscript**: PDF compression and rasterization
+- **qpdf**: PDF linearization and optimization
+- **Tesseract** (optional): OCR for scanned documents
 
-**Design Decision**: Upload size limits removed to allow users to process large files (up to 10GB). File size validation disabled in routers. Quota tracking in database with daily reset logic. Anonymous users tracked via hashed cookie ID (not stored as PII). Watermarking service applies conditional branding based on user tier. Integration ready for Mercado Pago (Brazilian payment gateway) for future monetization.
+**Frontend CDN Resources**:
+- Tailwind CSS: `cdn.tailwindcss.com`
+- HTMX: `unpkg.com/htmx.org@2.0.3`
+- Lucide Icons: `unpkg.com/lucide@latest`
+- Alpine.js: `unpkg.com/alpinejs@3.x.x`
 
-### Job Processing
-- **Current**: FastAPI BackgroundTasks for asynchronous operations
-- **Design**: Structured for future queue system (Celery/RQ)
-- **Job Registry**: In-memory job tracking with status updates
-- **Progress Tracking**: JobResult dataclass with status enum (PENDING, RUNNING, COMPLETED, FAILED)
-- **Download System**: Completed jobs provide download links via `/tools/api/jobs/{job_id}/download/{file_index}`
+**Deployment Platform**:
+- Designed for cloud deployment (references to Replit have been neutralized)
+- Environment variable configuration via `.env`
+- Custom domain support (hubpdf.pro)
+- Health check endpoints for monitoring (`/health`, `/health/db`, `/healthz`)
 
-**Design Decision**: BackgroundTasks sufficient for MVP with low concurrency. Job IDs (UUID) allow client polling for status and provide security through unpredictability (mitigating unauthorized access risk). Architecture prepared for distributed queue by isolating job service interface. Download endpoints use FileResponse for efficient file serving.
-
-**UI Pattern**: Tools using job system (compress, images-to-pdf) follow consistent pattern:
-1. Upload and submit operation
-2. Polling-based progress tracking with visual feedback
-3. Success card with download button on completion
-4. Error card with clear messaging on failure
-
-### Internationalization (i18n)
-- **Implementation**: Embedded Portuguese translations in `template_helpers.py`
-- **Default Language**: Brazilian Portuguese (pt-BR)
-- **Template Helper**: `t()` function for localized strings
-- **Future**: Structure supports external JSON files (`locales/pt.json`, `locales/en.json`)
-
-**Design Decision**: Embedded translations for simplicity during development. Template function `t()` abstracts translation lookup, allowing future migration to file-based or database-driven i18n without template changes.
-
-## External Dependencies
-
-### Third-Party Services
-- **Database**: Neon (Serverless PostgreSQL) with SSL/TLS
-- **OAuth Provider**: Google OAuth 2.0 (optional authentication method)
-- **Payment Gateway**: Mercado Pago (Brazilian payment processor, integration prepared)
-
-### CDN-Delivered Frontend Libraries
-- **Tailwind CSS**: `cdn.tailwindcss.com` (JIT compilation)
-- **HTMX**: `unpkg.com/htmx.org@2.0.3` (AJAX interactions)
-- **Alpine.js**: `unpkg.com/alpinejs@3.x.x` (reactive components)
-- **Lucide Icons**: `unpkg.com/lucide` (icon set)
-
-**Design Decision**: CDN delivery reduces build complexity and deployment size. Version pinning (HTMX 2.0.3) ensures stability. Fallback mechanism not implemented (assumes CDN availability).
-
-### Python Dependencies (Key Packages)
-- **Web Framework**: FastAPI, Uvicorn, Starlette
-- **Database**: SQLAlchemy, psycopg2-binary (PostgreSQL)
-- **Security**: argon2-cffi, PyJWT, itsdangerous, python-multipart
-- **PDF Processing**: PyMuPDF, pikepdf, PyPDF2, pdfplumber, pdf2image
-- **Image Processing**: Pillow, pytesseract (OCR)
-- **Office Formats**: python-docx, openpyxl, python-pptx
-- **Utilities**: pydantic, pydantic-settings, python-dotenv
-
-**Design Decision**: Multiple PDF libraries provide redundancy and feature coverage. OCR (pytesseract) requires system-level Tesseract installation. Pydantic used for settings validation and request schemas.
-
-### Environment Configuration
-Required environment variables (stored in Replit Secrets or `.env`):
-- `DATABASE_URL`: PostgreSQL connection string with SSL
-- `JWT_SECRET`: Secret for JWT signing
-- `CSRF_SECRET`: Secret for CSRF token signing
-- `ANON_COOKIE_SECRET`: Secret for anonymous session cookies
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: OAuth credentials
-- `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`: Mercado Pago integration
-- `MAX_UPLOAD_MB`: Upload size limit (default: 10000 - 10GB)
-
-**Design Decision**: Secrets management via environment variables follows 12-factor app principles. Fallback secrets for development with warnings to prevent production misconfiguration.
+**Configuration Management**:
+- Pydantic Settings for type-safe environment variable handling
+- Separate development/production configurations
+- Sensitive credentials stored in environment variables
+- Feature flags for beta features (e.g., unlimited operations, no watermarks)

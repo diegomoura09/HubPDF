@@ -1,100 +1,121 @@
-# 🧩 HubPDF  
-Sistema desenvolvido como parte do curso **CST em Análise e Desenvolvimento de Sistemas** (Cruzeiro do Sul / BrazCubas).  
-O HubPDF oferece ferramentas simples e seguras para manipulação de arquivos PDF — totalmente gratuito, acessível via web e sem armazenamento permanente de dados.
+# 🧩 HubPDF
+
+Sistema web desenvolvido como parte do curso **CST em Análise e Desenvolvimento de Sistemas** (Cruzeiro do Sul / BrazCubas).  
+O HubPDF oferece ferramentas simples e gratuitas para **manipulação de arquivos PDF**, com foco em **eficiência, acessibilidade e sustentabilidade digital**.
+
+---
 
 ## 🚀 Funcionalidades
 - Converter imagens em PDF  
 - Mesclar múltiplos PDFs  
 - Dividir arquivos PDF  
 - Comprimir e reduzir tamanho  
-- Extrair texto  
-- Garantia de privacidade (arquivos excluídos automaticamente)
+- Extrair texto de documentos  
+- Converter PDF para Word e Excel *(em desenvolvimento)*  
+- Interface responsiva e compatível com celulares  
+
+---
 
 ## 🛠️ Tecnologias Utilizadas
-- **Backend:** Python + FastAPI  
-- **Frontend:** HTML, CSS, JavaScript (Tailwind CSS, HTMX, Alpine.js)
-- **Servidor:** Uvicorn (ASGI)
-- **Implantação:** Cloud deployment (domínio próprio)
-- **Banco de dados:** PostgreSQL (Neon) / SQLite (desenvolvimento local)
-- **Autenticação:** JWT + Google OAuth (opcional)
+**Backend:** Python + FastAPI  
+**Frontend:** HTML, CSS e JavaScript (Tailwind CSS, HTMX)  
+**Servidor:** Uvicorn  
+**Implantação:** Replit Cloud com domínio próprio  
+**Banco de dados:** PostgreSQL / SQLite (ambiente local)  
+
+---
 
 ## 📦 Upload de Arquivos
-- **Tamanho de arquivo:** Sem limitações (suporta arquivos grandes até 10GB)
-- Sistema otimizado para processamento de arquivos de qualquer tamanho
-- Validação de tipo de arquivo implementada para segurança
-- Mensagens de erro em português brasileiro
+- **Tamanho ilimitado**, podendo haver lentidão em arquivos muito grandes.  
+- Arquivos com baixa qualidade ou já muito reduzidos podem apresentar falhas na leitura.  
+- Sistema validado para os formatos principais: PDF, JPG, PNG, DOCX e XLSX.  
 
-## 🏃 Executando Localmente
+---
+
+## 🧭 Executando Localmente
 
 ### Pré-requisitos
-- Python 3.10+
-- pip ou uv (gerenciador de pacotes Python)
+- Python 3.10 ou superior  
+- `pip` ou `uv` instalado  
 
-### Opção A: Usando uv (recomendado)
+### Opção A – Usando `uv` (recomendado)
 ```bash
-# Instalar uv
 pip install uv
-
-# Sincronizar dependências
 uv sync
-
-# Executar aplicação
 uv run uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-### Opção B: Usando pip
+### Opção B – Usando pip
 ```bash
-# Instalar dependências
 pip install -r requirements.txt
-
-# Executar aplicação
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
 ### Configuração de Ambiente
-1. Copie `.env.example` para `.env`:
-   ```bash
-   cp .env.example .env
-   ```
+Crie o arquivo `.env` com suas variáveis:
 
-2. Edite `.env` com suas configurações:
-   - `DATABASE_URL`: String de conexão do PostgreSQL
-   - `SECRET_KEY`, `JWT_SECRET`, `CSRF_SECRET`: Segredos da aplicação
-   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: OAuth do Google (opcional)
+```ini
+DATABASE_URL=postgresql://...
+SECRET_KEY=...
+JWT_SECRET=...
+CSRF_SECRET=...
+```
 
-3. Acesse a aplicação em `http://localhost:8000`
+Acesse: **http://localhost:8000**
+
+---
 
 ## 📁 Estrutura do Projeto
 ```
 HubPDF/
-├── app/                    # Código da aplicação
-│   ├── routers/           # Rotas FastAPI
-│   ├── services/          # Lógica de negócio
-│   ├── models.py          # Modelos do banco de dados
+├── app/                    # Código principal
+│   ├── routers/            # Rotas e endpoints FastAPI
+│   ├── services/           # Funções de manipulação de PDF
+│   ├── models.py           # Modelos e ORM
 │   └── ...
-├── templates/             # Templates Jinja2
-├── static/                # CSS, JavaScript, assets
-├── docs/                  # Documentação do projeto
-│   ├── examples/         # Arquivos de exemplo/teste
-│   └── assets/           # Assets de documentação
-├── scripts/              # Scripts de banco de dados
-├── main.py               # Ponto de entrada da aplicação
-└── pyproject.toml        # Dependências (uv/poetry)
+├── templates/              # Páginas HTML
+├── static/                 # CSS, JS, imagens
+├── scripts/                # Scripts auxiliares
+├── main.py                 # Ponto de entrada
+└── README.md               # Este arquivo
 ```
 
-## 📚 Documentação
-- [Correções de Autenticação](docs/AUTHENTICATION_FIXES.md)
-- [Sistema de Alertas](docs/SISTEMA_ALERTAS.md)
-- [Arquivos de Exemplo](docs/examples/)
+---
+
+## 💬 FAQ
+Acesse o FAQ do sistema em:  
+👉 **https://hubpdf.pro/faq**
+
+---
+
+## 🌱 Extensão Universitária
+Projeto desenvolvido como intervenção extensionista no eixo **Economia Sustentável**, alinhado aos Objetivos de Desenvolvimento Sustentável:
+
+- **ODS 8** – Trabalho decente e crescimento econômico  
+- **ODS 12** – Consumo e produção responsáveis  
+
+---
 
 ## 👨‍💻 Autor
 **Diego Moura de Andrade**  
-- GitHub: [diegomoura09](https://github.com/diegomoura09)  
-- E-mail: diego.andrade@cs.brazcubas.edu.br  
-- Sistema desenvolvido em atendimento a requisitos acadêmicos.  
+Curso: CST em Análise e Desenvolvimento de Sistemas  
+E-mail: diego.andrade@cs.brazcubas.edu.br  
+GitHub: [diegomoura09](https://github.com/diegomoura09)  
+LinkedIn: [linkedin.com/in/diegomouradeandrade](https://linkedin.com/in/diegomouradeandrade)  
+
+*Sistema desenvolvido como parte das atividades de extensão universitária, sem fins lucrativos.*
+
+---
 
 ## 🌐 Acesso Online
-Acesse gratuitamente: [https://hubpdf.pro](https://hubpdf.pro)
+Acesse gratuitamente: **https://hubpdf.pro**
+
+---
 
 ## ⚖️ Licença
 Distribuído sob a licença MIT.
+
+---
+
+**Versão Atual:** Novembro/2025  
+**Repositório oficial:** [github.com/diegomoura09/HubPDF](https://github.com/diegomoura09/HubPDF)
