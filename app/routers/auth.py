@@ -435,3 +435,146 @@ async def refresh_token(request: Request):
         "access_token": access_token,
         "token_type": "bearer"
     })
+
+@router.get("/forgot-password", response_class=HTMLResponse)
+async def forgot_password_page(request: Request):
+    """Forgot password page"""
+    return templates.TemplateResponse(
+        "auth/forgot-password.html",
+        {"request": request}
+    )
+
+@router.post("/forgot-password")
+async def forgot_password(
+    request: Request,
+    email: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    """Process forgot password request"""
+    email_lower = email.lower().strip()
+    
+    user = db.query(User).filter(func.lower(User.email) == email_lower).first()
+    
+    if not user:
+        return templates.TemplateResponse(
+            "auth/forgot-password.html",
+            {
+                "request": request,
+                "error": "Nenhuma conta encontrada com este email.",
+                "email": email
+            },
+            status_code=400
+        )
+    
+    from itsdangerous import URLSafeTimedSerializer
+    serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
+    token = serializer.dumps(user.email, salt='password-reset')
+    
+    reset_link = f"{request.base_url}auth/reset-password?token={token}"
+    
+    return templates.TemplateResponse(
+        "auth/forgot-password.html",
+        {
+            "request": request,
+            "success": "Link de recuperação gerado! Copie o link abaixo.",
+            "reset_link": reset_link,
+            "email": email
+        }
+    )
+
+@router.get("/reset-password", response_class=HTMLResponse)
+async def reset_password_page(
+    request: Request,
+    token: str
+):
+    """Reset password page"""
+    from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+    
+    serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
+    try:
+        email = serializer.loads(token, salt='password-reset', max_age=3600)
+    except (SignatureExpired, BadSignature):
+        return templates.TemplateResponse(
+            "auth/reset-password.html",
+            {
+                "request": request,
+                "error": "Link inválido ou expirado. Solicite um novo link de recuperação.",
+                "token": ""
+            },
+            status_code=400
+        )
+    
+    return templates.TemplateResponse(
+        "auth/reset-password.html",
+        {
+            "request": request,
+            "token": token
+        }
+    )
+
+@router.post("/reset-password")
+async def reset_password(
+    request: Request,
+    token: str = Form(...),
+    password: str = Form(...),
+    confirm_password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    """Process password reset"""
+    from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+    from app.utils.validators import InputValidator
+    
+    if password != confirm_password:
+        return templates.TemplateResponse(
+            "auth/reset-password.html",
+            {
+                "request": request,
+                "error": "As senhas não coincidem.",
+                "token": token
+            },
+            status_code=400
+        )
+    
+    password_errors = InputValidator.validate_password(password)
+    if password_errors:
+        return templates.TemplateResponse(
+            "auth/reset-password.html",
+            {
+                "request": request,
+                "error": f"Senha inválida: {', '.join(password_errors)}",
+                "token": token
+            },
+            status_code=400
+        )
+    
+    serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
+    try:
+        email = serializer.loads(token, salt='password-reset', max_age=3600)
+    except (SignatureExpired, BadSignature):
+        return templates.TemplateResponse(
+            "auth/reset-password.html",
+            {
+                "request": request,
+                "error": "Link inválido ou expirado.",
+                "token": token
+            },
+            status_code=400
+        )
+    
+    user = db.query(User).filter(func.lower(User.email) == email.lower()).first()
+    if not user:
+        return templates.TemplateResponse(
+            "auth/reset-password.html",
+            {
+                "request": request,
+                "error": "Usuário não encontrado.",
+                "token": token
+            },
+            status_code=400
+        )
+    
+    user.password_hash = auth_svc.hash_password(password)
+    db.commit()
+    
+    response = RedirectResponse(url="/auth/login", status_code=302)
+    return response
