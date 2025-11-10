@@ -29,7 +29,7 @@ def ensure_anon_cookie(request: Request, response):
             "anon_id", 
             str(uuid.uuid4()),
             httponly=True, 
-            secure=not settings.DEBUG, 
+            secure=settings.COOKIE_SECURE, 
             samesite="lax", 
             path="/"
         )
@@ -121,7 +121,7 @@ async def login(
             access_token,
             max_age=settings.JWT_EXPIRATION_HOURS * 3600,
             httponly=True,
-            secure=not settings.DEBUG,
+            secure=settings.COOKIE_SECURE,
             samesite="lax"
         )
         
@@ -130,7 +130,7 @@ async def login(
             refresh_token,
             max_age=settings.JWT_REFRESH_EXPIRATION_DAYS * 24 * 3600,
             httponly=True,
-            secure=not settings.DEBUG,
+            secure=settings.COOKIE_SECURE,
             samesite="lax"
         )
         
@@ -298,7 +298,7 @@ async def register_post(
             access_token,
             max_age=settings.JWT_EXPIRATION_HOURS * 3600,
             httponly=True,
-            secure=not settings.DEBUG,
+            secure=settings.COOKIE_SECURE,
             samesite="lax"
         )
         
@@ -307,7 +307,7 @@ async def register_post(
             refresh_token,
             max_age=settings.JWT_REFRESH_EXPIRATION_DAYS * 24 * 3600,
             httponly=True,
-            secure=not settings.DEBUG,
+            secure=settings.COOKIE_SECURE,
             samesite="lax"
         )
         
@@ -371,7 +371,7 @@ async def google_callback(
             access_token,
             max_age=settings.JWT_EXPIRATION_HOURS * 3600,
             httponly=True,
-            secure=not settings.DEBUG,
+            secure=settings.COOKIE_SECURE,
             samesite="strict"
         )
         
@@ -380,7 +380,7 @@ async def google_callback(
             refresh_token,
             max_age=settings.JWT_REFRESH_EXPIRATION_DAYS * 24 * 3600,
             httponly=True,
-            secure=not settings.DEBUG,
+            secure=settings.COOKIE_SECURE,
             samesite="strict"
         )
         

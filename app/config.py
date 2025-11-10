@@ -63,6 +63,9 @@ class Settings(BaseSettings):
     CSRF_SECRET: str = Field(default="csrf-secret-key-change-in-production")
     SESSION_SECRET: str = Field(default="session-secret-key-change-in-production")
     
+    # Cookie Security - Auto-detect HTTPS vs HTTP
+    COOKIE_SECURE: bool = Field(default=False)  # Set to True only in production with HTTPS
+    
     # Anonymous users
     ANON_COOKIE_SECRET: str = Field(default="change-this-anon-secret-in-production")
     
