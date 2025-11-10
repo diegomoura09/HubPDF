@@ -30,20 +30,31 @@ class SecurityMiddleware:
         
         async def send_with_headers(message):
             if message["type"] == "http.response.start":
-                headers = dict(message.get("headers", []))
+                # CRITICAL FIX: Do NOT convert to dict - this collapses Set-Cookie headers!
+                # Keep as list to preserve multiple cookies
+                existing_headers = list(message.get("headers", []))
                 
-                headers[b"x-content-type-options"] = b"nosniff"
-                headers[b"x-frame-options"] = b"DENY"
-                headers[b"x-xss-protection"] = b"1; mode=block"
-                headers[b"referrer-policy"] = b"strict-origin-when-cross-origin"
-                headers[b"permissions-policy"] = b"geolocation=(), microphone=(), camera=()"
+                # Security headers to add
+                security_headers = {
+                    b"x-content-type-options": b"nosniff",
+                    b"x-frame-options": b"DENY",
+                    b"x-xss-protection": b"1; mode=block",
+                    b"referrer-policy": b"strict-origin-when-cross-origin",
+                    b"permissions-policy": b"geolocation=(), microphone=(), camera=()"
+                }
                 
                 if not settings.DEBUG:
-                    headers[b"strict-transport-security"] = b"max-age=31536000; includeSubDomains"
+                    security_headers[b"strict-transport-security"] = b"max-age=31536000; includeSubDomains"
                 
-                message["headers"] = [(k.lower() if isinstance(k, str) else k, 
-                                      v.encode() if isinstance(v, str) else v) 
-                                     for k, v in headers.items()]
+                # Get existing header names for deduplication
+                existing_names = {name.lower() for name, _ in existing_headers}
+                
+                # Append security headers only if not already present
+                for header_name, header_value in security_headers.items():
+                    if header_name.lower() not in existing_names:
+                        existing_headers.append((header_name, header_value))
+                
+                message["headers"] = existing_headers
             
             await send(message)
         
