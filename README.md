@@ -224,7 +224,7 @@ Instituição: Cruzeiro do Sul / BrazCubas
 
 📧 E-mail: diego.andrade@cs.brazcubas.edu.br  
 🐙 GitHub: [@diegomoura09](https://github.com/diegomoura09)  
-💼 LinkedIn: [diegomouradeandrade](https://www.linkedin.com/in/-andrade/)  
+💼 LinkedIn: [linkedin.com/in/-andrade](https://linkedin.com/in/-andrade)  
 
 *Sistema desenvolvido como parte das atividades de extensão universitária, sem fins lucrativos.*
 
